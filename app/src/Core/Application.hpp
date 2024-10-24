@@ -1,5 +1,5 @@
 #pragma once
-
+//ensures header is included do not include again.
 namespace CB {
 
     class Application {
