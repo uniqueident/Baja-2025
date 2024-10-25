@@ -1,6 +1,7 @@
-//This should be the base 
-class Base_Module{
+#include "moduletemplate.hpp"
 
-basme
+namespace CB {
 
-};
+    
+
+}   // CB

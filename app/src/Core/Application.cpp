@@ -16,6 +16,7 @@ namespace CB {
     void Application::Run() {
         m_Running = true;
 
+        // This while loop is the runtime. All Module updates will be called from here.
         while (m_Running) {
             std::cout << "Updated\n";
 
