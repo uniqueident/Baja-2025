@@ -12,10 +12,15 @@
 
 /** @brief The working namespace for CarBug. */
 namespace CB {
+
+    class ThreadPool;
     
     /** @brief The core Application class, everything should be controlled or owned by this class. */
     class Application {
     public:
+        Application() = default;
+        ~Application() = default;
+
         /** @brief Initializes the Application. */
         void Init();
         /** @brief Shut's down the Application. */
@@ -29,6 +34,8 @@ namespace CB {
 
     private:
         bool m_Running = false; /** @brief Boolean of whether the Application is in runtime or not. */
+
+        ThreadPool* m_Pool = nullptr;
     };
 
 }   // CB
