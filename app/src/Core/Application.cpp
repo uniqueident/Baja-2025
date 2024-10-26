@@ -1,6 +1,10 @@
 #include "Application.hpp"
 
 #include "ThreadPool.hpp"
+#include "SharedData.hpp"
+
+// #include "../Modules/moduletemplate.hpp"
+#include "../Modules/GUI/GUIModule.hpp"
 
 // std
 #include <iostream>
@@ -10,16 +14,30 @@ namespace CB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
-        m_Pool = new ThreadPool(2);
+        p_Pool = new ThreadPool(2);
+        p_SharedData = new SharedData;
+
+        // This is how to add a Module to the Application.
+        // The GUI Module Should always be first so that it can be updated separately.
+        m_Modules.emplace_back(new GUIModule);
+        m_Modules.back()->Init(p_SharedData);
+
+        // Other Modules to be added and initialized below.
     }
 
     void Application::Shutdown() {
         std::cout << "Shutting Down Application!" << std::endl;
 
-        delete m_Pool;
-    }
+        // This will shut down and delete all modules.
+        // Nothing more should be needed here.
+        for (size_t i = 0; i < m_Modules.size(); i++) {
+            m_Modules[i]->Shutdown();
+            delete m_Modules[i];
+        }
 
-    void TaskMessage(int i) { std::cout << "Message " << i << " From Thread " << std::this_thread::get_id() << std::endl; }
+        delete p_SharedData;
+        delete p_Pool;
+    }
 
     void Application::Run() {
         m_Running = true;
@@ -29,8 +47,10 @@ namespace CB {
         while (m_Running) {
             std::cout << "Updated\n";
 
-            m_Pool->AddTask(TaskMessage, (i));
+            UpdateModules();
             i++;
+
+            Render();
 
             if (i > 10)
                 RequestShutdown();
@@ -39,6 +59,16 @@ namespace CB {
 
     void Application::RequestShutdown() {
         m_Running = false;
+    }
+
+    
+    void Application::UpdateModules() {
+        for (size_t i = 1; i < m_Modules.size(); i++)
+            m_Modules[i]->Update();
+    }
+
+    void Application::Render() {
+        m_Modules[0]->Update();
     }
 
 } // CB

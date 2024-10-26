@@ -10,10 +10,17 @@
  */
 #pragma once
 
+// std
+#include <vector>
+
 /** @brief The working namespace for CarBug. */
 namespace CB {
 
     class ThreadPool;
+
+    struct SharedData;
+
+    class Module;
     
     /** @brief The core Application class, everything should be controlled or owned by this class. */
     class Application {
@@ -33,9 +40,25 @@ namespace CB {
         void RequestShutdown();
 
     private:
+        Application(const Application&) = delete;
+        Application operator = (const Application&) = delete;
+
+        // TODO: Make UpdateModules() and Render() static so that they can updated on separate threads. 
+
+        /** @brief Updates all of the Modules for the Application, skips the first Module which should always be the GUI Module. */
+        void UpdateModules();
+
+        /** @brief Updates the GUI Module to render. */
+        void Render();
+
+        /* --- */
+
         bool m_Running = false; /** @brief Boolean of whether the Application is in runtime or not. */
 
-        ThreadPool* m_Pool = nullptr;
+        ThreadPool* p_Pool = nullptr; /** @brief The threadpool that the Application can submit tasks to. */
+        SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
+
+        std::vector<Module*> m_Modules = { }; /** @brief The Application Modules that complete tasks. */
     };
 
 }   // CB
