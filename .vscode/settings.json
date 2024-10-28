@@ -1,5 +1,24 @@
 {
     "files.associations": {
-        "optional": "cpp"
+        "optional": "cpp",
+        "condition_variable": "cpp",
+        "functional": "cpp",
+        "random": "cpp",
+        "mutex": "cpp",
+        "type_traits": "cpp",
+        "*.tcc": "cpp",
+        "array": "cpp",
+        "atomic": "cpp",
+        "cwchar": "cpp",
+        "deque": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "iosfwd": "cpp",
+        "new": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp"
     }
 }
