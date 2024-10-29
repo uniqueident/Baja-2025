@@ -22,6 +22,7 @@ namespace CB {
 
         /** @brief Update's the EventHandler. */
         void Update();
+        
 
     private:
 
