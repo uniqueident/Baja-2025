@@ -1,3 +1,6 @@
 [submodule "app/libs/libgpiod"]
 	path = app/libs/libgpiod
 	url = https://github.com/brgl/libgpiod
+[submodule "app/libs/Qt"]
+	path = app/libs/Qt
+	url = git://code.qt.io/qt/qt5.git
