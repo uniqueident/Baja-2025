@@ -44,6 +44,6 @@ set(GCC_FLAGS "-Wall -Wextra -Wold-style-cast -Wsign-promo -Woverloaded-virtual 
 # Append the newer flags.
 set(CMAKE_CXX_FLAGS "${GCC_FLAGS}")
 
-add_subdirectory(app/libs/Qt)
+# add_subdirectory(app/libs/Qt)
 
 add_subdirectory(app)
