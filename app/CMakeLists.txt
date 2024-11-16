@@ -17,5 +17,15 @@ target_include_directories(
     
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-# Link libraries if necesary
-# target_link_libraries(${PROJECT_NAME} PRIVATE ...Libraries...)
+
+target_include_directories(
+    ${PROJECT_NAME} SYSTEM
+
+    PRIVATE {Qt6Widgets_INCLUDE_DIRS}
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}
+
+    PRIVATE Qt6::Widgets
+)
