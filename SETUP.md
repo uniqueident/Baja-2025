@@ -66,3 +66,9 @@ Then run the following command in the same terminal to install the Qt6 libraries
 ```bash
 sudo apt-get install qt6-base-dev
 ```
+
+To ensure that Qt can work out of the box (theoretically), run the following command to set it to use X11.
+
+```bash
+export QT_QPA_PLATFORM=xcb
+```
