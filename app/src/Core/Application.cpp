@@ -38,7 +38,7 @@ namespace CB {
         delete p_SharedData;
         delete p_Pool;
     }
-
+    //runs the application.
     void Application::Run() {
         m_Running = true;
         int i = 0;
@@ -52,21 +52,22 @@ namespace CB {
 
             Render();
 
-            if (i > 10)
+            if (i > 10) // Temporary, fixed update cycle until user interaction enabled.
                 RequestShutdown();
         }
     }
-
+    // Calls application shutdown.
     void Application::RequestShutdown() {
         m_Running = false;
     }
 
-    
+    // Forces module_update
     void Application::UpdateModules() {
         for (size_t i = 1; i < m_Modules.size(); i++)
             m_Modules[i]->Update();
     }
 
+    // Pushes update into GUI
     void Application::Render() {
         m_Modules[0]->Update();
     }

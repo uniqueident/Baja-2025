@@ -44,4 +44,9 @@ set(GCC_FLAGS "-Wall -Wextra -Wold-style-cast -Wsign-promo -Woverloaded-virtual 
 # Append the newer flags.
 set(CMAKE_CXX_FLAGS "${GCC_FLAGS}")
 
+message(STATUS)
+message(STATUS "Qt6 Package...")
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+message(STATUS)
+
 add_subdirectory(app)
