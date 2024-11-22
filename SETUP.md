@@ -67,8 +67,8 @@ Then run the following command in the same terminal to install the Qt6 libraries
 sudo apt-get install qt6-base-dev
 ```
 
-To ensure that Qt can work out of the box (theoretically), run the following command to set it to use X11.
+For WSL2, it may have trouble finding the wayland package for QT, running the following command should work:
 
 ```bash
-export QT_QPA_PLATFORM=xcb
+sudo snap install qtwayland --beta
 ```
