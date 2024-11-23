@@ -12,6 +12,9 @@
 
 #include "../moduletemplate.hpp"
 
+class QApplication;
+class QWidget;
+
 namespace CB {
 
     class GUIModule : public Module {
@@ -28,7 +31,10 @@ namespace CB {
         GUIModule(const GUIModule&) = delete;
         GUIModule operator = (const GUIModule&) = delete;
 
+        /* --- */
 
+        QApplication* p_Application;
+        QWidget* p_Window;
 
     };
 

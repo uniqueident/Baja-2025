@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
-cmake_policy(VERSION 3.28)
+cmake_minimum_required(VERSION 3.11...3.28)
 
 # Improves Reconfigure Time / Build Time
 find_program(CCACHE_FOUND ccache)

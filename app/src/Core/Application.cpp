@@ -3,7 +3,6 @@
 #include "ThreadPool.hpp"
 #include "SharedData.hpp"
 
-// #include "../Modules/moduletemplate.hpp"
 #include "../Modules/GUI/GUIModule.hpp"
 
 // std
