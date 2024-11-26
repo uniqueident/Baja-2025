@@ -12,14 +12,19 @@
 
 #include "../moduletemplate.hpp"
 
-class QApplication;
-class QWidget;
+struct GLFWwindow;
 
 namespace CB {
 
+    namespace GL {
+    
+        class Renderer;
+
+    }   // GL
+
     class GUIModule : public Module {
     public:
-        GUIModule() = default;
+        GUIModule() : p_Renderer(nullptr), p_Window(nullptr), m_Closed(false) { }
         virtual ~GUIModule() = default;
 
         virtual void Init(SharedData* data) override;
@@ -33,8 +38,11 @@ namespace CB {
 
         /* --- */
 
-        QApplication* p_Application;
-        QWidget* p_Window;
+        GL::Renderer* p_Renderer;
+
+        GLFWwindow* p_Window;
+
+        bool m_Closed;
 
     };
 

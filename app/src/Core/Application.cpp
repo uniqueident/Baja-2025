@@ -40,19 +40,16 @@ namespace CB {
     //runs the application.
     void Application::Run() {
         m_Running = true;
-        int i = 0;
 
         // This while loop is the runtime. All Module updates will be called from here.
         while (m_Running) {
-            std::cout << "Updated\n";
-
             UpdateModules();
-            i++;
 
             Render();
 
-            if (i > 10) // Temporary, fixed update cycle until user interaction enabled.
-                RequestShutdown();
+            // This should have a possible call from some sort of button / ignition,
+            // then the application can close before the Pi shuts off.
+            // RequestShutdown();
         }
     }
     // Calls application shutdown.
