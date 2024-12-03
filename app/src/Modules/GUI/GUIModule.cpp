@@ -34,6 +34,12 @@ namespace CB {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    #ifdef __APPLE__
+
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    #endif
+
         p_Window = glfwCreateWindow(640, 480, "Buggie Bug Dashboard", NULL, NULL);
         if (!p_Window) {
             std::cerr << "Failed to create GLFW Window or OpenGL context!" << std::endl;
@@ -67,21 +73,17 @@ namespace CB {
 
     void GUIModule::Shutdown() {
         p_Renderer->Shutdown();
+        delete p_Renderer;
 
-        if (p_Window)
-            glfwDestroyWindow(p_Window);
+        glfwDestroyWindow(p_Window);
 
         glfwTerminate();
     }
 
     void GUIModule::Update() {
-        if (m_Closed)
-            return;
-
         if (glfwWindowShouldClose(p_Window)) {
-            glfwDestroyWindow(p_Window);
+            p_Data->Running = false;
 
-            m_Closed = true;
             return;
         }
 

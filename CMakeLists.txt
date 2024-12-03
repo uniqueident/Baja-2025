@@ -45,11 +45,11 @@ set(CMAKE_CXX_FLAGS "${GCC_FLAGS}")
 
 find_package(OpenGL REQUIRED)
 
-add_subdirectory(app/libs/glfw)
+add_subdirectory(app/libs/glfw EXCLUDE_FROM_ALL)
 
-# message(STATUS)
-# message(STATUS "Qt6 Package...")
-# find_package(Qt6 REQUIRED COMPONENTS Widgets)
-# message(STATUS)
+set(GLM_ENABLE_CXX_17 ON)
+set(GLM_BUILD_LIBRARY OFF)
+set(GLM_BUILD_TESTS OFF)
+add_subdirectory(app/libs/glm EXCLUDE_FROM_ALL)
 
 add_subdirectory(app)

@@ -1,6 +1,5 @@
 #include "Application.hpp"
 
-#include "ThreadPool.hpp"
 #include "SharedData.hpp"
 
 #include "../Modules/GUI/GUIModule.hpp"
@@ -13,7 +12,6 @@ namespace CB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
-        p_Pool = new ThreadPool(2);
         p_SharedData = new SharedData;
 
         // This is how to add a Module to the Application.
@@ -35,26 +33,17 @@ namespace CB {
         }
 
         delete p_SharedData;
-        delete p_Pool;
     }
     //runs the application.
     void Application::Run() {
-        m_Running = true;
+        p_SharedData->Running = true;
 
         // This while loop is the runtime. All Module updates will be called from here.
-        while (m_Running) {
+        while (p_SharedData->Running) {
             UpdateModules();
 
             Render();
-
-            // This should have a possible call from some sort of button / ignition,
-            // then the application can close before the Pi shuts off.
-            // RequestShutdown();
         }
-    }
-    // Calls application shutdown.
-    void Application::RequestShutdown() {
-        m_Running = false;
     }
 
     // Forces module_update

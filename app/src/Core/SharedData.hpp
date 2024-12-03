@@ -18,13 +18,10 @@ namespace CB {
      * @brief The only data that the modules can access outside of themselves. This is soley for ease of use in the GUI.
      */
     struct SharedData {
-        bool cameraOn = false;
-        char fuelLevel = 100;
+       bool Running; /** @brief Boolean of whether the Application is in runtime or not. */
 
-        int engineRPM = 0;
+        SharedData() : Running(false) { }
 
-
-
-    };
+    };  // SharedData
 
 }   // CB
