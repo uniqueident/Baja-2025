@@ -15,9 +15,9 @@ namespace CB {
     
         Shader::Shader(const char* vertexSource, const char* fragmentSource, const char* geometrySource) : m_Program(0) {
 
-            std::cout << vertexSource   << std::endl;
-            std::cout << fragmentSource << std::endl;
-            std::cout << geometrySource << std::endl;
+            // std::cout << vertexSource   << std::endl;
+            // std::cout << fragmentSource << std::endl;
+            // std::cout << geometrySource << std::endl;
 
             Shader_ID vertex, fragment, geometry;
 
@@ -67,10 +67,6 @@ namespace CB {
                 glDeleteShader(geometry);
         }
 
-        Shader::~Shader() {
-            glDeleteProgram(m_Program);
-        }
-
         void Shader::SetBool(const char* name, bool value) const {
             glUniform1i(glGetUniformLocation(m_Program, name), static_cast<int>(value));
         }
@@ -80,27 +76,27 @@ namespace CB {
         }
 
         void Shader::SetFloat(const char* name, float value) const {
-            glUniform1f(glGetUniformLocation(m_Program, name), value);
+            glUniform1f(glGetUniformLocation(this->m_Program, name), value);
         }
 
         void Shader::SetVec2f(const char* name, const glm::vec2& value) const {
-            glUniform2f(glGetUniformLocation(m_Program, name), value.x, value.y);
+            glUniform2f(glGetUniformLocation(this->m_Program, name), value.x, value.y);
         }
 
         void Shader::SetVec3f(const char* name, const glm::vec3& value) const {
-            glUniform3f(glGetUniformLocation(m_Program, name), value.x, value.y, value.z);
+            glUniform3f(glGetUniformLocation(this->m_Program, name), value.x, value.y, value.z);
         }
 
         void Shader::SetVec4f(const char* name, const glm::vec4& value) const {
-            glUniform4f(glGetUniformLocation(m_Program, name), value.x, value.y, value.z, value.w);
+            glUniform4f(glGetUniformLocation(this->m_Program, name), value.x, value.y, value.z, value.w);
         }
 
         void Shader::SetMat4f(const char* name, const glm::mat4& value) const {
-            glUniformMatrix4fv(glGetUniformLocation(m_Program, name), 1, false, glm::value_ptr(value));
+            glUniformMatrix4fv(glGetUniformLocation(this->m_Program, name), 1, false, glm::value_ptr(value));
         }
 
         void Shader::Use() {
-            glUseProgram(m_Program);
+            glUseProgram(this->m_Program);
         }
 
         void Shader::CheckCompileErrors(Object_ID object, CompileType type) {

@@ -17,7 +17,7 @@ namespace  CB {
         static GL::Shader& LoadShader(const char* source, const char* name);
         static GL::Shader& GetShader(const char* name);
 
-        static GL::Texture2D& LoadTexture(const char* source, const char* name);
+        static GL::Texture2D& LoadTexture(const char* source, const char* name, bool alpha = false);
         static GL::Texture2D& GetTexture(const char* name);
 
         static void Clear();
@@ -28,7 +28,7 @@ namespace  CB {
         static ResourceManager* Instance();
 
         GL::Shader LoadShaderFile(const char* source);
-        GL::Texture2D LoadTextureFile(const char* source);
+        GL::Texture2D LoadTextureFile(const char* source, bool alpha);
 
         /* --- */
         

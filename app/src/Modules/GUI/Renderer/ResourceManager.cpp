@@ -2,6 +2,7 @@
 
 #include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
+#include "Renderer.hpp"
 
 // libs
 #define STB_IMAGE_IMPLEMENTATION
@@ -20,8 +21,8 @@ namespace CB {
         return Instance()->m_Shaders[name];
     }
 
-    GL::Texture2D& ResourceManager::LoadTexture(const char* source, const char* name) {
-        return (Instance()->m_Textures[name] = Instance()->LoadTextureFile(source));
+    GL::Texture2D& ResourceManager::LoadTexture(const char* source, const char* name, bool alpha) {
+        return (Instance()->m_Textures[name] = Instance()->LoadTextureFile(source, alpha));
     }
 
     GL::Texture2D& ResourceManager::GetTexture(const char* name) {
@@ -29,6 +30,11 @@ namespace CB {
     }
 
     void ResourceManager::Clear() {
+        for (auto item : Instance()->m_Shaders)
+            glDeleteProgram(item.second.ID());
+        for (auto item : Instance()->m_Textures)
+            glDeleteTextures(1, &item.second.ID());
+
         Instance()->m_Shaders.clear();
         Instance()->m_Textures.clear();
     }
@@ -96,11 +102,15 @@ namespace CB {
 
         fclose(fp);
 
+        if (geometryCode.empty())
+            return GL::Shader(vertexCode.c_str(), fragmentCode.c_str(), nullptr);
+
         return GL::Shader(vertexCode.c_str(), fragmentCode.c_str(), geometryCode.c_str());
     }
 
-    GL::Texture2D ResourceManager::LoadTextureFile(const char* source) {
+    GL::Texture2D ResourceManager::LoadTextureFile(const char* source, bool alpha) {
         GL::Texture2D texture;
+        texture.SetAlpha(alpha);
 
         // Load Image
         int width, height, nChannels;

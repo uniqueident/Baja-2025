@@ -1,7 +1,7 @@
 #pragma once
 
 // libs
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 
 namespace CB {
@@ -24,7 +24,7 @@ namespace CB {
         public:
             Shader() = default;
             Shader(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr);
-            ~Shader();
+            ~Shader() = default;
 
             void SetBool  (const char* name, bool value) const;
             void SetInt   (const char* name, int value) const;
@@ -35,6 +35,8 @@ namespace CB {
             void SetMat4f (const char* name, const glm::mat4& value) const;
 
             void Use();
+
+            inline Program_ID ID() const { return m_Program; }
 
         private:
             void CheckCompileErrors(Object_ID object, CompileType type);

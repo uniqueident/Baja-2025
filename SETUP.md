@@ -50,25 +50,3 @@ Install the following extensions in Visual Studio Code.
 | [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)                                    | Yes      |
 | [CMake Language Support](https://marketplace.visualstudio.com/items?itemName=josetr.cmake-language-support-vscode) | Yes      |
 | [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)                           | Yes      |
-
-## QT Libraries
-
-### WSL / Linux
-
-Run the following command in a linux terminal to install the required libraries for Qt6.
-
-```bash
-sudo apt-get -y install build-essential openssl libssl-dev libssl1.0 libgl1-mesa-dev libqt5x11extras5 '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
-```
-
-Then run the following command in the same terminal to install the Qt6 libraries.
-
-```bash
-sudo apt-get install qt6-base-dev
-```
-
-For WSL2, it may have trouble finding the wayland package for QT, running the following command should work:
-
-```bash
-sudo snap install qtwayland --beta
-```

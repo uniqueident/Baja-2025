@@ -1,7 +1,7 @@
 #pragma once
 
 // libs
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace CB {
 
@@ -19,11 +19,15 @@ namespace CB {
         class Texture2D {
         public:
             Texture2D();
-            ~Texture2D();
+            ~Texture2D() = default;
 
             void Generate(unsigned int width, unsigned int heightn, unsigned char* data);
 
             void Bind() const;
+
+            void SetAlpha(bool alpha);
+
+            inline Texture_ID& ID() { return m_ID; }
 
         private:
             Texture_ID m_ID;

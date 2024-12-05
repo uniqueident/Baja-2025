@@ -1,8 +1,8 @@
 #include "Application.hpp"
 
-#include "SharedData.hpp"
+#include "Core/SharedData.hpp"
 
-#include "../Modules/GUI/GUIModule.hpp"
+#include "Modules/GUI/GUIModule.hpp"
 
 // std
 #include <iostream>

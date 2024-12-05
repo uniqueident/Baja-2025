@@ -1,7 +1,7 @@
 #pragma once
 
 // libs
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 
 namespace CB {
@@ -16,39 +16,30 @@ namespace CB {
 
         typedef GLuint ElementBuffer_ID;
 
-    }   // GL
-
-    // https://learnopengl.com/In-Practice/2D-Game/Rendering-Sprites
-
-    class Renderer2D {
-    public:
-        static void DrawSprite(
-            GL::Texture2D &texture,
-            const glm::vec2& position, const glm::vec2& size = { 10.0f, 10.0f },
-            const glm::vec3& color = { 1.0f, 1.0f, 1.0f },
-            float rotate = 0.0f
-        );
-
-    };
-
-    namespace GL {
-
         class Renderer {
         public:
-            static Renderer& Instance();
+            static Renderer* Instance();
 
-            void Init();
+            void Init(Shader* shader);
             void Shutdown();
 
-            void Render();
+            void LoadData();
+
+            void DrawSprite(
+                GL::Texture2D &texture,
+                const glm::vec2& position, const glm::vec2& size,
+                const glm::vec3& color = { 1.0f, 1.0f, 1.0f },
+                float rotate = 0.0f
+            );
+
+            void UpdateView(unsigned int width, unsigned int height);
 
         private:
-            VertexBuffer_ID m_VertexBuffer;
-            VertexArray_ID m_VertexArray;
+            Shader* p_Shader;
 
-            ElementBuffer_ID m_ElementBuffer;
+            VertexArray_ID m_VAO;
 
-            glm::mat4 m_Projection;
+            int m_Width, m_Height;
 
         };
 

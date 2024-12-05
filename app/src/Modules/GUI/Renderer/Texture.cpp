@@ -7,11 +7,7 @@ namespace CB {
         Texture2D::Texture2D() : m_ID(0), m_Width(0), m_Height(0), m_InternalFormat(GL_RGB), m_Format(GL_RGB), m_WrapS(GL_REPEAT), m_WrapT(GL_REPEAT), m_FilterMin(GL_LINEAR), m_FilterMax(GL_LINEAR) {
             glGenTextures(1, &this->m_ID);
         }
-
-        Texture2D::~Texture2D() {
-            glDeleteTextures(1, &this->m_ID);
-        }
-
+        
         void Texture2D::Generate(unsigned int width, unsigned int height, unsigned char* data) {
             this->m_Width = width;
             this->m_Height = height;
@@ -35,6 +31,16 @@ namespace CB {
             glBindTexture(GL_TEXTURE_2D, this->m_ID);
         }
 
+        void Texture2D::SetAlpha(bool alpha) {
+            if (alpha) {
+                this->m_InternalFormat = GL_RGBA;
+                this->m_Format = GL_RGBA;
+            }
+            else {
+                this->m_InternalFormat = GL_RGB;
+                this->m_Format = GL_RGB;
+            }
+        }
 
     }   // GL
 
