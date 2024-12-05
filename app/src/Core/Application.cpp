@@ -1,10 +1,8 @@
 #include "Application.hpp"
 
-#include "ThreadPool.hpp"
-#include "SharedData.hpp"
+#include "Core/SharedData.hpp"
 
-// #include "../Modules/moduletemplate.hpp"
-#include "../Modules/GUI/GUIModule.hpp"
+#include "Modules/GUI/GUIModule.hpp"
 
 // std
 #include <iostream>
@@ -14,7 +12,6 @@ namespace CB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
-        p_Pool = new ThreadPool(2);
         p_SharedData = new SharedData;
 
         // This is how to add a Module to the Application.
@@ -36,29 +33,17 @@ namespace CB {
         }
 
         delete p_SharedData;
-        delete p_Pool;
     }
     //runs the application.
     void Application::Run() {
-        m_Running = true;
-        int i = 0;
+        p_SharedData->Running = true;
 
         // This while loop is the runtime. All Module updates will be called from here.
-        while (m_Running) {
-            std::cout << "Updated\n";
-
+        while (p_SharedData->Running) {
             UpdateModules();
-            i++;
 
             Render();
-
-            if (i > 10) // Temporary, fixed update cycle until user interaction enabled.
-                RequestShutdown();
         }
-    }
-    // Calls application shutdown.
-    void Application::RequestShutdown() {
-        m_Running = false;
     }
 
     // Forces module_update

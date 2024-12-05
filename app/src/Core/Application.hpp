@@ -16,8 +16,6 @@
 /** @brief The working namespace for CarBug. */
 namespace CB {
 
-    class ThreadPool;
-
     struct SharedData;
 
     class Module;
@@ -36,9 +34,6 @@ namespace CB {
         /** @brief Run's the Application, everything in the runtime will be here. */
         void Run();
 
-        /** @brief Requests to end the runtime. */
-        void RequestShutdown();
-
     private:
         Application(const Application&) = delete;
         Application operator = (const Application&) = delete;
@@ -53,9 +48,6 @@ namespace CB {
 
         /* --- */
 
-        bool m_Running = false; /** @brief Boolean of whether the Application is in runtime or not. */
-
-        ThreadPool* p_Pool = nullptr; /** @brief The threadpool that the Application can submit tasks to. */
         SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
 
         std::vector<Module*> m_Modules = { }; /** @brief The Application Modules that complete tasks. */

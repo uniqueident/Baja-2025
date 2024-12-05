@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
-cmake_policy(VERSION 3.28)
+cmake_minimum_required(VERSION 3.11...3.28)
 
 # Improves Reconfigure Time / Build Time
 find_program(CCACHE_FOUND ccache)
@@ -44,9 +43,13 @@ set(GCC_FLAGS "-Wall -Wextra -Wold-style-cast -Wsign-promo -Woverloaded-virtual 
 # Append the newer flags.
 set(CMAKE_CXX_FLAGS "${GCC_FLAGS}")
 
-message(STATUS)
-message(STATUS "Qt6 Package...")
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
-message(STATUS)
+find_package(OpenGL REQUIRED)
+
+add_subdirectory(app/libs/glfw EXCLUDE_FROM_ALL)
+
+set(GLM_ENABLE_CXX_17 ON)
+set(GLM_BUILD_LIBRARY OFF)
+set(GLM_BUILD_TESTS OFF)
+add_subdirectory(app/libs/glm EXCLUDE_FROM_ALL)
 
 add_subdirectory(app)

@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "../Core/SharedData.hpp"
+#include "Core/SharedData.hpp"
 
 namespace CB {
 

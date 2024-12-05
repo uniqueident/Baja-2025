@@ -4,5 +4,12 @@
 
 ### [Environment Setup](./SETUP.md)
 
-Ensure that the [Qt6 libraries](./SETUP.md#qt-libraries) are installed.
+### GLFW Requirements
 
+On Windows, GLFW should be able to find all required packages to build.
+
+On Linux, extra dependencies are required to build, which can be installed with the following command:
+
+```bash
+sudo apt install libwayland-dev libxkbcommon-dev xorg-dev
+```
