@@ -22,7 +22,15 @@ namespace CB {
     #define SCREEN_WIDTH 800
     #define SCREEN_HEIGHT 600
 
-    void OpenGLMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity, int lenght, const char* message, const void* userParam) {
+    void OpenGLMessageCallback(
+        [[gnu::unused]]unsigned source,
+        [[gnu::unused]]unsigned type,
+        [[gnu::unused]]unsigned id,
+        unsigned severity,
+        [[gnu::unused]]int lenght,
+        const char* message,
+        [[gnu::unused]]const void* userParam
+    ) {
         switch (severity) {
             case GL_DEBUG_SEVERITY_HIGH:
                 std::cerr << message << std::endl;
@@ -90,7 +98,7 @@ namespace CB {
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
         }
         catch(const std::exception e) {
-            std::cerr << "OpenGL version likely does not support Debug Messaging!" << std::endl;
+            std::cerr << "OpenGL version likely does not support Debug Messaging! " << e.what() << std::endl;
         }
 
         glEnable(GL_BLEND);
@@ -111,6 +119,8 @@ namespace CB {
         m_WindowData.renderer = p_Renderer;
         glfwSetWindowUserPointer(p_Window, &m_WindowData);
 
+        // Load Textures Here //
+        
         ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
     }
 
@@ -141,13 +151,21 @@ namespace CB {
         glfwSwapBuffers(p_Window);
     }
 
-    // Render Calls For UI (Draw Sprites)
     void GUIModule::Render() {
+        // Render UI Here //
+
         p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Face"),
+            { 100.0f, 100.0f},
+            { 200.0f, 300.0f },
+            { 0.0f, 0.0f, 1.0f },
+            30.0f
+        );
+
+        p_Renderer->DrawQuad(
+            { 0.0f, 1.0f, 0.0f },
             { 200.0f, 200.0f},
             { 300.0f, 400.0f },
-            { 0.0f, 1.0f, 0.0f },
             45.0f
         );
     }

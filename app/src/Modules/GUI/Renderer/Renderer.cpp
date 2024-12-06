@@ -14,6 +14,13 @@ namespace CB {
 
         void Renderer::Init(Shader* shader) {
             p_Shader = shader;
+            p_WhiteTexture = new Texture2D();
+
+            unsigned char textureData[] = {
+                0xff, 0xff, 0xff, 0xff
+            };
+
+            p_WhiteTexture->Generate(1, 1, textureData);
         }
 
         void Renderer::Shutdown() {
@@ -80,9 +87,18 @@ namespace CB {
             glBindVertexArray(0);
         }
 
+        void Renderer::DrawQuad(
+            const glm::vec3& color,
+            const glm::vec2& position, const glm::vec2& size,
+            float rotate
+        ) {
+            DrawSprite(*p_WhiteTexture, position, size, color, rotate);
+        }
+
         void Renderer::UpdateView(unsigned int width, unsigned int height) {
             this->m_Width = width;
             this->m_Height = height;
+            this->m_Scale = static_cast<float>(width) / height;
 
             glViewport(0, 0, width, height);
 

@@ -32,6 +32,12 @@ namespace CB {
                 float rotate = 0.0f
             );
 
+            void DrawQuad(
+                const glm::vec3& color,
+                const glm::vec2& position, const glm::vec2& size,
+                float rotate = 0.0f
+            );
+
             void UpdateView(unsigned int width, unsigned int height);
 
         private:
@@ -40,6 +46,9 @@ namespace CB {
             VertexArray_ID m_VAO;
 
             int m_Width, m_Height;
+            float m_Scale;
+
+            Texture2D* p_WhiteTexture;
 
         };
 
