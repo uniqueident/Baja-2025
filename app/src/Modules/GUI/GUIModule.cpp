@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <iostream>
 #include <exception>
+#include <sstream>
 
 // libs
 #define GLFW_INCLUDE_NONE
@@ -51,12 +52,17 @@ namespace CB {
     }
 
     void glfwFramebufferSizeCallback(GLFWwindow* window, int width, int height) {        
-        static_cast<WindowData*>(glfwGetWindowUserPointer(window))->renderer->UpdateView(width, height);
+        WindowData* data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        
+        data->renderer->UpdateView(width, height);
+        data->scale->x = width / static_cast<float>(SCREEN_HEIGHT);
+        data->scale->y = height / static_cast<float>(SCREEN_HEIGHT);
     }
 
     void GUIModule::Init(SharedData * data) {
         p_Data = data;
         m_Closed = false;
+        m_WindowScale = { 1.0f, 1.0f };
 
         if (!glfwInit())
             std::cerr << "Failed to initialize GLFW!" << std::endl;
@@ -96,8 +102,8 @@ namespace CB {
             glDebugMessageCallback(OpenGLMessageCallback, nullptr);
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
         }
-        catch(const std::exception e) {
-            std::cerr << "OpenGL version likely does not support Debug Messaging! " << e.what() << std::endl;
+        catch(std::out_of_range const&) {
+            std::cerr << "OpenGL version likely does not support Debug Messaging!" << std::endl;
         }
 
         glEnable(GL_BLEND);
@@ -109,6 +115,7 @@ namespace CB {
         p_Renderer->LoadData();
 
         m_WindowData.renderer = p_Renderer;
+        m_WindowData.scale = &m_WindowScale;
         glfwSetWindowUserPointer(p_Window, &m_WindowData);
 
         // Load Textures Here //
@@ -152,8 +159,8 @@ namespace CB {
             ResourceManager::GetTexture("Face"),
             { 100.0f, 100.0f},
             { 200.0f, 300.0f },
-            { 0.0f, 0.0f, 1.0f },
-            30.0f
+            30.0f,
+            { 0.0f, 0.0f, 1.0f }
         );
 
         p_Renderer->DrawQuad(
@@ -163,8 +170,11 @@ namespace CB {
             45.0f
         );
 
+        std::stringstream ss;
+        ss << "Window Scale: " << m_WindowScale.x << "(x), " << m_WindowScale.y << "(y)";
+
         p_Renderer->DrawText(
-            "Tester Text",
+            ss.str().c_str(),
             ResourceManager::GetFont("ComicNeue"),
             { 50.0f, 50.f },
             1.0f,

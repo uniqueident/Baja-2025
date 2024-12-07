@@ -38,9 +38,12 @@ namespace CB {
             glDeleteProgram(item.second.ID());
         for (auto item : Instance()->m_Textures)
             glDeleteTextures(1, &item.second.ID());
+        for (auto item : Instance()->m_Fonts)
+            item.second.Clear();
 
         Instance()->m_Shaders.clear();
         Instance()->m_Textures.clear();
+        Instance()->m_Fonts.clear();
     }
 
     GL::Font& ResourceManager::LoadFont(const char *source, const char *name) {

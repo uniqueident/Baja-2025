@@ -88,9 +88,8 @@ namespace CB {
 
         void Renderer::DrawSprite(
             GL::Texture2D &texture,
-            const glm::vec2& position, const glm::vec2& size,
-            const glm::vec3& color,
-            float rotate
+            const glm::vec2& position, const glm::vec2& size, float rotate,
+            const glm::vec3& color
         ) {
             this->p_QuadShader->Use();
 
@@ -120,10 +119,9 @@ namespace CB {
 
         void Renderer::DrawQuad(
             const glm::vec3& color,
-            const glm::vec2& position, const glm::vec2& size,
-            float rotate
+            const glm::vec2& position, const glm::vec2& size, float rotate
         ) {
-            DrawSprite(*p_WhiteTexture, position, size, color, rotate);
+            DrawSprite(*p_WhiteTexture, position, size, rotate, color);
         }
 
         void Renderer::DrawText(
@@ -146,10 +144,6 @@ namespace CB {
         }
 
         void Renderer::UpdateView(unsigned int width, unsigned int height) {
-            this->m_Width = width;
-            this->m_Height = height;
-            this->m_Scale = static_cast<float>(width) / height;
-
             glViewport(0, 0, width, height);
 
             glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);

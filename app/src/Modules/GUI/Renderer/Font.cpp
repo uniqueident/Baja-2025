@@ -55,6 +55,11 @@ namespace CB {
             }
         }
 
+        void Font::Clear() {
+            for (auto item : m_Characters)
+                glDeleteTextures(1, &item.second.id);
+        }
+
         void Font::DrawChar(char c, float& x, float& y, float scale, VertexBuffer_ID buffer) {
             Character ch = m_Characters[c];
 
