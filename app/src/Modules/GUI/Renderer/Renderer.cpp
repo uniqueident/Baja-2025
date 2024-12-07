@@ -2,6 +2,7 @@
 
 #include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
+#include "Modules/GUI/Renderer/Font.hpp"
 
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
 
@@ -12,16 +13,36 @@ namespace CB {
 
     namespace GL {
 
-        void Renderer::Init(Shader* shader) {
-            p_Shader = shader;
+        void Renderer::Init() {
+            p_QuadShader = &ResourceManager::LoadShader("../../assets/Shaders/Sprite.glsl", "Sprite");
+            p_QuadShader->Use();
+            p_QuadShader->SetInt("image", 0);
+
+            p_TextShader = &ResourceManager::LoadShader("../../assets/Shaders/Text.glsl", "Text");
+            p_TextShader->Use();
+            p_TextShader->SetInt("text", 0);
+
+            p_WhiteTexture = new Texture2D();
         }
 
         void Renderer::Shutdown() {
-            glDeleteVertexArrays(1, &this->m_VAO);
+            glDeleteBuffers(1, &this->m_TextVBO);
+            glDeleteVertexArrays(1, &this->m_TextVAO);
+
+            glDeleteBuffers(1, &this->m_QuadVBO);
+            glDeleteVertexArrays(1, &this->m_QuadVAO);
+
+            delete p_WhiteTexture;
         }
 
         void Renderer::LoadData() {
-            VertexBuffer_ID vbo;
+            unsigned char textureData[] = {
+                0xff, 0xff, 0xff, 0xff
+            };
+
+            p_WhiteTexture->Generate(1, 1, textureData);
+
+            // Quad Vertex Array / Buffer
 
             float vertices[] = { 
                 // pos      // tex
@@ -34,16 +55,32 @@ namespace CB {
                 1.0f, 0.0f, 1.0f, 0.0f
             };
 
-            glGenVertexArrays(1, &this->m_VAO);
-            glGenBuffers(1, &vbo);
+            glGenVertexArrays(1, &this->m_QuadVAO);
+            glGenBuffers(1, &m_QuadVBO);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, m_QuadVBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-            glBindVertexArray(this->m_VAO);
+            glBindVertexArray(this->m_QuadVAO);
             
             glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(0));
+            glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
+
+            // Text Vertex Array / Buffer
+
+            glGenVertexArrays(1, &this->m_TextVAO);
+            glGenBuffers(1, &this->m_TextVBO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, this->m_TextVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
+
+            glBindVertexArray(this->m_TextVAO);
+
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
@@ -51,11 +88,10 @@ namespace CB {
 
         void Renderer::DrawSprite(
             GL::Texture2D &texture,
-            const glm::vec2& position, const glm::vec2& size,
-            const glm::vec3& color,
-            float rotate
+            const glm::vec2& position, const glm::vec2& size, float rotate,
+            const glm::vec3& color
         ) {
-            this->p_Shader->Use();
+            this->p_QuadShader->Use();
 
             // Apply Transformations
             glm::mat4 model(1.0f);
@@ -67,27 +103,54 @@ namespace CB {
 
             model = glm::scale(model, glm::vec3(size, 1.0f)); 
         
-            this->p_Shader->SetMat4f("model", model);
+            this->p_QuadShader->SetMat4f("model", model);
 
             // Render the Quad
-            this->p_Shader->SetVec3f("spriteColor", color);
+            this->p_QuadShader->SetVec3f("spriteColor", color);
         
             glActiveTexture(GL_TEXTURE0);
             texture.Bind();
 
-            glBindVertexArray(this->m_VAO);
+            glBindVertexArray(this->m_QuadVAO);
             glDrawArrays(GL_TRIANGLES, 0, 6);
+            
             glBindVertexArray(0);
         }
 
-        void Renderer::UpdateView(unsigned int width, unsigned int height) {
-            this->m_Width = width;
-            this->m_Height = height;
+        void Renderer::DrawQuad(
+            const glm::vec3& color,
+            const glm::vec2& position, const glm::vec2& size, float rotate
+        ) {
+            DrawSprite(*p_WhiteTexture, position, size, rotate, color);
+        }
 
+        void Renderer::DrawText(
+            const std::string& text, Font& font,
+            glm::vec2 position, float size,
+            const glm::vec3& color
+        ) {
+            p_TextShader->Use();
+            p_TextShader->SetVec3f("textColor", color);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindVertexArray(m_TextVAO);
+
+            for (unsigned int i = 0; i < text.length(); i++) {
+                font.DrawChar(text[i], position.x, position.y, size, this->m_TextVBO);
+            }
+
+            glBindVertexArray(0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+
+        void Renderer::UpdateView(unsigned int width, unsigned int height) {
             glViewport(0, 0, width, height);
 
             glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
-            this->p_Shader->SetMat4f("projection", projection);
+            this->p_QuadShader->Use();
+            this->p_QuadShader->SetMat4f("projection", projection);
+            this->p_TextShader->Use();
+            this->p_TextShader->SetMat4f("projection", projection);
         }
 
     }   // GL

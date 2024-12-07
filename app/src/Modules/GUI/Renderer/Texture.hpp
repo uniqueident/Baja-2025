@@ -21,12 +21,26 @@ namespace CB {
             Texture2D();
             ~Texture2D() = default;
 
-            void Generate(unsigned int width, unsigned int heightn, unsigned char* data);
+            /**
+             * @brief Generates the texture for OpenGL.
+             * 
+             * @param width The texture width.
+             * @param height The texture height.
+             * @param data The pixel data of the texture.
+             */
+            void Generate(unsigned int width, unsigned int height, unsigned char* data);
 
+            /** @brief Binds the texture in OpenGL. */
             void Bind() const;
 
+            /**
+             * @brief Enables or disables transparency for texture generation.
+             * 
+             * @param alpha True if transparent, false otherwise.
+             */
             void SetAlpha(bool alpha);
 
+            /** @return The texture ID. */
             inline Texture_ID& ID() { return m_ID; }
 
         private:

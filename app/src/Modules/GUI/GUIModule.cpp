@@ -1,9 +1,13 @@
 #include "GUIModule.hpp"
 
 #include "Modules/GUI/Renderer/Renderer.hpp"
-#include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
+
+// std
+#include <cstddef>
+#include <iostream>
 #include <exception>
+#include <sstream>
 
 // libs
 #define GLFW_INCLUDE_NONE
@@ -13,16 +17,20 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-// std
-#include <cstddef>
-#include <iostream>
-
 namespace CB {
 
     #define SCREEN_WIDTH 800
     #define SCREEN_HEIGHT 600
 
-    void OpenGLMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity, int lenght, const char* message, const void* userParam) {
+    void OpenGLMessageCallback(
+        [[gnu::unused]]unsigned source,
+        [[gnu::unused]]unsigned type,
+        [[gnu::unused]]unsigned id,
+        unsigned severity,
+        [[gnu::unused]]int lenght,
+        const char* message,
+        [[gnu::unused]]const void* userParam
+    ) {
         switch (severity) {
             case GL_DEBUG_SEVERITY_HIGH:
                 std::cerr << message << std::endl;
@@ -44,12 +52,17 @@ namespace CB {
     }
 
     void glfwFramebufferSizeCallback(GLFWwindow* window, int width, int height) {        
-        static_cast<WindowData*>(glfwGetWindowUserPointer(window))->renderer->UpdateView(width, height);
+        WindowData* data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        
+        data->renderer->UpdateView(width, height);
+        data->scale->x = width / static_cast<float>(SCREEN_HEIGHT);
+        data->scale->y = height / static_cast<float>(SCREEN_HEIGHT);
     }
 
     void GUIModule::Init(SharedData * data) {
         p_Data = data;
         m_Closed = false;
+        m_WindowScale = { 1.0f, 1.0f };
 
         if (!glfwInit())
             std::cerr << "Failed to initialize GLFW!" << std::endl;
@@ -89,29 +102,27 @@ namespace CB {
             glDebugMessageCallback(OpenGLMessageCallback, nullptr);
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
         }
-        catch(const std::exception e) {
+        catch(std::out_of_range const&) {
             std::cerr << "OpenGL version likely does not support Debug Messaging!" << std::endl;
         }
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        ResourceManager::LoadShader("../../assets/Shaders/Sprite.glsl", "Sprite");
-
         p_Renderer = new GL::Renderer;
-        p_Renderer->Init(&ResourceManager::GetShader("Sprite"));
-
-        ResourceManager::GetShader("Sprite").Use();
-        ResourceManager::GetShader("Sprite").SetInt("image", 0);
-
+        p_Renderer->Init();
         p_Renderer->UpdateView(SCREEN_WIDTH, SCREEN_HEIGHT);
-
         p_Renderer->LoadData();
 
         m_WindowData.renderer = p_Renderer;
+        m_WindowData.scale = &m_WindowScale;
         glfwSetWindowUserPointer(p_Window, &m_WindowData);
 
+        // Load Textures Here //
+        
         ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
+
+        ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
     }
 
     void GUIModule::Shutdown() {
@@ -141,14 +152,33 @@ namespace CB {
         glfwSwapBuffers(p_Window);
     }
 
-    // Render Calls For UI (Draw Sprites)
     void GUIModule::Render() {
+        // Render UI Here //
+
         p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Face"),
+            { 100.0f, 100.0f},
+            { 200.0f, 300.0f },
+            30.0f,
+            { 0.0f, 0.0f, 1.0f }
+        );
+
+        p_Renderer->DrawQuad(
+            { 0.0f, 1.0f, 0.0f },
             { 200.0f, 200.0f},
             { 300.0f, 400.0f },
-            { 0.0f, 1.0f, 0.0f },
             45.0f
+        );
+
+        std::stringstream ss;
+        ss << "Window Scale: " << m_WindowScale.x << "(x), " << m_WindowScale.y << "(y)";
+
+        p_Renderer->DrawText(
+            ss.str().c_str(),
+            ResourceManager::GetFont("ComicNeue"),
+            { 50.0f, 50.f },
+            1.0f,
+            {0.0f, 0.f, 0.0f }
         );
     }
 

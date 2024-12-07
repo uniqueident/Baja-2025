@@ -52,4 +52,6 @@ set(GLM_BUILD_LIBRARY OFF)
 set(GLM_BUILD_TESTS OFF)
 add_subdirectory(app/libs/glm EXCLUDE_FROM_ALL)
 
+find_package(Freetype REQUIRED)
+
 add_subdirectory(app)
