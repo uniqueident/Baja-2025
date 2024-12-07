@@ -9,6 +9,7 @@ namespace  CB {
         
         class Shader;
         class Texture2D;
+        class Font;
 
     }   // GL
 
@@ -20,6 +21,9 @@ namespace  CB {
         static GL::Texture2D& LoadTexture(const char* source, const char* name, bool alpha = false);
         static GL::Texture2D& GetTexture(const char* name);
 
+        static GL::Font& LoadFont(const char* source, const char* name);
+        static GL::Font& GetFont(const char* name);
+
         static void Clear();
 
     private:
@@ -29,6 +33,7 @@ namespace  CB {
 
         GL::Shader LoadShaderFile(const char* source);
         GL::Texture2D LoadTextureFile(const char* source, bool alpha);
+        GL::Font LoadFontFile(const char* source);
 
         /* --- */
         
@@ -36,6 +41,7 @@ namespace  CB {
 
         std::map<const char*, GL::Shader> m_Shaders;
         std::map<const char*, GL::Texture2D> m_Textures;
+        std::map<const char*, GL::Font> m_Fonts;
 
     };
 

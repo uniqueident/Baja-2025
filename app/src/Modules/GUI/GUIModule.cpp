@@ -1,8 +1,11 @@
 #include "GUIModule.hpp"
 
 #include "Modules/GUI/Renderer/Renderer.hpp"
-#include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
+
+// std
+#include <cstddef>
+#include <iostream>
 #include <exception>
 
 // libs
@@ -12,10 +15,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-// std
-#include <cstddef>
-#include <iostream>
 
 namespace CB {
 
@@ -104,16 +103,9 @@ namespace CB {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        ResourceManager::LoadShader("../../assets/Shaders/Sprite.glsl", "Sprite");
-
         p_Renderer = new GL::Renderer;
-        p_Renderer->Init(&ResourceManager::GetShader("Sprite"));
-
-        ResourceManager::GetShader("Sprite").Use();
-        ResourceManager::GetShader("Sprite").SetInt("image", 0);
-
+        p_Renderer->Init();
         p_Renderer->UpdateView(SCREEN_WIDTH, SCREEN_HEIGHT);
-
         p_Renderer->LoadData();
 
         m_WindowData.renderer = p_Renderer;
@@ -122,6 +114,8 @@ namespace CB {
         // Load Textures Here //
         
         ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
+
+        ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
     }
 
     void GUIModule::Shutdown() {
@@ -167,6 +161,14 @@ namespace CB {
             { 200.0f, 200.0f},
             { 300.0f, 400.0f },
             45.0f
+        );
+
+        p_Renderer->DrawText(
+            "Tester Text",
+            ResourceManager::GetFont("ComicNeue"),
+            { 50.0f, 50.f },
+            1.0f,
+            {0.0f, 0.f, 0.0f }
         );
     }
 

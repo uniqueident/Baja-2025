@@ -1,5 +1,8 @@
 #pragma once
 
+// std
+#include <string>
+
 // libs
 #include <glad/gl.h>
 #include <glm/glm.hpp>
@@ -10,6 +13,7 @@ namespace CB {
 
         class Shader;
         class Texture2D;
+        class Font;
 
         typedef GLuint VertexArray_ID;
         typedef GLuint VertexBuffer_ID;
@@ -20,7 +24,7 @@ namespace CB {
         public:
             static Renderer* Instance();
 
-            void Init(Shader* shader);
+            void Init();
             void Shutdown();
 
             void LoadData();
@@ -38,12 +42,23 @@ namespace CB {
                 float rotate = 0.0f
             );
 
+            void DrawText(
+                const std::string& text, Font& font,
+                glm::vec2 position, float size,
+                const glm::vec3& color
+            );
+
             void UpdateView(unsigned int width, unsigned int height);
 
         private:
-            Shader* p_Shader;
+            Shader* p_QuadShader;
+            Shader* p_TextShader;
 
-            VertexArray_ID m_VAO;
+            VertexArray_ID m_QuadVAO;
+            VertexBuffer_ID m_QuadVBO;
+
+            VertexArray_ID m_TextVAO;
+            VertexBuffer_ID m_TextVBO;
 
             int m_Width, m_Height;
             float m_Scale;

@@ -2,14 +2,18 @@
 
 #include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
-#include "Renderer.hpp"
+#include "Modules/GUI/Renderer/Font.hpp"
+#include "Modules/GUI/Renderer/Renderer.hpp"
+
+// std
+#include <iostream>
 
 // libs
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-// std
-#include <iostream>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 namespace CB {
 
@@ -39,7 +43,15 @@ namespace CB {
         Instance()->m_Textures.clear();
     }
 
-    ResourceManager::ResourceManager() : m_Shaders(), m_Textures() { }
+    GL::Font& ResourceManager::LoadFont(const char *source, const char *name) {
+        return (Instance()->m_Fonts[name] = Instance()->LoadFontFile(source));
+    }
+
+    GL::Font& ResourceManager::GetFont(const char *name) {
+        return Instance()->m_Fonts[name];
+    }
+
+    ResourceManager::ResourceManager() : m_Shaders(), m_Textures(), m_Fonts() { }
 
     ResourceManager* ResourceManager::Instance() {
         if (s_Instance != nullptr)
@@ -123,6 +135,25 @@ namespace CB {
         stbi_image_free(data);
 
         return texture;
+    }
+
+    GL::Font ResourceManager::LoadFontFile(const char* source) {
+        FT_Library ft;
+        if (FT_Init_FreeType(&ft)) {
+            std::cerr << "Could not init FreeType librar" << std::endl;
+        }
+
+        FT_Face face;
+        if (FT_New_Face(ft, source, 0, &face)) {
+            std::cerr << "Failed to load font (" << source << ")!" << std::endl;
+        }
+
+        GL::Font font(face, 48);
+
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+
+        return font;
     }
 
 }   // CB
