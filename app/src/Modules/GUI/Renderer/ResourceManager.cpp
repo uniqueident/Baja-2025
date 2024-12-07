@@ -7,6 +7,7 @@
 
 // std
 #include <iostream>
+#include <libcamera/camera_manager.h>
 
 // libs
 #define STB_IMAGE_IMPLEMENTATION
@@ -16,6 +17,12 @@
 #include FT_FREETYPE_H
 
 namespace CB {
+
+    ResourceManager::~ResourceManager() {
+        p_CameraManager->stop();
+
+        delete p_CameraManager;
+    }
 
     GL::Shader& ResourceManager::LoadShader(const char* source, const char* name) {
         return (Instance()->m_Shaders[name] = Instance()->LoadShaderFile(source));
@@ -54,7 +61,14 @@ namespace CB {
         return Instance()->m_Fonts[name];
     }
 
-    ResourceManager::ResourceManager() : m_Shaders(), m_Textures(), m_Fonts() { }
+    ResourceManager::ResourceManager() : p_CameraManager(nullptr), m_Shaders(), m_Textures(), m_Fonts() {
+        p_CameraManager = new libcamera::CameraManager;
+        p_CameraManager->start();
+
+        for (auto const &camera : p_CameraManager->cameras()) {
+            std::cout << camera->id() << std::endl;
+        }
+    }
 
     ResourceManager* ResourceManager::Instance() {
         if (s_Instance != nullptr)

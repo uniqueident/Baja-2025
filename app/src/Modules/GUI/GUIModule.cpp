@@ -59,6 +59,8 @@ namespace CB {
         data->scale->y = height / static_cast<float>(SCREEN_HEIGHT);
     }
 
+
+
     void GUIModule::Init(SharedData * data) {
         p_Data = data;
         m_Closed = false;

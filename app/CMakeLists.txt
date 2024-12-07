@@ -66,6 +66,13 @@ add_executable(
     ${stb_HEADER}
 )
 
+find_package(PkgConfig)
+pkg_check_modules(LIBCAMERA REQUIRED IMPORTED_TARGET libcamera)
+message(STATUS "libcamera library found:")
+message(STATUS "    version: ${LIBCAMERA_VERSION}")
+message(STATUS "    libraries: ${LIBCAMERA_LINK_LIBRARIES}")
+message(STATUS "    include path: ${LIBCAMERA_INCLUDE_DIRS}")
+
 # Include Directories for Cleaner Includes
 target_include_directories(
     ${PROJECT_NAME}
@@ -79,6 +86,7 @@ target_include_directories(
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/glm"
     PRIVATE "${FREETYPE_INCLUDE_DIRS}"
+    PRIVATE "${LIBCAMERA_INCLUDE_DIRS}"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/stb"
 )
 
@@ -88,5 +96,6 @@ target_link_libraries(
     PRIVATE glfw
     PRIVATE glm::glm-header-only
     PRIVATE ${FREETYPE_LIBRARIES}
+    PRIVATE PkgConfig::LIBCAMERA
     PRIVATE ${OPENGL_LIBRARIES}
 )

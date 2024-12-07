@@ -1,7 +1,11 @@
 #pragma once
 
 // std
+#include <libcamera/camera_manager.h>
 #include <map>
+
+// libs
+#include <libcamera/libcamera.h>
 
 namespace  CB {
 
@@ -15,6 +19,8 @@ namespace  CB {
 
     class ResourceManager {
     public:
+        ~ResourceManager();
+
         /**
          * @brief Loads a shader file and creates a shader object.
          * 
@@ -99,6 +105,8 @@ namespace  CB {
         /* --- */
         
         static inline ResourceManager* s_Instance = nullptr;
+
+        libcamera::CameraManager* p_CameraManager;
 
         std::map<const char*, GL::Shader> m_Shaders;
         std::map<const char*, GL::Texture2D> m_Textures;
