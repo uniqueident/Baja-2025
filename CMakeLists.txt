@@ -35,6 +35,7 @@ if(CMAKE_CXX_COMPILER)
 else()
     message(FATAL_ERROR "Compiler Reassessment: Compiler not found. Status: Calamitous.")
 endif()
+message(STATUS "")
 
 # My variable :D - Mateo
 # These flags only work if on GCC.
@@ -46,6 +47,7 @@ set(CMAKE_CXX_FLAGS "${GCC_FLAGS}")
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(app/libs/glfw EXCLUDE_FROM_ALL)
+message(STATUS "")
 
 set(GLM_ENABLE_CXX_17 ON)
 set(GLM_BUILD_LIBRARY OFF)
@@ -53,5 +55,14 @@ set(GLM_BUILD_TESTS OFF)
 add_subdirectory(app/libs/glm EXCLUDE_FROM_ALL)
 
 find_package(Freetype REQUIRED)
+
+message(STATUS "")
+find_package(PkgConfig)
+pkg_check_modules(LIBCAMERA REQUIRED IMPORTED_TARGET libcamera)
+message(STATUS "libcamera library found:")
+message(STATUS "    version: ${LIBCAMERA_VERSION}")
+message(STATUS "    libraries: ${LIBCAMERA_LINK_LIBRARIES}")
+message(STATUS "    include path: ${LIBCAMERA_INCLUDE_DIRS}")
+message(STATUS "")
 
 add_subdirectory(app)

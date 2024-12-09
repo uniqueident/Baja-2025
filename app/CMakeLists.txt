@@ -66,13 +66,6 @@ add_executable(
     ${stb_HEADER}
 )
 
-find_package(PkgConfig)
-pkg_check_modules(LIBCAMERA REQUIRED IMPORTED_TARGET libcamera)
-message(STATUS "libcamera library found:")
-message(STATUS "    version: ${LIBCAMERA_VERSION}")
-message(STATUS "    libraries: ${LIBCAMERA_LINK_LIBRARIES}")
-message(STATUS "    include path: ${LIBCAMERA_INCLUDE_DIRS}")
-
 # Include Directories for Cleaner Includes
 target_include_directories(
     ${PROJECT_NAME}

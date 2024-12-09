@@ -3,11 +3,11 @@
 #include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
 #include "Modules/GUI/Renderer/Font.hpp"
+#include "Modules/GUI/Renderer/Camera.hpp"
 #include "Modules/GUI/Renderer/Renderer.hpp"
 
 // std
 #include <iostream>
-#include <libcamera/camera_manager.h>
 
 // libs
 #define STB_IMAGE_IMPLEMENTATION
@@ -15,6 +15,8 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+#include <libcamera/camera.h>
 
 namespace CB {
 
@@ -40,19 +42,6 @@ namespace CB {
         return Instance()->m_Textures[name];
     }
 
-    void ResourceManager::Clear() {
-        for (auto item : Instance()->m_Shaders)
-            glDeleteProgram(item.second.ID());
-        for (auto item : Instance()->m_Textures)
-            glDeleteTextures(1, &item.second.ID());
-        for (auto item : Instance()->m_Fonts)
-            item.second.Clear();
-
-        Instance()->m_Shaders.clear();
-        Instance()->m_Textures.clear();
-        Instance()->m_Fonts.clear();
-    }
-
     GL::Font& ResourceManager::LoadFont(const char *source, const char *name) {
         return (Instance()->m_Fonts[name] = Instance()->LoadFontFile(source));
     }
@@ -61,7 +50,31 @@ namespace CB {
         return Instance()->m_Fonts[name];
     }
 
-    ResourceManager::ResourceManager() : p_CameraManager(nullptr), m_Shaders(), m_Textures(), m_Fonts() {
+    GL::Camera& ResourceManager::LoadCamera(const char* name) {
+        return (Instance()->m_Cameras[name] = Instance()->LoadCameraFromManager());
+    }
+
+    GL::Camera& ResourceManager::GetCamera(const char* name) {
+        return Instance()->m_Cameras[name];
+    }
+
+    void ResourceManager::Clear() {
+        for (auto item : Instance()->m_Shaders)
+            glDeleteProgram(item.second.ID());
+        for (auto item : Instance()->m_Textures)
+            glDeleteTextures(1, &item.second.ID());
+        for (auto item : Instance()->m_Fonts)
+            item.second.Clear();
+        for (auto item : Instance()->m_Cameras)
+            item.second.Clear();
+
+        Instance()->m_Shaders.clear();
+        Instance()->m_Textures.clear();
+        Instance()->m_Fonts.clear();
+        Instance()->m_Cameras.clear();
+    }
+
+    ResourceManager::ResourceManager() : p_CameraManager(nullptr), m_Shaders(), m_Textures(), m_Fonts(), m_Cameras() {
         p_CameraManager = new libcamera::CameraManager;
         p_CameraManager->start();
 
@@ -171,6 +184,25 @@ namespace CB {
         FT_Done_FreeType(ft);
 
         return font;
+    }
+
+    GL::Camera ResourceManager::LoadCameraFromManager() {
+        const auto cameras = this->p_CameraManager->cameras();
+
+        if (cameras.empty()) {
+            std::cerr << "No cameras were identified on the system!" << std::endl;
+        }
+
+        unsigned int i = 0;
+        for (auto& cam : this->m_Cameras) {
+            if (cameras[i]->id().compare(cam.second.ID()) != 0) {
+                break;
+            }
+
+            i++;
+        }
+
+        return GL::Camera(cameras[i]);
     }
 
 }   // CB

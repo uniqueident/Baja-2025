@@ -1,11 +1,11 @@
 #pragma once
 
 // std
-#include <libcamera/camera_manager.h>
 #include <map>
 
 // libs
-#include <libcamera/libcamera.h>
+#include <libcamera/camera_manager.h>
+
 
 namespace  CB {
 
@@ -14,6 +14,7 @@ namespace  CB {
         class Shader;
         class Texture2D;
         class Font;
+        class Camera;
 
     }   // GL
 
@@ -70,11 +71,16 @@ namespace  CB {
          */
         static GL::Font& GetFont(const char* name);
 
+        static GL::Camera& LoadCamera(const char* name);
+        static GL::Camera& GetCamera(const char* name);
+
         /** @brief Erases all currently stored resources. */
         static void Clear();
 
     private:
         ResourceManager();
+        ResourceManager(const ResourceManager&) = delete;
+        ResourceManager& operator = (const ResourceManager&) = delete;
 
         /** @return The resource manager instance. */
         static ResourceManager* Instance();
@@ -102,6 +108,8 @@ namespace  CB {
          */
         GL::Font LoadFontFile(const char* source);
 
+        GL::Camera LoadCameraFromManager();
+
         /* --- */
         
         static inline ResourceManager* s_Instance = nullptr;
@@ -111,6 +119,7 @@ namespace  CB {
         std::map<const char*, GL::Shader> m_Shaders;
         std::map<const char*, GL::Texture2D> m_Textures;
         std::map<const char*, GL::Font> m_Fonts;
+        std::map<const char*, GL::Camera> m_Cameras;
 
     };
 

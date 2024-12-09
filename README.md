@@ -19,3 +19,14 @@ To install the [FreeType](https://freetype.org/) library on Linux and WSL2, use 
 ```bash
 sudo apt install libfreetype-dev
 ```
+
+### LibCamera
+
+To install the [libcamera](https://libcamera.org/) library on Linux and WSL2, use the following commands:
+
+_For libcamera library (make sure to be at the root directory):_
+
+```bash
+sudo apt install libcamera-dev
+sudo apt install libcamera-tools
+```

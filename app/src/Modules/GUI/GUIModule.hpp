@@ -34,7 +34,7 @@ namespace CB {
 
     class GUIModule : public Module {
     public:
-        GUIModule() : p_Renderer(nullptr), p_Window(nullptr), m_WindowData(), m_Closed(false) { }
+        GUIModule() : p_Renderer(nullptr), p_Window(nullptr), m_WindowData(), m_WindowScale(), m_Closed(false) { }
         virtual ~GUIModule() = default;
 
         /**

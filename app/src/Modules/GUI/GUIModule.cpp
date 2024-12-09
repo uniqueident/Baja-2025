@@ -6,7 +6,6 @@
 // std
 #include <cstddef>
 #include <iostream>
-#include <exception>
 #include <sstream>
 
 // libs
@@ -125,6 +124,8 @@ namespace CB {
         ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
+
+        ResourceManager::LoadCamera("main");
     }
 
     void GUIModule::Shutdown() {

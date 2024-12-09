@@ -43,7 +43,6 @@ namespace CB {
 
         private:
             friend class Renderer;
-            friend class ResourceManager;
 
             /**
              * @brief Draw a single character on screen.
