@@ -1,24 +1,31 @@
 #include "Camera.hpp"
+
 #include "Modules/GUI/Renderer/Texture.hpp"
 
 // std
-#include <freetype/config/ftoption.h>
+#include <cstddef>
+#include <cstdint>
 #include <iomanip>
+#include <libcamera/stream.h>
 #include <memory>
+#include <unistd.h>
+#include <sys/mman.h>
 
 // libs
 #include <libcamera/framebuffer_allocator.h>
+#include <libcamera/base/span.h>
+#include <libcamera/formats.h>
 
 namespace BB {
 
     namespace GL {
 
-        #define CAMERA_VIEW_WIDTH 640
-        #define CAMERA_VIEW_HEIGHT 480
+        #define CAMERA_VIEW_WIDTH 1280
+        #define CAMERA_VIEW_HEIGHT 720
 
-        Camera::Camera() : m_Texture(), p_Stream(nullptr), p_Allocator(nullptr), m_Active(false) { }
+        Camera::Camera() : p_Stream(nullptr), p_Allocator(nullptr), m_Active(false) { }
 
-        Camera::Camera(std::shared_ptr<libcamera::Camera> camera) : m_Texture(std::make_shared<Texture2D>()), p_Stream(nullptr), p_Allocator(nullptr), m_Active(true) {
+        Camera::Camera(std::shared_ptr<libcamera::Camera> camera) : p_Stream(nullptr), p_Allocator(nullptr), m_Active(true) {
             p_Camera = camera;
             p_Camera->acquire();
 
@@ -30,7 +37,7 @@ namespace BB {
 
             streamConfig.size.width = CAMERA_VIEW_WIDTH;
             streamConfig.size.height = CAMERA_VIEW_HEIGHT;
-            // streamConfig.pixelFormat.fromString("RGB888");
+            streamConfig.pixelFormat = libcamera::formats::RGB888;
 
             config->validate();
             std::cout << "Validated viewfinder config is: " << streamConfig.toString() << std::endl;
@@ -70,6 +77,7 @@ namespace BB {
 
             this->p_Camera->requestCompleted.connect(RequestComplete);
 
+            m_Texture = std::make_shared<Texture2D>();
             this->m_Texture->Generate(CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT, nullptr);
         }
 
@@ -88,8 +96,8 @@ namespace BB {
             p_Camera->stop();
         }
 
-        const FrameData Camera::GetFrame() {
-            return { CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT, this->m_Texture };
+        const CamBuffer& Camera::GetFrame() {
+            // CamBuffer& buffer;
         }
 
         void Camera::Clear() {
@@ -117,17 +125,25 @@ namespace BB {
                 libcamera::FrameBuffer* buffer = bufferPair.second;
                 const libcamera::FrameMetadata& metadata = buffer->metadata();
 
-                std::cout << " seq: " << std::setw(6) << std::setfill('0') << metadata.sequence << " bytesused: ";
+                std::cout << "Frame " << metadata.sequence << ": bytes (" << metadata.planes()[0].bytesused << ")" << std::endl;
 
-                unsigned int nplane = 0;
-                for (const libcamera::FrameMetadata::Plane &plane : metadata.planes())
-                {
-                    std::cout << plane.bytesused;
-                    if (++nplane < metadata.planes().size()) std::cout << "/";
-                }
+                size_t length = 0;
+                for (const auto& plane : buffer->planes())
+                    length += plane.length;
 
-                std::cout << std::endl;
+                m_Texture->Bind();
 
+                auto* addr = static_cast<unsigned char*>(mmap(nullptr, buffer->planes()[0].length, PROT_READ, MAP_PRIVATE, buffer->planes()[0].fd.get(), 0));
+
+                if (addr == MAP_FAILED)
+                    std::cerr << "Failed to map framebuffer planes!" << std::endl;
+
+                std::cout << *addr << std::endl;
+
+                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT, GL_R8, GL_UNSIGNED_BYTE, addr);
+                glFinish();
+
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
 
             request->reuse(libcamera::Request::ReuseBuffers);

@@ -191,7 +191,7 @@ namespace BB {
         p_Renderer->DrawCam(
             ResourceManager::GetCamera("main"), 
             { 50.0f, 50.0f },
-            { 0.0f, 0.0f }
+            { 640.0f, 480.0f }
         );
     }
 
