@@ -7,7 +7,7 @@
 #include <libcamera/camera_manager.h>
 
 
-namespace  CB {
+namespace  BB {
 
     namespace GL {
         
@@ -123,4 +123,4 @@ namespace  CB {
 
     };
 
-}   // CB
+}   // BB

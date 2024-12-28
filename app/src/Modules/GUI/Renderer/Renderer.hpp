@@ -7,13 +7,14 @@
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 
-namespace CB {
+namespace BB {
 
     namespace GL {
 
         class Shader;
         class Texture2D;
         class Font;
+        class Camera;
 
         typedef GLuint VertexArray_ID;
         typedef GLuint VertexBuffer_ID;
@@ -73,6 +74,11 @@ namespace CB {
                 const glm::vec3& color
             );
 
+            void DrawCam(
+                Camera& cam,
+                glm::vec2 position, glm::vec2 size, float rotate = 0.0f
+            );
+
             /**
              * @brief Update the OpenGL view and view projection matrix of the screen.
              * 
@@ -97,4 +103,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

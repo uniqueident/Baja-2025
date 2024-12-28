@@ -7,7 +7,7 @@
 // std
 #include <iostream>
 
-namespace CB {
+namespace BB {
 
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
@@ -57,4 +57,4 @@ namespace CB {
         m_Modules[0]->Update();
     }
 
-} // CB
+} // BB

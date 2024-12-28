@@ -12,7 +12,7 @@
 
 #include "Core/SharedData.hpp"
 
-namespace CB {
+namespace BB {
 
     /** @brief The base class for a Module. Pure virtual class. */
     class Module {
@@ -37,4 +37,4 @@ namespace CB {
         
     };
 
-} // CB
+} // BB

@@ -14,7 +14,7 @@
 #include <vector>
 
 /** @brief The working namespace for CarBug. */
-namespace CB {
+namespace BB {
 
     struct SharedData;
 
@@ -53,4 +53,4 @@ namespace CB {
         std::vector<Module*> m_Modules = { }; /** @brief The Application Modules that complete tasks. */
     };
 
-}   // CB
+}   // BB

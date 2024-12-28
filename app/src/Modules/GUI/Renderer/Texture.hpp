@@ -3,7 +3,7 @@
 // libs
 #include <glad/gl.h>
 
-namespace CB {
+namespace BB {
 
     namespace GL {
 
@@ -62,4 +62,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

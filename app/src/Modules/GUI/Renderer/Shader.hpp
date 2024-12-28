@@ -4,7 +4,7 @@
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 
-namespace CB {
+namespace BB {
 
     namespace  GL {
 
@@ -113,4 +113,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

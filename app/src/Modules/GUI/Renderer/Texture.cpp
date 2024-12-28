@@ -1,6 +1,6 @@
 #include "Texture.hpp"
 
-namespace CB {
+namespace BB {
 
     namespace GL {
 
@@ -44,4 +44,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

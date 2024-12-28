@@ -1,20 +1,22 @@
 #pragma once
 
+#include "Modules/GUI/Renderer/Texture.hpp"
+
 // std
-#include <libcamera/framebuffer_allocator.h>
 #include <memory>
+#include <vector>
 
 // libs
 #include <libcamera/camera.h>
 
-namespace CB {
+namespace BB {
 
     namespace GL {
 
         struct FrameData {
             int width, height;
             
-            void* data;
+            std::shared_ptr<Texture2D> image;
 
         };
 
@@ -22,27 +24,37 @@ namespace CB {
         public:
             Camera();
             Camera(std::shared_ptr<libcamera::Camera> camera);
-            ~Camera() = default;
+            ~Camera();
 
             void Start();
-            inline void Stop() { p_Camera->stop(); }
+            void Stop();
 
-            const FrameData& GetFrame();
+            const FrameData GetFrame();
 
             void Clear();
 
             inline const std::string& ID() { return p_Camera->id(); }
 
         private:
-            std::shared_ptr<libcamera::Camera> p_Camera;
+            static void RequestComplete(libcamera::Request* request);
 
-            libcamera::FrameBufferAllocator* p_Allocator;
+
+
+            /* --- */
+
+            inline static std::shared_ptr<libcamera::Camera> p_Camera;
+            
+            std::shared_ptr<Texture2D> m_Texture;
 
             libcamera::Stream* p_Stream;
+            libcamera::FrameBufferAllocator* p_Allocator;
 
-            std::vector<std::shared_ptr<libcamera::Request>> m_Requests;
+            inline static std::vector<std::unique_ptr<libcamera::Request>> m_Requests;
+
+            bool m_Active;
+
         };
 
     }   // GL
 
-}   // CB
+}   // BB

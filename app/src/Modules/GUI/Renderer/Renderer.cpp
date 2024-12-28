@@ -3,13 +3,14 @@
 #include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
 #include "Modules/GUI/Renderer/Font.hpp"
+#include "Modules/GUI/Renderer/Camera.hpp"
 
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace CB {
+namespace BB {
 
     namespace GL {
 
@@ -143,6 +144,22 @@ namespace CB {
             glBindTexture(GL_TEXTURE_2D, 0);
         }
 
+        void Renderer::DrawCam(
+            Camera& cam,
+            glm::vec2 position, glm::vec2 size, float rotate
+        ) {
+            FrameData data = cam.GetFrame();
+
+            if (size.x == 0.0f)
+                DrawSprite(*data.image, position, { data.width, size.y }, rotate);
+            else if (size.y == 0.0f)
+                DrawSprite(*data.image, position, { size.x, data.height }, rotate);
+            else if (size.x == 0.0f && size.y == 0.0f)
+                DrawSprite(*data.image, position, { data.width, data.height }, rotate);
+            else
+                DrawSprite(*data.image, position, size, rotate);
+        }
+
         void Renderer::UpdateView(unsigned int width, unsigned int height) {
             glViewport(0, 0, width, height);
 
@@ -155,4 +172,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

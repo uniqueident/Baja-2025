@@ -17,7 +17,7 @@
 
 struct GLFWwindow;
 
-namespace CB {
+namespace BB {
 
     namespace GL {
     
@@ -70,4 +70,4 @@ namespace CB {
 
     };
 
-}   // CB
+}   // BB

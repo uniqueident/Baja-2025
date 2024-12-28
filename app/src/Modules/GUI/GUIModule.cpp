@@ -1,5 +1,6 @@
 #include "GUIModule.hpp"
 
+#include "Modules/GUI/Renderer/Camera.hpp"
 #include "Modules/GUI/Renderer/Renderer.hpp"
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
 
@@ -16,7 +17,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace CB {
+namespace BB {
 
     #define SCREEN_WIDTH 800
     #define SCREEN_HEIGHT 600
@@ -126,9 +127,12 @@ namespace CB {
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
 
         ResourceManager::LoadCamera("main");
+        ResourceManager::GetCamera("main").Start();
     }
 
     void GUIModule::Shutdown() {
+        ResourceManager::GetCamera("main").Stop();
+
         p_Renderer->Shutdown();
         delete p_Renderer;
 
@@ -183,6 +187,12 @@ namespace CB {
             1.0f,
             {0.0f, 0.f, 0.0f }
         );
+
+        p_Renderer->DrawCam(
+            ResourceManager::GetCamera("main"), 
+            { 50.0f, 50.0f },
+            { 0.0f, 0.0f }
+        );
     }
 
-}   // CB
+}   // BB

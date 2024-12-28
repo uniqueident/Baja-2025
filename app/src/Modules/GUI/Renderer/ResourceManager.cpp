@@ -18,7 +18,7 @@
 
 #include <libcamera/camera.h>
 
-namespace CB {
+namespace BB {
 
     ResourceManager::~ResourceManager() {
         p_CameraManager->stop();
@@ -205,4 +205,4 @@ namespace CB {
         return GL::Camera(cameras[i]);
     }
 
-}   // CB
+}   // BB

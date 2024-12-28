@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace CB {
+namespace BB {
 
     // TODO: Figure out what is going to be needed here for the GUI.
 
@@ -24,4 +24,4 @@ namespace CB {
 
     };  // SharedData
 
-}   // CB
+}   // BB
