@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 
+#include "Modules/GUI/Renderer/Renderer.hpp"
+
 // std
 #include <cstddef>
 #include <cstdio>

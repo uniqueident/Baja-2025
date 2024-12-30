@@ -9,6 +9,9 @@ endif()
 # Overhead Project Name
 project(RPI_PROJECT)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # include(Ctest)
 # enable_testing()
 # Finds the system it is on. for fun and debugging if needed
@@ -53,8 +56,11 @@ set(GLM_ENABLE_CXX_17 ON)
 set(GLM_BUILD_LIBRARY OFF)
 set(GLM_BUILD_TESTS OFF)
 add_subdirectory(app/libs/glm EXCLUDE_FROM_ALL)
+message(STATUS "")
 
 find_package(Freetype REQUIRED)
+
+add_subdirectory(app/libs/epoxy)
 
 message(STATUS "")
 find_package(PkgConfig)

@@ -1,11 +1,10 @@
 #include "Renderer.hpp"
 
+#include "Modules/GUI/Renderer/ResourceManager.hpp"
 #include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
 #include "Modules/GUI/Renderer/Font.hpp"
 #include "Modules/GUI/Renderer/Camera.hpp"
-
-#include "Modules/GUI/Renderer/ResourceManager.hpp"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
@@ -148,6 +147,8 @@ namespace BB {
             Camera& cam,
             glm::vec2 position, glm::vec2 size, float rotate
         ) {
+            // CamBuffer buffer = cam.GetFrame();
+
 
         }
 

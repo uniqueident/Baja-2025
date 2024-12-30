@@ -7,6 +7,7 @@
 
 // libs
 #include <freetype/freetype.h>
+
 #include <glm/glm.hpp>
 
 namespace BB {

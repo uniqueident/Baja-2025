@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Modules/GUI/Renderer/CameraUtils.hpp"
+
+#include "Modules/GUI/Renderer/Renderer.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
 
 // std
 #include <cstddef>
-#include <libcamera/color_space.h>
-#include <libcamera/pixel_format.h>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -15,29 +17,6 @@
 namespace BB {
 
     namespace GL {
-
-        struct CamStreamInfo {
-            CamStreamInfo() : width(0), height(0), stride(0) { }
-
-            unsigned int width;
-            unsigned int height;
-
-            unsigned int stride;
-
-            libcamera::PixelFormat format;
-            std::optional<libcamera::ColorSpace> colorSpace;
-
-        };  // StreamInfo
-
-        struct CamBuffer {
-            CamBuffer() : fd(-1) { }
-
-            int fd;
-            size_t size;
-            CamStreamInfo info;
-            std::shared_ptr<Texture2D> texture;
-
-        };  // Buffer
 
         class Camera {
         public:
@@ -55,20 +34,25 @@ namespace BB {
             inline const std::string& ID() { return p_Camera->id(); }
 
         private:
-            static void RequestComplete(libcamera::Request* request);
+            void MakeRequests();
+            std::unique_ptr<Request> CreateRequest(uint64_t cookie = 0);
+
+            void QueueRequest(CompletedRequest* cr);
+            void RequestComplete(libcamera::Request* request);
 
             /* --- */
 
-            inline static std::shared_ptr<libcamera::Camera> p_Camera;
-            
-            inline static std::shared_ptr<Texture2D> m_Texture;
+            std::shared_ptr<libcamera::Camera> p_Camera;
+            std::unique_ptr<libcamera::CameraConfiguration> p_Configuration;
 
-            libcamera::Stream* p_Stream;
-            libcamera::FrameBufferAllocator* p_Allocator;
+            std::unordered_map<const char*, libcamera::Stream*> m_Streams;
+            std::unordered_map<libcamera::Stream*, std::vector<std::unique_ptr<libcamera::FrameBuffer>>> m_Framebuffers;
+            std::unordered_map<libcamera::FrameBuffer*, std::vector<libcamera::Span<uint8_t>>> m_MappedBuffers;
 
-            inline static std::vector<std::unique_ptr<libcamera::Request>> m_Requests;
+            std::vector<std::unique_ptr<Request>> m_Requests;
+            std::set<CompletedRequest*> m_CompletedRequests;
 
-            bool m_Active;
+            uint64_t m_Sequence;
 
         };
 

@@ -6,12 +6,13 @@
 
 // std
 #include <cstddef>
+#include <epoxy/egl_generated.h>
 #include <iostream>
 #include <sstream>
 
 // libs
 #define GLFW_INCLUDE_NONE
-#include <glad/gl.h>
+#include <epoxy/egl.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -22,30 +23,30 @@ namespace BB {
     #define SCREEN_WIDTH 800
     #define SCREEN_HEIGHT 600
 
-    void OpenGLMessageCallback(
-        [[gnu::unused]]unsigned source,
-        [[gnu::unused]]unsigned type,
-        [[gnu::unused]]unsigned id,
-        unsigned severity,
-        [[gnu::unused]]int lenght,
-        const char* message,
-        [[gnu::unused]]const void* userParam
-    ) {
-        switch (severity) {
-            case GL_DEBUG_SEVERITY_HIGH:
-                std::cerr << message << std::endl;
-                return;
-            case GL_DEBUG_SEVERITY_MEDIUM:
-                std::cerr << message << std::endl;
-                return;
-            case GL_DEBUG_SEVERITY_LOW:
-                std::cerr << message << std::endl;
-                return;
-            case GL_DEBUG_SEVERITY_NOTIFICATION:
-                std::cout << message << std::endl;
-                return;
-        }
-    }
+    // void OpenGLMessageCallback(
+    //     [[gnu::unused]]unsigned source,
+    //     [[gnu::unused]]unsigned type,
+    //     [[gnu::unused]]unsigned id,
+    //     unsigned severity,
+    //     [[gnu::unused]]int lenght,
+    //     const char* message,
+    //     [[gnu::unused]]const void* userParam
+    // ) {
+    //     switch (severity) {
+    //         case GL_DEBUG_SEVERITY_HIGH:
+    //             std::cerr << message << std::endl;
+    //             return;
+    //         case GL_DEBUG_SEVERITY_MEDIUM:
+    //             std::cerr << message << std::endl;
+    //             return;
+    //         case GL_DEBUG_SEVERITY_LOW:
+    //             std::cerr << message << std::endl;
+    //             return;
+    //         case GL_DEBUG_SEVERITY_NOTIFICATION:
+    //             std::cout << message << std::endl;
+    //             return;
+    //     }
+    // }
 
     void glfwErrorCallback(int error, const char* description) {
         std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
@@ -86,27 +87,27 @@ namespace BB {
 
         glfwMakeContextCurrent(p_Window);
         
-        if (!gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress))) {
-            std::cerr << "Failed to initialize GLAD loader!" << std::endl;
+        // if (!gladLoadGLES2(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress))) {
+        //     std::cerr << "Failed to initialize GLAD loader!" << std::endl;
 
-            this->Shutdown();
-            m_Closed = true;
+        //     this->Shutdown();
+        //     m_Closed = true;
 
-            std::cerr << "GLFW has been closed, please check for issues and run again." << std::endl;
-            return;
-        }
+        //     std::cerr << "GLFW has been closed, please check for issues and run again." << std::endl;
+        //     return;
+        // }
 
         glfwSwapInterval(1);
 
         glfwSetFramebufferSizeCallback(p_Window, glfwFramebufferSizeCallback);
 
-        try {
-            glDebugMessageCallback(OpenGLMessageCallback, nullptr);
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
-        }
-        catch(std::out_of_range const&) {
-            std::cerr << "OpenGL version likely does not support Debug Messaging!" << std::endl;
-        }
+        // try {
+        //     glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+        //     glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+        // }
+        // catch(std::out_of_range const&) {
+        //     std::cerr << "OpenGL version likely does not support Debug Messaging!" << std::endl;
+        // }
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

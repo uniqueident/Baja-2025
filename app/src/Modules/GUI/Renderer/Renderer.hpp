@@ -4,7 +4,7 @@
 #include <string>
 
 // libs
-#include <glad/gl.h>
+#include <epoxy/egl.h>
 #include <glm/glm.hpp>
 
 namespace BB {

@@ -1,20 +1,32 @@
 #include "Camera.hpp"
-
-#include "Modules/GUI/Renderer/Texture.hpp"
+#include "Modules/GUI/Renderer/CameraUtils.hpp"
+#include "Modules/GUI/Renderer/Renderer.hpp"
 
 // std
+#include <EGL/eglplatform.h>
 #include <cstddef>
-#include <cstdint>
-#include <iomanip>
-#include <libcamera/stream.h>
+#include <epoxy/egl_generated.h>
+#include <epoxy/gl_generated.h>
+#include <libcamera/framebuffer.h>
+#include <libcamera/request.h>
 #include <memory>
+#include <queue>
+#include <string>
+#include <sys/ioctl.h>
 #include <unistd.h>
-#include <sys/mman.h>
+
+// Pretty sure this is linux specific.
+#include <libdrm/drm_fourcc.h>
+#include <linux/dma-buf.h>
 
 // libs
+#include <epoxy/egl.h>
+
 #include <libcamera/framebuffer_allocator.h>
+#include <libcamera/color_space.h>
 #include <libcamera/base/span.h>
 #include <libcamera/formats.h>
+#include <libcamera/stream.h>
 
 namespace BB {
 
@@ -23,9 +35,9 @@ namespace BB {
         #define CAMERA_VIEW_WIDTH 1280
         #define CAMERA_VIEW_HEIGHT 720
 
-        Camera::Camera() : p_Stream(nullptr), p_Allocator(nullptr), m_Active(false) { }
+        Camera::Camera() { }
 
-        Camera::Camera(std::shared_ptr<libcamera::Camera> camera) : p_Stream(nullptr), p_Allocator(nullptr), m_Active(true) {
+        Camera::Camera(std::shared_ptr<libcamera::Camera> camera) {
             p_Camera = camera;
             p_Camera->acquire();
 
@@ -75,10 +87,7 @@ namespace BB {
                 m_Requests.push_back(std::move(request));
             }
 
-            this->p_Camera->requestCompleted.connect(RequestComplete);
-
-            m_Texture = std::make_shared<Texture2D>();
-            this->m_Texture->Generate(CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT, nullptr);
+            MakeRequests();
         }
 
         Camera::~Camera() {
@@ -87,9 +96,6 @@ namespace BB {
 
         void Camera::Start() {
             this->p_Camera->start();
-
-            for (std::unique_ptr<libcamera::Request>& request : m_Requests)
-                this->p_Camera->queueRequest(request.get());
         }
 
         void Camera::Stop() {
@@ -97,15 +103,11 @@ namespace BB {
         }
 
         const CamBuffer& Camera::GetFrame() {
-            // CamBuffer& buffer;
+            
         }
 
         void Camera::Clear() {
-            if (this->m_Active)
-                this->Stop();
-
-            this->p_Allocator->free(this->p_Stream);
-            delete this->p_Allocator;
+            this->Stop();
 
             m_Requests.clear();
 
@@ -113,41 +115,102 @@ namespace BB {
             this->p_Camera.reset();
         }
 
+        static CamStreamInfo GetStreamInfo(const libcamera::Stream* stream) {
+            const libcamera::StreamConfiguration& cfg = stream->configuration();
+
+            CamStreamInfo info;
+            info.width = cfg.size.width;
+            info.height = cfg.size.height;
+            info.stride = cfg.stride;
+            info.pixelFormat = cfg.pixelFormat;
+            info.colorSpace = cfg.colorSpace;
+            return info;
+        }
+
         void Camera::RequestComplete(libcamera::Request* request) {
             if (request->status() == libcamera::Request::RequestCancelled)
                 return;
 
-            // Update The Texture Here
+            struct dma_buf_sync dma_sync { };
+            dma_sync.flags = DMA_BUF_SYNC_START | DMA_BUF_SYNC_READ;
 
-            const std::map<const libcamera::Stream*, libcamera::FrameBuffer*>& buffers = request->buffers();
+            for (const auto& bufferMap : request->buffers()) {
+                auto it = this->m_MappedBuffers.find(bufferMap.second);
+                if (it == m_MappedBuffers.end())
+                    std::cerr << "Failed to identify request complete buffer!" << std::endl;
 
-            for (auto bufferPair : buffers) {
-                libcamera::FrameBuffer* buffer = bufferPair.second;
-                const libcamera::FrameMetadata& metadata = buffer->metadata();
-
-                std::cout << "Frame " << metadata.sequence << ": bytes (" << metadata.planes()[0].bytesused << ")" << std::endl;
-
-                size_t length = 0;
-                for (const auto& plane : buffer->planes())
-                    length += plane.length;
-
-                m_Texture->Bind();
-
-                auto* addr = static_cast<unsigned char*>(mmap(nullptr, buffer->planes()[0].length, PROT_READ, MAP_PRIVATE, buffer->planes()[0].fd.get(), 0));
-
-                if (addr == MAP_FAILED)
-                    std::cerr << "Failed to map framebuffer planes!" << std::endl;
-
-                std::cout << *addr << std::endl;
-
-                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT, GL_R8, GL_UNSIGNED_BYTE, addr);
-                glFinish();
-
-                glBindTexture(GL_TEXTURE_2D, 0);
+                int ret = ::ioctl(bufferMap.second->planes()[0].fd.get(), DMA_BUF_IOCTL_SYNC, &dma_sync);
+                if (ret)
+                    std::cerr << "Failed to syncronize dma buf on request complete!" << std::endl;
             }
 
-            request->reuse(libcamera::Request::ReuseBuffers);
-            p_Camera->queueRequest(request);
+            CompletedRequest* r = new CompletedRequest(this->m_Sequence++, request);
+            CompletedRequestPtr payload(r, [this](CompletedRequest* cr) { this->QueueRequest(cr); });
+            {
+                this->m_CompletedRequests.insert(r);
+            }
+        }
+
+        void Camera::MakeRequests() {
+            std::map<libcamera::Stream*, std::queue<libcamera::FrameBuffer*>> freeBuffers;
+
+            for (auto& kv : this->m_Framebuffers) {
+                freeBuffers[kv.first] = { };
+
+                for (auto& b : kv.second)
+                    freeBuffers[kv.first].push(b.get());
+            }
+
+            // TODO: Change to range or condition limited loop
+            while (true) {
+                for (libcamera::StreamConfiguration& config : *this->p_Configuration) {
+                    libcamera::Stream* stream = config.stream();
+
+                    if (stream == this->p_Configuration->at(0).stream()) {
+                        if (freeBuffers[stream].empty()) {
+                            return;
+                        }
+
+                        std::unique_ptr<Request> request = this->CreateRequest();
+                        if (!request)
+                            std::cerr << "Failed to make request!" << std::endl;
+
+                        this->m_Requests.push_back(std::move(request));
+                    }
+                    else if (freeBuffers[stream].empty())
+                        std::cerr << "Concurrent streams need matching numbers of buffers!" << std::endl;
+
+                    libcamera::FrameBuffer* buffer = freeBuffers[stream].front();
+                    freeBuffers[stream].pop();
+
+                    if (this->m_Requests.back()->AddBuffer(stream, buffer) < 0)
+                        std::cerr << "Failed to add buffer to request!" << std::endl;
+                }
+            }
+        }
+
+        std::unique_ptr<Request> Camera::CreateRequest(uint64_t cookie) {
+
+        }
+
+        void Camera::QueueRequest(CompletedRequest* cr) {
+            BufferMap buffers(std::move(cr->buffers));
+
+            bool requestFound;
+            {
+                auto it = this->m_CompletedRequests.find(cr);
+
+                if (it != this->m_CompletedRequests.end()) {
+                    requestFound = true;
+                    this->m_CompletedRequests.erase(it);
+                }
+                else {
+                    requestFound = false;
+                }
+            }
+
+            libcamera::Request* request = cr->request;
+            
         }
 
     }   // GL

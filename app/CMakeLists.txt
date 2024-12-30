@@ -20,8 +20,8 @@ file(GLOB buggie_MOD_GUI_REN_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/
 file(GLOB buggie_MOD_GUI_REN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/Renderer/*.cpp)
 
 # Get GLAD Source Files
-file(GLOB_RECURSE glad_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/include/*.h)
-file(GLOB glad_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/src/*.c)
+# file(GLOB_RECURSE glad_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/include/*.h)
+# file(GLOB glad_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/src/*.c)
 
 # Get STBI Source Files
 file(GLOB stb_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/libs/stb/*.h)
@@ -42,8 +42,8 @@ source_group("GUI Renderer Headers" FILES ${buggie_MOD_GUI_REN_HEADER})
 source_group("GUI Renderer Sources" FILES ${buggie_MOD_GUI_REN_SOURCE})
 
 # Library Source Groups
-source_group("glad Headers" FILES ${glad_HEADER})
-source_group("glad Sources" FILES ${glad_SOURCE})
+# source_group("glad Headers" FILES ${glad_HEADER})
+# source_group("glad Sources" FILES ${glad_SOURCE})
 
 source_group("stb Headers" FILES ${stb_HEADER})
 
@@ -62,7 +62,7 @@ add_executable(
     ${buggie_MOD_GUI_HEADER}     ${buggie_MOD_GUI_SOURCE}
     ${buggie_MOD_GUI_REN_HEADER} ${buggie_MOD_GUI_REN_SOURCE}
     
-    ${glad_HEADER} ${glad_SOURCE}
+    # ${glad_HEADER} ${glad_SOURCE}
     ${stb_HEADER}
 )
 
@@ -81,6 +81,7 @@ target_include_directories(
     PRIVATE "${FREETYPE_INCLUDE_DIRS}"
     PRIVATE "${LIBCAMERA_INCLUDE_DIRS}"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/stb"
+    PRIVATE "${epoxy_INCLUDE_DIRS}"
 )
 
 target_link_libraries(
@@ -91,4 +92,5 @@ target_link_libraries(
     PRIVATE ${FREETYPE_LIBRARIES}
     PRIVATE PkgConfig::LIBCAMERA
     PRIVATE ${OPENGL_LIBRARIES}
+    PRIVATE ${epoxy_LIBRARIES}
 )
