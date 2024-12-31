@@ -61,14 +61,8 @@ message(STATUS "")
 find_package(Freetype REQUIRED)
 
 add_subdirectory(app/libs/epoxy)
+message(STATUS "")
 
-message(STATUS "")
-find_package(PkgConfig)
-pkg_check_modules(LIBCAMERA REQUIRED IMPORTED_TARGET libcamera)
-message(STATUS "libcamera library found:")
-message(STATUS "    version: ${LIBCAMERA_VERSION}")
-message(STATUS "    libraries: ${LIBCAMERA_LINK_LIBRARIES}")
-message(STATUS "    include path: ${LIBCAMERA_INCLUDE_DIRS}")
-message(STATUS "")
+find_package(OpenCV REQUIRED)
 
 add_subdirectory(app)

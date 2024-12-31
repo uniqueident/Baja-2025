@@ -1,4 +1,5 @@
 #include "Texture.hpp"
+#include <epoxy/gl_generated.h>
 
 namespace BB {
 
@@ -40,6 +41,16 @@ namespace BB {
                 this->m_InternalFormat = GL_RGB;
                 this->m_Format = GL_RGB;
             }
+        }
+
+
+
+        void DynamicTexture2D::UpdateData(unsigned char* data) {
+            glBindTexture(GL_TEXTURE_2D, this->m_ID);
+
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, this->m_Width, this->m_Height, GL_BGR, GL_UNSIGNED_BYTE, data);
+
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
 
     }   // GL

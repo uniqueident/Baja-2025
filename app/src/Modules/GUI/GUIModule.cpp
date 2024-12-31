@@ -127,12 +127,12 @@ namespace BB {
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
 
-        ResourceManager::LoadCamera("main");
-        ResourceManager::GetCamera("main").Start();
+        ResourceManager::LoadCamera(0);
+        ResourceManager::GetCamera(0).Start();
     }
 
     void GUIModule::Shutdown() {
-        ResourceManager::GetCamera("main").Stop();
+        ResourceManager::GetCamera(0).Stop();
 
         p_Renderer->Shutdown();
         delete p_Renderer;
@@ -190,7 +190,7 @@ namespace BB {
         );
 
         p_Renderer->DrawCam(
-            ResourceManager::GetCamera("main"), 
+            ResourceManager::GetCamera(0), 
             { 50.0f, 50.0f },
             { 640.0f, 480.0f }
         );

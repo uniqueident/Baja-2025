@@ -16,14 +16,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <libcamera/camera.h>
-
 namespace BB {
 
     ResourceManager::~ResourceManager() {
-        p_CameraManager->stop();
 
-        delete p_CameraManager;
     }
 
     GL::Shader& ResourceManager::LoadShader(const char* source, const char* name) {
@@ -50,12 +46,12 @@ namespace BB {
         return Instance()->m_Fonts[name];
     }
 
-    GL::Camera& ResourceManager::LoadCamera(const char* name) {
-        return (Instance()->m_Cameras[name] = Instance()->LoadCameraFromManager());
+    GL::Camera& ResourceManager::LoadCamera(int index) {
+        return (Instance()->m_Cameras[index] = Instance()->LoadCameraFromManager(index));
     }
 
-    GL::Camera& ResourceManager::GetCamera(const char* name) {
-        return Instance()->m_Cameras[name];
+    GL::Camera& ResourceManager::GetCamera(int index) {
+        return Instance()->m_Cameras[index];
     }
 
     void ResourceManager::Clear() {
@@ -65,8 +61,6 @@ namespace BB {
             glDeleteTextures(1, &item.second.ID());
         for (auto item : Instance()->m_Fonts)
             item.second.Clear();
-        for (auto item : Instance()->m_Cameras)
-            item.second.Clear();
 
         Instance()->m_Shaders.clear();
         Instance()->m_Textures.clear();
@@ -74,13 +68,8 @@ namespace BB {
         Instance()->m_Cameras.clear();
     }
 
-    ResourceManager::ResourceManager() : p_CameraManager(nullptr), m_Shaders(), m_Textures(), m_Fonts(), m_Cameras() {
-        p_CameraManager = new libcamera::CameraManager;
-        p_CameraManager->start();
+    ResourceManager::ResourceManager() : m_Shaders(), m_Textures(), m_Fonts(), m_Cameras() {
 
-        for (auto const &camera : p_CameraManager->cameras()) {
-            std::cout << camera->id() << std::endl;
-        }
     }
 
     ResourceManager* ResourceManager::Instance() {
@@ -186,23 +175,8 @@ namespace BB {
         return font;
     }
 
-    GL::Camera ResourceManager::LoadCameraFromManager() {
-        const auto cameras = this->p_CameraManager->cameras();
-
-        if (cameras.empty()) {
-            std::cerr << "No cameras were identified on the system!" << std::endl;
-        }
-
-        unsigned int i = 0;
-        for (auto& cam : this->m_Cameras) {
-            if (cameras[i]->id().compare(cam.second.ID()) != 0) {
-                break;
-            }
-
-            i++;
-        }
-
-        return GL::Camera(cameras[i]);
+    GL::Camera ResourceManager::LoadCameraFromManager(int index) {
+        return GL::Camera(index);
     }
 
 }   // BB

@@ -43,7 +43,7 @@ namespace BB {
             /** @return The texture ID. */
             inline Texture_ID& ID() { return m_ID; }
 
-        private:
+        protected:
             Texture_ID m_ID;
 
             unsigned int m_Width;
@@ -59,6 +59,12 @@ namespace BB {
             FilterMode m_FilterMax;
 
         };
+
+        class DynamicTexture2D : public Texture2D {
+        public:
+            void UpdateData(unsigned char* data);
+
+        };  // DynamicTexture2D
 
     }   // GL
 

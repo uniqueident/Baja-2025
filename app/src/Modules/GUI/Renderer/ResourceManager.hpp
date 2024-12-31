@@ -3,10 +3,6 @@
 // std
 #include <map>
 
-// libs
-#include <libcamera/camera_manager.h>
-
-
 namespace  BB {
 
     namespace GL {
@@ -71,8 +67,8 @@ namespace  BB {
          */
         static GL::Font& GetFont(const char* name);
 
-        static GL::Camera& LoadCamera(const char* name);
-        static GL::Camera& GetCamera(const char* name);
+        static GL::Camera& LoadCamera(int index);
+        static GL::Camera& GetCamera(int index);
 
         /** @brief Erases all currently stored resources. */
         static void Clear();
@@ -108,18 +104,16 @@ namespace  BB {
          */
         GL::Font LoadFontFile(const char* source);
 
-        GL::Camera LoadCameraFromManager();
+        GL::Camera LoadCameraFromManager(int index);
 
         /* --- */
         
         static inline ResourceManager* s_Instance = nullptr;
 
-        libcamera::CameraManager* p_CameraManager;
-
         std::map<const char*, GL::Shader> m_Shaders;
         std::map<const char*, GL::Texture2D> m_Textures;
         std::map<const char*, GL::Font> m_Fonts;
-        std::map<const char*, GL::Camera> m_Cameras;
+        std::map<int, GL::Camera> m_Cameras;
 
     };
 

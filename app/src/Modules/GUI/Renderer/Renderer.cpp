@@ -8,6 +8,7 @@
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
+#include <memory>
 
 namespace BB {
 
@@ -147,9 +148,9 @@ namespace BB {
             Camera& cam,
             glm::vec2 position, glm::vec2 size, float rotate
         ) {
-            // CamBuffer buffer = cam.GetFrame();
+            std::shared_ptr<DynamicTexture2D>& tex = cam.GetFrame();
 
-
+            DrawSprite(*tex, position, size);
         }
 
         void Renderer::UpdateView(unsigned int width, unsigned int height) {
