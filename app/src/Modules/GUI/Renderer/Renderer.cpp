@@ -6,9 +6,11 @@
 #include "Modules/GUI/Renderer/Font.hpp"
 #include "Modules/GUI/Renderer/Camera.hpp"
 
+// std
+#include <memory>
+
 // libs
 #include <glm/gtc/matrix_transform.hpp>
-#include <memory>
 
 namespace BB {
 
@@ -150,7 +152,7 @@ namespace BB {
         ) {
             std::shared_ptr<DynamicTexture2D>& tex = cam.GetFrame();
 
-            DrawSprite(*tex, position, size);
+            DrawSprite(*tex, position, size, rotate);
         }
 
         void Renderer::UpdateView(unsigned int width, unsigned int height) {

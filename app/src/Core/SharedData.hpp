@@ -1,13 +1,3 @@
-/**
- * @file SharedData.hpp
- * @author Evan F., Mateo M.
- * @brief The SharedData header file. Declares the SharedData struct and any necessary helper functions.
- * @version 1.0
- * @date 10-25-2024
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
 
 namespace BB {

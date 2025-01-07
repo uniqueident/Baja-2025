@@ -1,7 +1,8 @@
 #pragma once
 
 // libs
-#include <epoxy/egl.h>
+#include <glad/gl.h>
+
 #include <glm/glm.hpp>
 
 namespace BB {

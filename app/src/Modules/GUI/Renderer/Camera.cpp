@@ -6,11 +6,12 @@
 // std
 #include <iostream>
 #include <memory>
-#include <opencv2/videoio.hpp>
 #include <unistd.h>
 
 // libs
-#include <epoxy/egl.h>
+#include <glad/gl.h>
+
+#include <opencv2/videoio.hpp>
 
 
 namespace BB {
@@ -20,15 +21,13 @@ namespace BB {
         #define CAMERA_VIEW_WIDTH 1280
         #define CAMERA_VIEW_HEIGHT 720
 
-        Camera::Camera() { }
+        Camera::Camera() : m_Camera(), m_Frame(), m_Texture(std::make_shared<DynamicTexture2D>()), m_Started(false) { }
 
         Camera::Camera(int index) : m_Camera(index), m_Frame(), m_Texture(std::make_shared<DynamicTexture2D>()), m_Started(false) {
             if (!this->m_Camera.isOpened())
                 std::cerr << "Failed to access camera!" << std::endl;
 
             this->m_Texture->Generate(this->m_Camera.get(cv::CAP_PROP_FRAME_WIDTH), this->m_Camera.get(cv::CAP_PROP_FRAME_HEIGHT), nullptr);
-
-            // this->m_Buffer.resize(this->m_Frame.cols * this->m_Frame.rows * this->m_Frame.channels());
         }
 
         Camera::~Camera() {
@@ -46,7 +45,10 @@ namespace BB {
         }
 
         void Camera::Start() {
-            this->m_Started = true;
+            if (this->m_Started == true)
+                std::cerr << "Camera start called after camera is already started!" << std::endl;
+
+            
         }
 
         void Camera::Stop() {

@@ -1,13 +1,3 @@
-/**
- * @file GUIModule.hpp
- * @author Evan F.
- * @brief The GUIModule header file. Declares the GUIModule class members and methods.
- * @version 1.0
- * @date 10-25-2024
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
 
 #include "Modules/moduletemplate.hpp"

@@ -40,22 +40,22 @@ namespace BB {
             CheckCompileErrors(fragment, SHADER);
 
             // Geometry Shader If Given
-            if (geometrySource != nullptr) {
-                geometry = glCreateShader(GL_GEOMETRY_SHADER);
+            // if (geometrySource != nullptr) {
+            //     geometry = glCreateShader(GL_GEOMETRY_SHADER);
 
-                glShaderSource(geometry, 1, &geometrySource, NULL);
-                glCompileShader(geometry);
+            //     glShaderSource(geometry, 1, &geometrySource, NULL);
+            //     glCompileShader(geometry);
 
-                CheckCompileErrors(geometry, SHADER);
-            }
+            //     CheckCompileErrors(geometry, SHADER);
+            // }
 
             // Create The Shader Program
             m_Program = glCreateProgram();
 
             glAttachShader(m_Program, vertex);
             glAttachShader(m_Program, fragment);
-            if (geometrySource != nullptr)
-                glAttachShader(m_Program, geometry);
+            // if (geometrySource != nullptr)
+            //     glAttachShader(m_Program, geometry);
 
             glLinkProgram(m_Program);
 
@@ -65,8 +65,8 @@ namespace BB {
             glDeleteShader(vertex);
             glDeleteShader(fragment);
 
-            if (geometrySource != nullptr)
-                glDeleteShader(geometry);
+            // if (geometrySource != nullptr)
+            //     glDeleteShader(geometry);
         }
 
         void Shader::SetBool(const char* name, bool value) const {

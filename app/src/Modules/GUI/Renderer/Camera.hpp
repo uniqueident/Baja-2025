@@ -30,9 +30,7 @@ namespace BB {
             /* --- */
 
             cv::VideoCapture m_Camera;
-
             cv::Mat m_Frame;
-            // std::vector<unsigned char*> m_Buffer;
 
             std::shared_ptr<DynamicTexture2D> m_Texture;
 

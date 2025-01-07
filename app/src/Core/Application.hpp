@@ -1,14 +1,6 @@
-/**
- * @file Application.hpp
- * @author Evan F.
- * @brief The Application header file. Declares the Application class members and methods.
- * @version 1.0
- * @date 10-25-2024
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
+
+#include "Core/ThreadRunner.hpp"
 
 // std
 #include <vector>
@@ -51,6 +43,8 @@ namespace BB {
         SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
 
         std::vector<Module*> m_Modules = { }; /** @brief The Application Modules that complete tasks. */
+
+        ThreadRunner m_GUIThread;
     };
 
 }   // BB
