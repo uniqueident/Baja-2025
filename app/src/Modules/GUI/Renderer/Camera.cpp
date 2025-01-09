@@ -18,7 +18,9 @@ namespace BB {
 
     namespace GL {
 
+        // The set frame width.
         #define CAMERA_VIEW_WIDTH 1280
+        // The set frame height.
         #define CAMERA_VIEW_HEIGHT 720
 
         Camera::Camera() : m_Camera(), m_Frame(), m_Texture(std::make_shared<DynamicTexture2D>()), m_Started(false) { }

@@ -44,7 +44,7 @@ namespace BB {
 
         std::vector<Module*> m_Modules = { }; /** @brief The Application Modules that complete tasks. */
 
-        ThreadRunner m_GUIThread;
+        // ThreadRunner m_Thread; /** @brief The separate thread to use for update calls. */
     };
 
 }   // BB

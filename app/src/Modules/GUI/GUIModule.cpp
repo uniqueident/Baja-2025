@@ -93,8 +93,8 @@ namespace BB {
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
 
-        ResourceManager::LoadCamera(0);
-        ResourceManager::GetCamera(0).Start();
+        ResourceManager::LoadCamera();
+        ResourceManager::GetCamera().Start();
     }
 
     void GUIModule::Shutdown() {

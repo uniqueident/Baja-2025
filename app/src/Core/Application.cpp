@@ -7,7 +7,6 @@
 
 // std
 #include <ctime>
-#include <functional>
 #include <iostream>
 
 namespace BB {
@@ -17,7 +16,9 @@ namespace BB {
 
         this->p_SharedData = new SharedData;
 
-        this->m_GUIThread.AddMethod(std::bind(&Application::Render, this), 1);
+        // Assuming the modules do no need to run on the main thread,
+        // we can run it on a separate thread using the following member.
+        // this->m_GUIThread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
 
         // This is how to add a Module to the Application.
         // The GUI Module Should always be first so that it can be updated separately.
@@ -49,7 +50,7 @@ namespace BB {
         Timestep time(0.0f);
         unsigned int frameCount = 0;
 
-        this->m_GUIThread.Start();
+        // this->m_GUIThread.Start();
 
         // This while loop is the runtime. All Module updates will be called from here.
         while (this->p_SharedData->Running) {
@@ -68,12 +69,12 @@ namespace BB {
 
             UpdateModules();
 
-            // Render();
+            Render();
 
             frameCount++;
         }
 
-        this->m_GUIThread.Stop();
+        // this->m_GUIThread.Stop();
     }
 
     // Forces module_update
@@ -84,7 +85,7 @@ namespace BB {
 
     // Pushes update into GUI
     void Application::Render() {
-        std::cout << timeNow() << " Renderer Thread" << std::endl;
+        // std::cout << timeNow() << " Renderer Thread" << std::endl;
 
         this->m_Modules[0]->Update();
     }

@@ -2,8 +2,6 @@
 
 namespace BB {
 
-    // TODO: Figure out what is going to be needed here for the GUI.
-
     /** 
      * @brief The only data that the modules can access outside of themselves. This is soley for ease of use in the GUI.
      */

@@ -75,6 +75,14 @@ namespace BB {
                 const glm::vec3& color
             );
 
+            /**
+             * @brief Draws a camera frame as a textured quad.
+             * 
+             * @param cam The camera to capture from.
+             * @param position The position on screen.
+             * @param size The size on screen.
+             * @param rotate The rotation on screen.
+             */
             void DrawCam(
                 Camera& cam,
                 glm::vec2 position, glm::vec2 size, float rotate = 0.0f

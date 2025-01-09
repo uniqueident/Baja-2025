@@ -58,7 +58,7 @@ namespace BB {
 
             /* --- */
 
-            std::map<char, Character> m_Characters;
+            std::map<char, Character> m_Characters; /** @brief A map of each character and its texture from the font. */
 
         };
 

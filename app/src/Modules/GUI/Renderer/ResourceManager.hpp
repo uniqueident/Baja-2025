@@ -67,8 +67,14 @@ namespace  BB {
          */
         static GL::Font& GetFont(const char* name);
 
-        static GL::Camera& LoadCamera(int index);
-        static GL::Camera& GetCamera(int index);
+        /**
+         * @brief Loads a camera at the given index, by default it is 0.
+         * 
+         * @param index The index of 
+         * @return GL::Camera& 
+         */
+        static GL::Camera& LoadCamera(int index = 0);
+        static GL::Camera& GetCamera(int index = 0);
 
         /** @brief Erases all currently stored resources. */
         static void Clear();
@@ -104,6 +110,12 @@ namespace  BB {
          */
         GL::Font LoadFontFile(const char* source);
 
+        /**
+         * @brief Internal loader for cameras.
+         * 
+         * @param index The camera index to use.
+         * @return GL::Camera 
+         */
         GL::Camera LoadCameraFromManager(int index);
 
         /* --- */

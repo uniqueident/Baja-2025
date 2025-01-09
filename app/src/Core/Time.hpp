@@ -5,8 +5,18 @@ class Timestep {
 public:
 	Timestep(float time = 0.0f) : m_Time(time) { }
 
+	/**
+	 * @brief Get the seconds of time from the timestep.
+	 * 
+	 * @return Seconds as a float.
+	 */
 	float GetSeconds() const { return m_Time * 10.0f; }
-	float GetMilliseconds() const { return m_Time * 1000.0f; }
+	/**
+	 * @brief Get the milliseconds of time from the timestep.
+	 * 
+	 * @return Milliseconds as a float.
+	 */
+	float GetMilliseconds() const { return m_Time * 10000.0f; }
 
 	operator float() const { return m_Time; }
 

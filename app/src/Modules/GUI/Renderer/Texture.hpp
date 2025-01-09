@@ -44,24 +44,31 @@ namespace BB {
             inline Texture_ID& ID() { return m_ID; }
 
         protected:
-            Texture_ID m_ID;
+            Texture_ID m_ID; /** @brief The texture ID in OpenGL. */
 
-            unsigned int m_Width;
-            unsigned int m_Height;
+            unsigned int m_Width; /** @brief The texture width. */
+            unsigned int m_Height; /** @brief The texture height. */
 
-            InternalFormat m_InternalFormat;
-            ImageFormat m_Format;
+            InternalFormat m_InternalFormat; /** @brief The internal OpenGL format. */
+            ImageFormat m_Format; /** @brief The OpenGL texture format. */
 
-            WrappingMode m_WrapS;
-            WrappingMode m_WrapT;
+            WrappingMode m_WrapS; /** @brief The OpenGL texuture side wrapping mode. */
+            WrappingMode m_WrapT; /** @brief The OpenGL texuture top wrapping mode. */
 
-            FilterMode m_FilterMin;
-            FilterMode m_FilterMax;
+            FilterMode m_FilterMin; /** @brief The OpenGL texture minimizing filter. */
+            FilterMode m_FilterMax; /** @brief The OpenGL texture maximizing filter. */
 
-        };
+        };  // Texture2D
+
+
 
         class DynamicTexture2D : public Texture2D {
         public:
+            /**
+             * @brief Updates the OpenGL texture data.
+             * 
+             * @param data The data to load to the texture.
+             */
             void UpdateData(unsigned char* data);
 
         };  // DynamicTexture2D

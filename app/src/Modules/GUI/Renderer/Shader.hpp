@@ -108,7 +108,7 @@ namespace BB {
 
             /* --- */
 
-            Program_ID m_Program;
+            Program_ID m_Program; /** @brief The shader program that this object controls. */
 
         };
 
