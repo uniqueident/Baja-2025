@@ -1,18 +1,8 @@
-/**
- * @file moduletemplate.hpp
- * @authors Mateo, Evan F.
- * @brief The Module header file. Declares the virtual class of a Module and its required members and methods.
- * @version 1.0
- * @date 10-25-2024
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
 
 #include "Core/SharedData.hpp"
 
-namespace CB {
+namespace BB {
 
     /** @brief The base class for a Module. Pure virtual class. */
     class Module {
@@ -37,4 +27,4 @@ namespace CB {
         
     };
 
-} // CB
+} // BB

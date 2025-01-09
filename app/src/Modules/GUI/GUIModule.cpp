@@ -1,12 +1,12 @@
 #include "GUIModule.hpp"
 
+#include "Modules/GUI/Renderer/Camera.hpp"
 #include "Modules/GUI/Renderer/Renderer.hpp"
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
 
 // std
 #include <cstddef>
 #include <iostream>
-#include <exception>
 #include <sstream>
 
 // libs
@@ -17,35 +17,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace CB {
+namespace BB {
 
     #define SCREEN_WIDTH 800
     #define SCREEN_HEIGHT 600
-
-    void OpenGLMessageCallback(
-        [[gnu::unused]]unsigned source,
-        [[gnu::unused]]unsigned type,
-        [[gnu::unused]]unsigned id,
-        unsigned severity,
-        [[gnu::unused]]int lenght,
-        const char* message,
-        [[gnu::unused]]const void* userParam
-    ) {
-        switch (severity) {
-            case GL_DEBUG_SEVERITY_HIGH:
-                std::cerr << message << std::endl;
-                return;
-            case GL_DEBUG_SEVERITY_MEDIUM:
-                std::cerr << message << std::endl;
-                return;
-            case GL_DEBUG_SEVERITY_LOW:
-                std::cerr << message << std::endl;
-                return;
-            case GL_DEBUG_SEVERITY_NOTIFICATION:
-                std::cout << message << std::endl;
-                return;
-        }
-    }
 
     void glfwErrorCallback(int error, const char* description) {
         std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
@@ -58,6 +33,8 @@ namespace CB {
         data->scale->x = width / static_cast<float>(SCREEN_HEIGHT);
         data->scale->y = height / static_cast<float>(SCREEN_HEIGHT);
     }
+
+
 
     void GUIModule::Init(SharedData * data) {
         p_Data = data;
@@ -98,14 +75,6 @@ namespace CB {
 
         glfwSetFramebufferSizeCallback(p_Window, glfwFramebufferSizeCallback);
 
-        try {
-            glDebugMessageCallback(OpenGLMessageCallback, nullptr);
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
-        }
-        catch(std::out_of_range const&) {
-            std::cerr << "OpenGL version likely does not support Debug Messaging!" << std::endl;
-        }
-
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -123,9 +92,14 @@ namespace CB {
         ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
+
+        ResourceManager::LoadCamera();
+        ResourceManager::GetCamera().Start();
     }
 
     void GUIModule::Shutdown() {
+        ResourceManager::GetCamera(0).Stop();
+
         p_Renderer->Shutdown();
         delete p_Renderer;
 
@@ -180,6 +154,12 @@ namespace CB {
             1.0f,
             {0.0f, 0.f, 0.0f }
         );
+
+        p_Renderer->DrawCam(
+            ResourceManager::GetCamera(0), 
+            { 50.0f, 50.0f },
+            { 640.0f, 480.0f }
+        );
     }
 
-}   // CB
+}   // BB

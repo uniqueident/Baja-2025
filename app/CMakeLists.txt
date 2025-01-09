@@ -79,7 +79,10 @@ target_include_directories(
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/include"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/glm"
     PRIVATE "${FREETYPE_INCLUDE_DIRS}"
+    PRIVATE "${OpenCV_INCLUDE_DIRS}"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/stb"
+    PRIVATE "${glad_INCLUDE_DIRS}"
+    # PRIVATE "${epoxy_INCLUDE_DIRS}"
 )
 
 target_link_libraries(
@@ -88,5 +91,7 @@ target_link_libraries(
     PRIVATE glfw
     PRIVATE glm::glm-header-only
     PRIVATE ${FREETYPE_LIBRARIES}
+    PRIVATE ${OpenCV_LIBS}
     PRIVATE ${OPENGL_LIBRARIES}
+    # PRIVATE ${epoxy_LIBRARIES}
 )

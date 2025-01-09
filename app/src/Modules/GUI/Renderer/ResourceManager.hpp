@@ -3,18 +3,21 @@
 // std
 #include <map>
 
-namespace  CB {
+namespace  BB {
 
     namespace GL {
         
         class Shader;
         class Texture2D;
         class Font;
+        class Camera;
 
     }   // GL
 
     class ResourceManager {
     public:
+        ~ResourceManager();
+
         /**
          * @brief Loads a shader file and creates a shader object.
          * 
@@ -64,11 +67,22 @@ namespace  CB {
          */
         static GL::Font& GetFont(const char* name);
 
+        /**
+         * @brief Loads a camera at the given index, by default it is 0.
+         * 
+         * @param index The index of 
+         * @return GL::Camera& 
+         */
+        static GL::Camera& LoadCamera(int index = 0);
+        static GL::Camera& GetCamera(int index = 0);
+
         /** @brief Erases all currently stored resources. */
         static void Clear();
 
     private:
         ResourceManager();
+        ResourceManager(const ResourceManager&) = delete;
+        ResourceManager& operator = (const ResourceManager&) = delete;
 
         /** @return The resource manager instance. */
         static ResourceManager* Instance();
@@ -96,6 +110,14 @@ namespace  CB {
          */
         GL::Font LoadFontFile(const char* source);
 
+        /**
+         * @brief Internal loader for cameras.
+         * 
+         * @param index The camera index to use.
+         * @return GL::Camera 
+         */
+        GL::Camera LoadCameraFromManager(int index);
+
         /* --- */
         
         static inline ResourceManager* s_Instance = nullptr;
@@ -103,7 +125,8 @@ namespace  CB {
         std::map<const char*, GL::Shader> m_Shaders;
         std::map<const char*, GL::Texture2D> m_Textures;
         std::map<const char*, GL::Font> m_Fonts;
+        std::map<int, GL::Camera> m_Cameras;
 
     };
 
-}   // CB
+}   // BB

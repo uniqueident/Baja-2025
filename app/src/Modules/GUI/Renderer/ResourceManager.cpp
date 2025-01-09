@@ -3,6 +3,7 @@
 #include "Modules/GUI/Renderer/Shader.hpp"
 #include "Modules/GUI/Renderer/Texture.hpp"
 #include "Modules/GUI/Renderer/Font.hpp"
+#include "Modules/GUI/Renderer/Camera.hpp"
 #include "Modules/GUI/Renderer/Renderer.hpp"
 
 // std
@@ -15,7 +16,11 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace CB {
+namespace BB {
+
+    ResourceManager::~ResourceManager() {
+
+    }
 
     GL::Shader& ResourceManager::LoadShader(const char* source, const char* name) {
         return (Instance()->m_Shaders[name] = Instance()->LoadShaderFile(source));
@@ -33,6 +38,22 @@ namespace CB {
         return Instance()->m_Textures[name];
     }
 
+    GL::Font& ResourceManager::LoadFont(const char *source, const char *name) {
+        return (Instance()->m_Fonts[name] = Instance()->LoadFontFile(source));
+    }
+
+    GL::Font& ResourceManager::GetFont(const char *name) {
+        return Instance()->m_Fonts[name];
+    }
+
+    GL::Camera& ResourceManager::LoadCamera(int index) {
+        return (Instance()->m_Cameras[index] = Instance()->LoadCameraFromManager(index));
+    }
+
+    GL::Camera& ResourceManager::GetCamera(int index) {
+        return Instance()->m_Cameras[index];
+    }
+
     void ResourceManager::Clear() {
         for (auto item : Instance()->m_Shaders)
             glDeleteProgram(item.second.ID());
@@ -44,17 +65,12 @@ namespace CB {
         Instance()->m_Shaders.clear();
         Instance()->m_Textures.clear();
         Instance()->m_Fonts.clear();
+        Instance()->m_Cameras.clear();
     }
 
-    GL::Font& ResourceManager::LoadFont(const char *source, const char *name) {
-        return (Instance()->m_Fonts[name] = Instance()->LoadFontFile(source));
-    }
+    ResourceManager::ResourceManager() : m_Shaders(), m_Textures(), m_Fonts(), m_Cameras() {
 
-    GL::Font& ResourceManager::GetFont(const char *name) {
-        return Instance()->m_Fonts[name];
     }
-
-    ResourceManager::ResourceManager() : m_Shaders(), m_Textures(), m_Fonts() { }
 
     ResourceManager* ResourceManager::Instance() {
         if (s_Instance != nullptr)
@@ -159,4 +175,8 @@ namespace CB {
         return font;
     }
 
-}   // CB
+    GL::Camera ResourceManager::LoadCameraFromManager(int index) {
+        return GL::Camera(index);
+    }
+
+}   // BB
