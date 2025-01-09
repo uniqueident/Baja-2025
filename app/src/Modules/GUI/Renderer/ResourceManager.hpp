@@ -70,7 +70,7 @@ namespace  BB {
         /**
          * @brief Loads a camera at the given index, by default it is 0.
          * 
-         * @param index The index of 
+         * @param index The index of the camera device from OpenCV.
          * @return GL::Camera& 
          */
         static GL::Camera& LoadCamera(int index = 0);
