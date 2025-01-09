@@ -20,13 +20,10 @@ To install the [FreeType](https://freetype.org/) library on Linux and WSL2, use 
 sudo apt install libfreetype-dev
 ```
 
-### LibCamera
+### OpenCV
 
-To install the [libcamera](https://libcamera.org/) library on Linux and WSL2, use the following commands:
-
-_For libcamera library (make sure to be at the root directory):_
+To install [OpenCV](https://opencv.org/) for Ubuntu, use the following command and it should be ready to go. This is something that will make working on Windows more difficult as enabling camera access for WSL is difficult.
 
 ```bash
-sudo apt install libcamera-dev
-sudo apt install libcamera-tools
+sudo apt install libopencv-dev
 ```

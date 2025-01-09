@@ -60,9 +60,6 @@ message(STATUS "")
 
 find_package(Freetype REQUIRED)
 
-# add_subdirectory(app/libs/epoxy)
-# message(STATUS "")
-
 find_package(OpenCV REQUIRED)
 
 set(glad_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/app/libs/glad/include")
