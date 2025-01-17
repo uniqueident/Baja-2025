@@ -19,7 +19,7 @@
 
 namespace BB {
 
-    #define SCREEN_WIDTH 800
+    #define SCREEN_WIDTH 1024
     #define SCREEN_HEIGHT 600
 
     void glfwErrorCallback(int error, const char* description) {
@@ -48,7 +48,36 @@ namespace BB {
 
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
-        p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", NULL, NULL);
+        // Get the connected monitors
+        int monitorCount;
+        GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+
+        // If there is only one monitor
+        if (monitorCount == 1) {
+            const GLFWvidmode* vidMode = glfwGetVideoMode(monitors[0]);
+            
+            // Check if it's a monitor that fullscreen is prefered.
+            if (vidMode->width == SCREEN_WIDTH && vidMode->height == SCREEN_HEIGHT)
+                p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", monitors[0], NULL);
+            else
+                p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", NULL, NULL);
+        }
+        // If there are multiple monitors
+        else {
+            // Iterate through each monitor to see if there is the prefered one.
+            for (int i = 0; i < monitorCount; i++) {
+                const GLFWvidmode* vidMode = glfwGetVideoMode(monitors[0]);
+
+                if (vidMode->width == SCREEN_WIDTH && vidMode->height == SCREEN_HEIGHT) {
+                    p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", monitors[0], NULL);
+                }
+            }
+
+            if (!p_Window)
+                p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", NULL, NULL);
+        }
+
+        // Error if the window failed to be made.
         if (!p_Window) {
             std::cerr << "Failed to create GLFW Window or OpenGL context!" << std::endl;
 
@@ -153,12 +182,6 @@ namespace BB {
             { 50.0f, 50.f },
             1.0f,
             {0.0f, 0.f, 0.0f }
-        );
-
-        p_Renderer->DrawCam(
-            ResourceManager::GetCamera(0), 
-            { 50.0f, 50.0f },
-            { 640.0f, 480.0f }
         );
     }
 
