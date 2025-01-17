@@ -43,35 +43,15 @@ namespace BB {
 
     // Runs the application.
     void Application::Run() {
-        this->p_SharedData->Running = true;
-
-        Timestep currTime(timeRealiSec(timeNow()));
-
-        Timestep time(0.0f);
-        unsigned int frameCount = 0;
+        this->p_SharedData->running = true;
 
         // this->m_GUIThread.Start();
 
         // This while loop is the runtime. All Module updates will be called from here.
-        while (this->p_SharedData->Running) {
-            Timestep t(timeRealiSec(timeNow()));
-            Timestep frameTime(t - currTime);
-            currTime = t;
-
-            time += frameTime;
-
-            if (time.GetSeconds() >= 5.0f) {
-                time -= 5.0f;
-
-                std::cout << "Frames per 5 seconds on update thread: " << frameCount << " (" << frameCount / 5.0f << ")" << std::endl;
-                frameCount = 0;
-            }
-
+        while (this->p_SharedData->running) {
             UpdateModules();
 
             Render();
-
-            frameCount++;
         }
 
         // this->m_GUIThread.Stop();

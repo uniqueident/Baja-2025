@@ -1,5 +1,6 @@
 #include "GUIModule.hpp"
 
+#include "Core/SharedData.hpp"
 #include "Modules/GUI/Renderer/Camera.hpp"
 #include "Modules/GUI/Renderer/Renderer.hpp"
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
@@ -58,7 +59,7 @@ namespace BB {
             
             // Check if it's a monitor that fullscreen is prefered.
             if (vidMode->width == SCREEN_WIDTH && vidMode->height == SCREEN_HEIGHT)
-                p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", monitors[0], NULL);
+                p_Window = glfwCreateWindow(vidMode->width, vidMode->height, "Buggie Bug Dashboard", monitors[0], NULL);
             else
                 p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", NULL, NULL);
         }
@@ -69,7 +70,7 @@ namespace BB {
                 const GLFWvidmode* vidMode = glfwGetVideoMode(monitors[0]);
 
                 if (vidMode->width == SCREEN_WIDTH && vidMode->height == SCREEN_HEIGHT) {
-                    p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", monitors[0], NULL);
+                    p_Window = glfwCreateWindow(vidMode->width, vidMode->height, "Buggie Bug Dashboard", monitors[0], NULL);
                 }
             }
 
@@ -143,7 +144,7 @@ namespace BB {
 
     void GUIModule::Update() {
         if (glfwWindowShouldClose(p_Window)) {
-            p_Data->Running = false;
+            p_Data->running = false;
 
             return;
         }
@@ -159,6 +160,7 @@ namespace BB {
 
     void GUIModule::Render() {
         // Render UI Here //
+        glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
 
         // p_Renderer->DrawSprite(
         //     ResourceManager::GetTexture("Face"),
@@ -167,28 +169,50 @@ namespace BB {
         //     30.0f,
         //     { 0.0f, 0.0f, 1.0f }
         // );
+
         p_Renderer->DrawQuad(
             { 0.8f, 0.8f, 0.8f },
-            { 0.0f, -50.0f},
-            { 1300.0f, 1400.0f },
-            90.0f
+            { 0.0f, 0.0f},
+            screenSize
         );
         //dont touch this it is perfect how it is :3
         p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Dashboard"),
             { 0.0f, 0.0f},
-            { 1030.0f, 530.0f },
-            0.0f,
-            { 1.0, 1.0f, 1.0f }
+            screenSize // I touched it :^)
         );
+
+        // The gearShiftPos will need to be adjusted if the image is changed but it works :)
+        glm::vec2 gearShiftPos(85.0f, 275.0f);
+        switch (this->p_Data->gearPosition) {
+            case PARK:
+                break;
+
+            case REVERSE:
+                gearShiftPos.x -= 37.0f;
+                break;
+
+            case NEUTRAL:
+                gearShiftPos.x -= 37.0f * 2.0f;
+                break;
+
+            case DRIVE:
+                gearShiftPos.x -= 38.0f * 3.0f;
+                break;
+
+            case ONE:
+                gearShiftPos.x -= 36.0f * 4.0f;
+                break;
+
+            case TWO:
+                gearShiftPos.x -= 35.0f * 5.0f;
+                break;
+        }
 
         p_Renderer->DrawSprite(
             ResourceManager::GetTexture("GearShift"),
-            //right side(or Park) is x = 200, left side(or 2nd gear) is x = 25, shift 40 to the right or left
-            { 200.0f, 225.0f},
-            {800.0f, 580.0f },
-            0.0f,
-            { 1.0, 1.0f, 1.0f }
+            gearShiftPos * this->m_WindowScale,
+            screenSize
         );
 
         std::stringstream ss;
@@ -197,7 +221,7 @@ namespace BB {
         p_Renderer->DrawText(
             ss.str().c_str(),
             ResourceManager::GetFont("ComicNeue"),
-            { 0.0f, 0.f },
+            { 200.0f, 10.f },
             1.0f,
             {0.82f, 0.106f, 0.106f }
         );
