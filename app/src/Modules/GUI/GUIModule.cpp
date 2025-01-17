@@ -30,7 +30,7 @@ namespace BB {
         WindowData* data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
         
         data->renderer->UpdateView(width, height);
-        data->scale->x = width / static_cast<float>(SCREEN_HEIGHT);
+        data->scale->x = width / static_cast<float>(SCREEN_WIDTH);
         data->scale->y = height / static_cast<float>(SCREEN_HEIGHT);
     }
 
@@ -89,7 +89,9 @@ namespace BB {
 
         // Load Textures Here //
         
-        ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
+        // ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
+        ResourceManager::LoadTexture("../../assets/dashboardUI.png", "Dashboard", true);
+        ResourceManager::LoadTexture("../../assets/dashboardGearShift.png", "GearShift", true);
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
 
@@ -129,19 +131,35 @@ namespace BB {
     void GUIModule::Render() {
         // Render UI Here //
 
+        // p_Renderer->DrawSprite(
+        //     ResourceManager::GetTexture("Face"),
+        //     { 200.0f, 100.0f},
+        //     { 200.0f, 300.0f },
+        //     30.0f,
+        //     { 0.0f, 0.0f, 1.0f }
+        // );
+        p_Renderer->DrawQuad(
+            { 0.8f, 0.8f, 0.8f },
+            { 0.0f, -50.0f},
+            { 1300.0f, 1400.0f },
+            90.0f
+        );
+        //dont touch this it is perfect how it is :3
         p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Face"),
-            { 100.0f, 100.0f},
-            { 200.0f, 300.0f },
-            30.0f,
-            { 0.0f, 0.0f, 1.0f }
+            ResourceManager::GetTexture("Dashboard"),
+            { 0.0f, 0.0f},
+            { 1030.0f, 530.0f },
+            0.0f,
+            { 1.0, 1.0f, 1.0f }
         );
 
-        p_Renderer->DrawQuad(
-            { 0.0f, 1.0f, 0.0f },
-            { 200.0f, 200.0f},
-            { 300.0f, 400.0f },
-            45.0f
+        p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("GearShift"),
+            //right side(or Park) is x = 200, left side(or 2nd gear) is x = 25, shift 40 to the right or left
+            { 200.0f, 225.0f},
+            {800.0f, 580.0f },
+            0.0f,
+            { 1.0, 1.0f, 1.0f }
         );
 
         std::stringstream ss;
@@ -150,16 +168,16 @@ namespace BB {
         p_Renderer->DrawText(
             ss.str().c_str(),
             ResourceManager::GetFont("ComicNeue"),
-            { 50.0f, 50.f },
+            { 0.0f, 0.f },
             1.0f,
-            {0.0f, 0.f, 0.0f }
+            {0.82f, 0.106f, 0.106f }
         );
 
-        p_Renderer->DrawCam(
-            ResourceManager::GetCamera(0), 
-            { 50.0f, 50.0f },
-            { 640.0f, 480.0f }
-        );
+        // p_Renderer->DrawCam(
+        //     ResourceManager::GetCamera(0), 
+        //     { 50.0f, 50.0f },
+        //     { 640.0f, 480.0f }
+        // );
     }
 
 }   // BB
