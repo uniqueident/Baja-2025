@@ -38,9 +38,9 @@ namespace BB {
 
 
     void GUIModule::Init(SharedData * data) {
-        p_Data = data;
-        m_Closed = false;
-        m_WindowScale = { 1.0f, 1.0f };
+        this->p_Data = data;
+        this->m_Closed = false;
+        this->m_WindowScale = { 1.0f, 1.0f };
 
         if (!glfwInit())
             std::cerr << "Failed to initialize GLFW!" << std::endl;
@@ -53,49 +53,50 @@ namespace BB {
         int monitorCount;
         GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
 
+        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+        glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
+
         // If there is only one monitor
         if (monitorCount == 1) {
             const GLFWvidmode* vidMode = glfwGetVideoMode(monitors[0]);
             
             // Check if it's a monitor that fullscreen is prefered.
-            if (vidMode->width == SCREEN_WIDTH && vidMode->height == SCREEN_HEIGHT)
-                p_Window = glfwCreateWindow(vidMode->width, vidMode->height, "Buggie Bug Dashboard", monitors[0], NULL);
-            else
-                p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", NULL, NULL);
-        }
-        // If there are multiple monitors
-        else {
-            // Iterate through each monitor to see if there is the prefered one.
-            for (int i = 0; i < monitorCount; i++) {
-                const GLFWvidmode* vidMode = glfwGetVideoMode(monitors[0]);
-
-                if (vidMode->width == SCREEN_WIDTH && vidMode->height == SCREEN_HEIGHT) {
-                    p_Window = glfwCreateWindow(vidMode->width, vidMode->height, "Buggie Bug Dashboard", monitors[0], NULL);
-                }
+            // NOTE: This may need to be changed to assume that it should always be fullscreened if there is only one monitor.
+            if (vidMode->width == SCREEN_WIDTH && vidMode->height == SCREEN_HEIGHT) {
+                this->p_Window = glfwCreateWindow(vidMode->width, vidMode->height, "Buggie Bug Dashboard", nullptr, nullptr);
+                
+                glfwSetWindowMonitor(this->p_Window, monitors[monitorCount - 1], 0, 0, vidMode->width, vidMode->height, vidMode->refreshRate);
             }
+            else
+                this->p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", nullptr, nullptr);
+        }
+        // If there are multiple monitors, assumes the last one is the correct monitor (AKA non-primary screen).
+        else {
+            const GLFWvidmode* vidMode = glfwGetVideoMode(monitors[monitorCount - 1]);
 
-            if (!p_Window)
-                p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", NULL, NULL);
+            this->p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", nullptr, nullptr);
+
+            glfwSetWindowMonitor(this->p_Window, monitors[monitorCount - 1], 0, 0, vidMode->width, vidMode->height, vidMode->refreshRate);
         }
 
         // Error if the window failed to be made.
-        if (!p_Window) {
+        if (!this->p_Window) {
             std::cerr << "Failed to create GLFW Window or OpenGL context!" << std::endl;
 
             glfwTerminate();
-            m_Closed = true;
+            this->m_Closed = true;
 
             std::cerr << "GLFW has been closed, please check for issues and run again." << std::endl;
             return;
         }
 
-        glfwMakeContextCurrent(p_Window);
+        glfwMakeContextCurrent(this->p_Window);
         
         if (!gladLoadGL(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress))) {
             std::cerr << "Failed to initialize GLAD loader!" << std::endl;
 
             this->Shutdown();
-            m_Closed = true;
+            this->m_Closed = true;
 
             std::cerr << "GLFW has been closed, please check for issues and run again." << std::endl;
             return;
@@ -103,19 +104,19 @@ namespace BB {
 
         glfwSwapInterval(1);
 
-        glfwSetFramebufferSizeCallback(p_Window, glfwFramebufferSizeCallback);
+        glfwSetFramebufferSizeCallback(this->p_Window, glfwFramebufferSizeCallback);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        p_Renderer = new GL::Renderer;
-        p_Renderer->Init();
-        p_Renderer->UpdateView(SCREEN_WIDTH, SCREEN_HEIGHT);
-        p_Renderer->LoadData();
+        this->p_Renderer = new GL::Renderer;
+        this->p_Renderer->Init();
+        this->p_Renderer->UpdateView(SCREEN_WIDTH, SCREEN_HEIGHT);
+        this->p_Renderer->LoadData();
 
-        m_WindowData.renderer = p_Renderer;
-        m_WindowData.scale = &m_WindowScale;
-        glfwSetWindowUserPointer(p_Window, &m_WindowData);
+        this->m_WindowData.renderer = this->p_Renderer;
+        this->m_WindowData.scale = &this->m_WindowScale;
+        glfwSetWindowUserPointer(this->p_Window, &this->m_WindowData);
 
         // Load Textures Here //
         
@@ -132,19 +133,19 @@ namespace BB {
     void GUIModule::Shutdown() {
         ResourceManager::GetCamera(0).Stop();
 
-        p_Renderer->Shutdown();
-        delete p_Renderer;
+        this->p_Renderer->Shutdown();
+        delete this->p_Renderer;
 
         ResourceManager::Clear();
 
-        glfwDestroyWindow(p_Window);
+        glfwDestroyWindow(this->p_Window);
 
         glfwTerminate();
     }
 
     void GUIModule::Update() {
-        if (glfwWindowShouldClose(p_Window)) {
-            p_Data->running = false;
+        if (glfwWindowShouldClose(this->p_Window)) {
+            this->p_Data->running = false;
 
             return;
         }
@@ -155,7 +156,7 @@ namespace BB {
 
         Render();
 
-        glfwSwapBuffers(p_Window);
+        glfwSwapBuffers(this->p_Window);
     }
 
     void GUIModule::Render() {
@@ -170,13 +171,13 @@ namespace BB {
         //     { 0.0f, 0.0f, 1.0f }
         // );
 
-        p_Renderer->DrawQuad(
+        this->p_Renderer->DrawQuad(
             { 0.8f, 0.8f, 0.8f },
             { 0.0f, 0.0f},
             screenSize
         );
         //dont touch this it is perfect how it is :3
-        p_Renderer->DrawSprite(
+        this->p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Dashboard"),
             { 0.0f, 0.0f},
             screenSize // I touched it :^)
@@ -209,24 +210,21 @@ namespace BB {
                 break;
         }
 
-        p_Renderer->DrawSprite(
+        this->p_Renderer->DrawSprite(
             ResourceManager::GetTexture("GearShift"),
             gearShiftPos * this->m_WindowScale,
             screenSize
         );
 
-        std::stringstream ss;
-        ss << "Window Scale: " << m_WindowScale.x << "(x), " << m_WindowScale.y << "(y)";
-
-        p_Renderer->DrawText(
-            ss.str().c_str(),
+        this->p_Renderer->DrawText(
+            "Sample Text",
             ResourceManager::GetFont("ComicNeue"),
             { 200.0f, 10.f },
             1.0f,
             {0.82f, 0.106f, 0.106f }
         );
 
-        // p_Renderer->DrawCam(
+        // this->p_Renderer->DrawCam(
         //     ResourceManager::GetCamera(0), 
         //     { 50.0f, 50.0f },
         //     { 640.0f, 480.0f }
