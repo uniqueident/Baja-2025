@@ -217,9 +217,9 @@ namespace BB {
         );
 
         this->p_Renderer->DrawText(
-            "Sample Text",
+            "#%",
             ResourceManager::GetFont("ComicNeue"),
-            { 200.0f, 10.f },
+            { 140.0f, 45.f },
             1.0f,
             {0.82f, 0.106f, 0.106f }
         );
