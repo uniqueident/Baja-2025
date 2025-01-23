@@ -23,8 +23,10 @@ namespace BB {
         GearPosition gearPosition; /** @brief The gear position of the transmission as a enum value. */
         int engineRPM; /** @brief The RPM of the engine as a int. */
         int milesPerHour; /** @brief The MPH of the car as a int. */
+        float CVT_Heat; /** @brief The heat value of the Continuously Variable Transmission. */
+        float pi_Heat; /** @brief The heat value of the pi. */
 
-        SharedData() : running(false), gearPosition(GearPosition::PARK), engineRPM(0), milesPerHour(0) { }
+        SharedData() : running(false), gearPosition(GearPosition::PARK), engineRPM(0), milesPerHour(0), CVT_Heat(0.0), pi_Heat(0.0) { }
 
     };  // SharedData
 
