@@ -217,7 +217,8 @@ namespace BB {
         );
         
         //string version of the pi heat float
-        std::stringstream str_Data << this->p_Data->pi_Heat << " %";
+        std::stringstream str_Data;
+        str_Data << this->p_Data->pi_Heat << "%";
 
         //pi heat represented as text on the GUI
         this->p_Renderer->DrawText(
