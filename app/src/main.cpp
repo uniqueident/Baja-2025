@@ -15,7 +15,6 @@ int main(/* int argc, char** argv */) {
 
         app->Shutdown();
     }
-    
     catch (const std::exception& e) { // If something start's crashing and burning, destroy it all and there might be a helpful message.
         std::cerr << e.what() << std::endl;
 
