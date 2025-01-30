@@ -215,12 +215,16 @@ namespace BB {
             gearShiftPos * this->m_WindowScale,
             screenSize
         );
+        
+        //string version of the pi heat float
+        std::stringstream str_Data << this->p_Data->pi_Heat;
 
+        //pi heat represented as text on the GUI
         this->p_Renderer->DrawText(
-            "#%",
+            str_Data.str() + " %",
             ResourceManager::GetFont("ComicNeue"),
-            { 140.0f, 45.f },
-            1.0f,
+            this->m_WindowScale * (280.0f * 100.f),
+            1.5f,
             {0.82f, 0.106f, 0.106f }
         );
 
