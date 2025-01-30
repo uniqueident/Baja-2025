@@ -217,14 +217,14 @@ namespace BB {
         );
         
         //string version of the pi heat float
-        std::stringstream str_Data << this->p_Data->pi_Heat;
+        std::stringstream str_Data << this->p_Data->pi_Heat << " %";
 
         //pi heat represented as text on the GUI
         this->p_Renderer->DrawText(
-            str_Data.str() + " %",
+            str_Data.str(),
             ResourceManager::GetFont("ComicNeue"),
-            this->m_WindowScale * (280.0f * 100.f),
-            1.5f,
+            this->m_WindowScale * glm::vec2(140.0f, 52.0f),
+            1.2f,
             {0.82f, 0.106f, 0.106f }
         );
 
