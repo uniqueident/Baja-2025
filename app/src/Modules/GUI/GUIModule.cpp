@@ -44,8 +44,8 @@ namespace BB {
 
         if (!glfwInit())
             std::cerr << "Failed to initialize GLFW!" << std::endl;
-
         glfwSetErrorCallback(glfwErrorCallback);
+        
 
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 

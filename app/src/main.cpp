@@ -10,7 +10,7 @@ int main(/* int argc, char** argv */) {
     // The application is initialized, then enters the runtime. Once the runtime is exited, application is shut down before being deleted.
     try {
         app->Init();
-
+       
         app->Run();
 
         app->Shutdown();
