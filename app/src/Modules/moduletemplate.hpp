@@ -30,7 +30,7 @@ namespace CB {
 
     private:
         Module(const Module&) = delete;
-        Module operator = (const Module&) = delete;
+        Module& operator = (const Module&) = delete;
 
     protected:
         SharedData* p_Data = nullptr; /** @brief The pointer to the shared data where results are saved for GUI. */

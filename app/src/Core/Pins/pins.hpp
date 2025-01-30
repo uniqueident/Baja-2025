@@ -119,6 +119,7 @@ namespace IO {
             break; 
             case EEP_PIN_27 : case EEP_PIN_28 : 
             outstream<<"EEPROM Communication Pin";
+            break;
             case SER_PIN_8: case SER_PIN_10 : 
             outstream<<"Async Serial Communication Pin";
             break;
@@ -207,7 +208,8 @@ class phyisical_to_virtual{
     private:
 
         struct gpiod_chip* chip;
-        
+        phyisical_to_virtual(const phyisical_to_virtual&) = delete;
+        phyisical_to_virtual& operator= (const phyisical_to_virtual&) = delete;
         /*
         foo(struct* struct)
 

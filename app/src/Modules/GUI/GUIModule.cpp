@@ -60,18 +60,20 @@ namespace CB {
     }
 
     void GUIModule::Init(SharedData * data) {
+
         p_Data = data;
         m_Closed = false;
         m_WindowScale = { 1.0f, 1.0f };
 
         if (!glfwInit())
             std::cerr << "Failed to initialize GLFW!" << std::endl;
-
         glfwSetErrorCallback(glfwErrorCallback);
+        
 
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
         p_Window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Buggie Bug Dashboard", NULL, NULL);
+
         if (!p_Window) {
             std::cerr << "Failed to create GLFW Window or OpenGL context!" << std::endl;
 
@@ -98,14 +100,6 @@ namespace CB {
 
         glfwSetFramebufferSizeCallback(p_Window, glfwFramebufferSizeCallback);
 
-        try {
-            glDebugMessageCallback(OpenGLMessageCallback, nullptr);
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
-        }
-        catch(std::out_of_range const&) {
-            std::cerr << "OpenGL version likely does not support Debug Messaging!" << std::endl;
-        }
-
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -119,7 +113,7 @@ namespace CB {
         glfwSetWindowUserPointer(p_Window, &m_WindowData);
 
         // Load Textures Here //
-        
+
         ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");

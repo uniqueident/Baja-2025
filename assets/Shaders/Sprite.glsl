@@ -1,11 +1,11 @@
 ~v
-#version 330 core
-layout (location = 0) in vec4 vertex;
+#version 300 es
+layout (location = 0) in mediump vec4 vertex;
 
-out vec2 TexCoords;
+out mediump vec2 TexCoords;
 
-uniform mat4 model;
-uniform mat4 projection;
+uniform mediump mat4 model;
+uniform mediump mat4 projection;
 
 void main()
 {
@@ -13,12 +13,12 @@ void main()
     gl_Position = projection * model * vec4(vertex.xy, 0.0, 1.0);
 }
 ~f
-#version 330 core
-in vec2 TexCoords;
-out vec4 color;
+#version 300 es
+in mediump vec2 TexCoords;
+out mediump vec4 color;
 
-uniform sampler2D image;
-uniform vec3 spriteColor;
+uniform mediump sampler2D image;
+uniform mediump vec3 spriteColor;
 
 void main()
 {

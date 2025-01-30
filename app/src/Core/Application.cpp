@@ -17,6 +17,7 @@ namespace CB {
         // This is how to add a Module to the Application.
         // The GUI Module Should always be first so that it can be updated separately.
         m_Modules.emplace_back(new GUIModule);
+
         m_Modules.back()->Init(p_SharedData);
 
         // Other Modules to be added and initialized below.
