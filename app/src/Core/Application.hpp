@@ -1,20 +1,12 @@
-/**
- * @file Application.hpp
- * @author Evan F.
- * @brief The Application header file. Declares the Application class members and methods.
- * @version 1.0
- * @date 10-25-2024
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
+
+#include "Core/ThreadRunner.hpp"
 
 // std
 #include <vector>
 
 /** @brief The working namespace for CarBug. */
-namespace CB {
+namespace BB {
 
     struct SharedData;
 
@@ -51,6 +43,8 @@ namespace CB {
         SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
 
         std::vector<Module*> m_Modules = { }; /** @brief The Application Modules that complete tasks. */
+
+        // ThreadRunner m_Thread; /** @brief The separate thread to use for update calls. */
     };
 
-}   // CB
+}   // BB

@@ -1,13 +1,3 @@
-/**
- * @file GUIModule.hpp
- * @author Evan F.
- * @brief The GUIModule header file. Declares the GUIModule class members and methods.
- * @version 1.0
- * @date 10-25-2024
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
 
 #include "Modules/moduletemplate.hpp"
@@ -17,7 +7,7 @@
 
 struct GLFWwindow;
 
-namespace CB {
+namespace BB {
 
     namespace GL {
     
@@ -34,7 +24,7 @@ namespace CB {
 
     class GUIModule : public Module {
     public:
-        GUIModule() : p_Renderer(nullptr), p_Window(nullptr), m_WindowData(), m_Closed(false) { }
+        GUIModule() : p_Renderer(nullptr), p_Window(nullptr), m_WindowData(), m_WindowScale(), m_Closed(false) { }
         virtual ~GUIModule() = default;
 
         /**
@@ -70,4 +60,4 @@ namespace CB {
 
     };
 
-}   // CB
+}   // BB

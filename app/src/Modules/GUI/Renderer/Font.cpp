@@ -7,7 +7,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-namespace CB {
+namespace BB {
 
     namespace GL {
 
@@ -92,4 +92,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

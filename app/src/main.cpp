@@ -5,7 +5,7 @@
 
 int main(/* int argc, char** argv */) {
     // Creating the application dynamically helps keep a smaller stack size.
-    CB::Application* app = new CB::Application;
+    BB::Application* app = new BB::Application;
 
     // The application is initialized, then enters the runtime. Once the runtime is exited, application is shut down before being deleted.
     try {

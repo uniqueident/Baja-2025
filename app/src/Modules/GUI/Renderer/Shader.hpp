@@ -2,9 +2,10 @@
 
 // libs
 #include <glad/gl.h>
+
 #include <glm/glm.hpp>
 
-namespace CB {
+namespace BB {
 
     namespace  GL {
 
@@ -107,10 +108,10 @@ namespace CB {
 
             /* --- */
 
-            Program_ID m_Program;
+            Program_ID m_Program; /** @brief The shader program that this object controls. */
 
         };
 
     }   // GL
 
-}   // CB
+}   // BB
