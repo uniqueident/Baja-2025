@@ -1,27 +1,33 @@
-/**
- * @file SharedData.hpp
- * @author Evan F., Mateo M.
- * @brief The SharedData header file. Declares the SharedData struct and any necessary helper functions.
- * @version 1.0
- * @date 10-25-2024
- * 
- * @copyright Copyright (c) 2024
- * 
- */
 #pragma once
 
-namespace CB {
+namespace BB {
 
-    // TODO: Figure out what is going to be needed here for the GUI.
+    enum GearPosition {
+        PARK = 0,
+
+        REVERSE = 1,
+        NEUTRAL = 2,
+        DRIVE = 3,
+        
+        ONE = 4,
+        TWO = 5,
+
+    };  // GearPosition
 
     /** 
      * @brief The only data that the modules can access outside of themselves. This is soley for ease of use in the GUI.
      */
     struct SharedData {
-       bool Running; /** @brief Boolean of whether the Application is in runtime or not. */
+        bool running; /** @brief Boolean of whether the Application is in runtime or not. */
 
-        SharedData() : Running(false) { }
+        GearPosition gearPosition; /** @brief The gear position of the transmission as a enum value. */
+        int engineRPM; /** @brief The RPM of the engine as a int. */
+        int milesPerHour; /** @brief The MPH of the car as a int. */
+        float CVT_Heat; /** @brief The heat value of the Continuously Variable Transmission. */
+        float pi_Heat; /** @brief The heat value of the pi. */
+
+        SharedData() : running(false), gearPosition(GearPosition::PARK), engineRPM(0), milesPerHour(0), CVT_Heat(0.0), pi_Heat(0.0) { }
 
     };  // SharedData
 
-}   // CB
+}   // BB

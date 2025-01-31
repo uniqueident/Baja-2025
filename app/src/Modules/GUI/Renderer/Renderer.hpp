@@ -5,15 +5,17 @@
 
 // libs
 #include <glad/gl.h>
+
 #include <glm/glm.hpp>
 
-namespace CB {
+namespace BB {
 
     namespace GL {
 
         class Shader;
         class Texture2D;
         class Font;
+        class Camera;
 
         typedef GLuint VertexArray_ID;
         typedef GLuint VertexBuffer_ID;
@@ -74,6 +76,19 @@ namespace CB {
             );
 
             /**
+             * @brief Draws a camera frame as a textured quad.
+             * 
+             * @param cam The camera to capture from.
+             * @param position The position on screen.
+             * @param size The size on screen.
+             * @param rotate The rotation on screen.
+             */
+            void DrawCam(
+                Camera& cam,
+                glm::vec2 position, glm::vec2 size, float rotate = 0.0f
+            );
+
+            /**
              * @brief Update the OpenGL view and view projection matrix of the screen.
              * 
              * @param width The new window width.
@@ -97,4 +112,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 
+#include "Modules/GUI/Renderer/Renderer.hpp"
+
 // std
 #include <cstddef>
 #include <cstdio>
@@ -9,7 +11,7 @@
 // libs
 #include <glm/gtc/type_ptr.hpp>
 
-namespace CB {
+namespace BB {
 
     namespace GL {
     
@@ -38,22 +40,22 @@ namespace CB {
             CheckCompileErrors(fragment, SHADER);
 
             // Geometry Shader If Given
-            if (geometrySource != nullptr) {
-                geometry = glCreateShader(GL_GEOMETRY_SHADER);
+            // if (geometrySource != nullptr) {
+            //     geometry = glCreateShader(GL_GEOMETRY_SHADER);
 
-                glShaderSource(geometry, 1, &geometrySource, NULL);
-                glCompileShader(geometry);
+            //     glShaderSource(geometry, 1, &geometrySource, NULL);
+            //     glCompileShader(geometry);
 
-                CheckCompileErrors(geometry, SHADER);
-            }
+            //     CheckCompileErrors(geometry, SHADER);
+            // }
 
             // Create The Shader Program
             m_Program = glCreateProgram();
 
             glAttachShader(m_Program, vertex);
             glAttachShader(m_Program, fragment);
-            if (geometrySource != nullptr)
-                glAttachShader(m_Program, geometry);
+            // if (geometrySource != nullptr)
+            //     glAttachShader(m_Program, geometry);
 
             glLinkProgram(m_Program);
 
@@ -63,8 +65,8 @@ namespace CB {
             glDeleteShader(vertex);
             glDeleteShader(fragment);
 
-            if (geometrySource != nullptr)
-                glDeleteShader(geometry);
+            // if (geometrySource != nullptr)
+            //     glDeleteShader(geometry);
         }
 
         void Shader::SetBool(const char* name, bool value) const {
@@ -125,4 +127,4 @@ namespace CB {
 
     }   // GL
 
-}   // CB
+}   // BB

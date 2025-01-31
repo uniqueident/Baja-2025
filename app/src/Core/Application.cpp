@@ -1,24 +1,29 @@
 #include "Application.hpp"
 
+#include "Core/Time.hpp"
 #include "Core/SharedData.hpp"
 
 #include "Modules/GUI/GUIModule.hpp"
 
 // std
+#include <ctime>
 #include <iostream>
 
-namespace CB {
+namespace BB {
 
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
-        p_SharedData = new SharedData;
+        this->p_SharedData = new SharedData;
+
+        // Assuming the modules do no need to run on the main thread,
+        // we can run it on a separate thread using the following member.
+        // this->m_GUIThread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
 
         // This is how to add a Module to the Application.
         // The GUI Module Should always be first so that it can be updated separately.
-        m_Modules.emplace_back(new GUIModule);
-
-        m_Modules.back()->Init(p_SharedData);
+        this->m_Modules.emplace_back(new GUIModule);
+        this->m_Modules.back()->Init(this->p_SharedData);
 
         // Other Modules to be added and initialized below.
     }
@@ -28,34 +33,41 @@ namespace CB {
 
         // This will shut down and delete all modules.
         // Nothing more should be needed here.
-        for (size_t i = 0; i < m_Modules.size(); i++) {
-            m_Modules[i]->Shutdown();
-            delete m_Modules[i];
+        for (size_t i = 0; i < this->m_Modules.size(); i++) {
+            this->m_Modules[i]->Shutdown();
+            delete this->m_Modules[i];
         }
 
-        delete p_SharedData;
+        delete this->p_SharedData;
     }
-    //runs the application.
+
+    // Runs the application.
     void Application::Run() {
-        p_SharedData->Running = true;
+        this->p_SharedData->running = true;
+
+        // this->m_GUIThread.Start();
 
         // This while loop is the runtime. All Module updates will be called from here.
-        while (p_SharedData->Running) {
+        while (this->p_SharedData->running) {
             UpdateModules();
 
             Render();
         }
+
+        // this->m_GUIThread.Stop();
     }
 
     // Forces module_update
     void Application::UpdateModules() {
-        for (size_t i = 1; i < m_Modules.size(); i++)
-            m_Modules[i]->Update();
+        for (size_t i = 1; i < this->m_Modules.size(); i++)
+            this->m_Modules[i]->Update();
     }
 
     // Pushes update into GUI
     void Application::Render() {
-        m_Modules[0]->Update();
+        // std::cout << timeNow() << " Renderer Thread" << std::endl;
+
+        this->m_Modules[0]->Update();
     }
 
-} // CB
+} // BB

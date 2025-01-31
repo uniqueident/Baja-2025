@@ -1,7 +1,7 @@
 #include "moduletemplate.hpp"
 
-namespace CB {
+namespace BB {
 
     
 
-}   // CB
+}   // BB

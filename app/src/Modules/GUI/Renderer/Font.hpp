@@ -7,9 +7,10 @@
 
 // libs
 #include <freetype/freetype.h>
+
 #include <glm/glm.hpp>
 
-namespace CB {
+namespace BB {
     
     namespace GL {
 
@@ -43,7 +44,6 @@ namespace CB {
 
         private:
             friend class Renderer;
-            friend class ResourceManager;
 
             /**
              * @brief Draw a single character on screen.
@@ -58,10 +58,10 @@ namespace CB {
 
             /* --- */
 
-            std::map<char, Character> m_Characters;
+            std::map<char, Character> m_Characters; /** @brief A map of each character and its texture from the font. */
 
         };
 
     }   // GL
 
-}   // CB
+}   // BB
