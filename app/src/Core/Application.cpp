@@ -1,5 +1,6 @@
 #include "Application.hpp"
 
+#include "Core/Pins/pins.hpp"
 #include "Core/Time.hpp"
 #include "Core/SharedData.hpp"
 
@@ -15,7 +16,7 @@ namespace BB {
         std::cout << "Initializing Application!" << std::endl;
 
         this->p_SharedData = new SharedData;
-
+        
         // Assuming the modules do no need to run on the main thread,
         // we can run it on a separate thread using the following member.
         // this->m_GUIThread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
@@ -25,7 +26,11 @@ namespace BB {
         this->m_Modules.emplace_back(new GUIModule);
         this->m_Modules.back()->Init(this->p_SharedData);
 
+
+
         // Other Modules to be added and initialized below.
+        //Sensor modules below.
+        this->p_pincontrol = new phyisical_to_virtual();
     }
 
     void Application::Shutdown() {

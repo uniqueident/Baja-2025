@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Pins/pins.hpp"
 #include "Core/ThreadRunner.hpp"
 
 // std
@@ -39,6 +40,7 @@ namespace BB {
         void Render();
 
         /* --- */
+        phyisical_to_virtual* p_pincontrol = nullptr;
 
         SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
 

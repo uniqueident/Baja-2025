@@ -229,11 +229,11 @@ namespace BB {
             {0.82f, 0.106f, 0.106f }
         );
 
-        // this->p_Renderer->DrawCam(
-        //     ResourceManager::GetCamera(0), 
-        //     { 50.0f, 50.0f },
-        //     { 640.0f, 480.0f }
-        // );
+        this->p_Renderer->DrawCam(
+            ResourceManager::GetCamera(0), 
+            { 50.0f, 50.0f },
+            { 640.0f, 480.0f }
+        );
     }
 
 }   // BB
