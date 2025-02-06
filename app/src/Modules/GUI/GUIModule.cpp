@@ -225,7 +225,7 @@ namespace BB {
             str_Data.str(),
             ResourceManager::GetFont("ComicNeue"),
             this->m_WindowScale * glm::vec2(140.0f, 50.0f),
-            this->m_WindowScale * 1.2f,
+            1.2f,
             {0.82f, 0.106f, 0.106f }
         );
 

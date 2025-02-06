@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/Pins/pins.hpp"
 #include "Core/ThreadRunner.hpp"
 
 // std
@@ -38,9 +37,6 @@ namespace BB {
 
         /** @brief Updates the GUI Module to render. */
         void Render();
-
-        /* --- */
-        phyisical_to_virtual* p_pincontrol = nullptr;
 
         SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
 

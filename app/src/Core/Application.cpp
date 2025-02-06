@@ -1,6 +1,5 @@
 #include "Application.hpp"
 
-#include "Core/Pins/pins.hpp"
 #include "Core/Time.hpp"
 #include "Core/SharedData.hpp"
 
@@ -30,7 +29,7 @@ namespace BB {
 
         // Other Modules to be added and initialized below.
         //Sensor modules below.
-        this->p_pincontrol = new phyisical_to_virtual();
+
     }
 
     void Application::Shutdown() {
