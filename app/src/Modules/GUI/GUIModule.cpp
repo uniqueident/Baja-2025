@@ -191,6 +191,11 @@ namespace BB {
 
             case REVERSE:
                 gearShiftPos.x -= 37.0f;
+                this->p_Renderer->DrawCam(
+                    ResourceManager::GetCamera(0), 
+                    { 50.0f, 50.0f },
+                    { 640.0f, 480.0f }
+                );
                 break;
 
             case NEUTRAL:
@@ -216,24 +221,72 @@ namespace BB {
             screenSize
         );
         
-        //string version of the pi heat float
-        std::stringstream str_Data;
-        str_Data << this->p_Data->pi_Heat << "%";
+        //string version of the shared data values
+        std::stringstream str_PI, str_CVT, str_RPM, str_MPH;
+        str_PI << this->p_Data->pi_Heat << "%";
 
-        //pi heat represented as text on the GUI
         this->p_Renderer->DrawText(
-            str_Data.str(),
+            str_PI.str(),
             ResourceManager::GetFont("ComicNeue"),
             this->m_WindowScale * glm::vec2(140.0f, 50.0f),
-            this->m_WindowScale * 1.2f,
+            this->m_WindowScale.y * 0.8f,
+            {0.82f, 0.106f, 0.106f }
+        );
+        
+        str_CVT << this->p_Data->CVT_Heat << "%";
+        
+        this->p_Renderer->DrawText(
+            str_CVT.str(),
+            ResourceManager::GetFont("ComicNeue"),
+            this->m_WindowScale * glm::vec2(170.0f, 120.0f),
+            this->m_WindowScale.y * 0.8f,
             {0.82f, 0.106f, 0.106f }
         );
 
-        // this->p_Renderer->DrawCam(
-        //     ResourceManager::GetCamera(0), 
-        //     { 50.0f, 50.0f },
-        //     { 640.0f, 480.0f }
-        // );
+        str_MPH << this->p_Data->milesPerHour;
+
+        this->p_Renderer->DrawText(
+            str_MPH.str(),
+            ResourceManager::GetFont("ComicNeue"),
+            this->m_WindowScale * glm::vec2(440.0f, 170.0f),
+            this->m_WindowScale.y * 1.5f,
+            {0.82f, 0.106f, 0.106f }
+        );
+
+        float mph_bar_size = (static_cast<float>(this->p_Data->milesPerHour)/30) * 300;
+
+        this->p_Renderer->DrawQuad(
+            { 0.0f, 0.0f, 0.0f },
+            { 360.0f, 235.0f},
+            { mph_bar_size, 65.0f}
+        );
+
+        str_RPM << this->p_Data->engineRPM;
+
+        this->p_Renderer->DrawText(
+            str_RPM.str(),
+            ResourceManager::GetFont("ComicNeue"),
+            this->m_WindowScale * glm::vec2(90.0f, 460.0f),
+            this->m_WindowScale.y * 0.8f,
+            {0.82f, 0.106f, 0.106f }
+        );
+
+        float rpm_bar_size = (static_cast<float>(this->p_Data->engineRPM)/3600) * 230;
+
+        this->p_Renderer->DrawQuad(
+            { 0.0f, 0.0f, 0.0f },
+            { 35.0f, 490.0f},
+            { rpm_bar_size, 50.0f}
+        );
+
+        float fuel_in_tank_bar = (this->p_Data->fuel/2) * -267;
+
+        this->p_Renderer->DrawQuad(
+            { 0.0f, 0.0f, 0.0f },
+            { 847.0f, 573.0f},
+            { 117.0f, fuel_in_tank_bar}
+        );
+        
     }
 
 }   // BB
