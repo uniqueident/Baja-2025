@@ -25,8 +25,9 @@ namespace BB {
         int milesPerHour; /** @brief The MPH of the car as a int. */
         float CVT_Heat; /** @brief The heat value of the Continuously Variable Transmission. */
         float pi_Heat; /** @brief The heat value of the pi. */
+        float fuel; /** @brief The data representation of the amount of fuel in the tank */
 
-        SharedData() : running(false), gearPosition(GearPosition::PARK), engineRPM(0), milesPerHour(0), CVT_Heat(0.0), pi_Heat(0.0) { }
+        SharedData() : running(false), gearPosition(GearPosition::PARK), engineRPM(0), milesPerHour(0), CVT_Heat(0.0), pi_Heat(0.0), fuel(0.0) { }
 
     };  // SharedData
 
