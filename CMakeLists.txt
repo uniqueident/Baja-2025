@@ -49,6 +49,7 @@ set(CMAKE_CXX_FLAGS "${GCC_FLAGS}")
 
 find_package(OpenGL REQUIRED)
 
+set(GLFW_BUILD_WAYLAND OFF)
 add_subdirectory(app/libs/glfw EXCLUDE_FROM_ALL)
 message(STATUS "")
 
