@@ -10,9 +10,6 @@ file(GLOB buggie_MAIN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 file(GLOB buggie_CORE_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/*.hpp)
 file(GLOB buggie_CORE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/*.cpp)
 
-# file(GLOB buggie_PIN_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Pins/*.hpp)
-# file(GLOB buggie_PIN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Pins/*.cpp)
-
 file(GLOB buggie_MOD_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/*.hpp)
 file(GLOB buggie_MOD_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/*.cpp)
 
@@ -21,6 +18,9 @@ file(GLOB buggie_MOD_GUI_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/*.cp
 
 file(GLOB buggie_MOD_GUI_REN_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/Renderer/*.hpp)
 file(GLOB buggie_MOD_GUI_REN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/Renderer/*.cpp)
+
+file(GLOB buggie_MOD_SENS_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/Sensors/*.hpp)
+file(GLOB buggie_MOD_SENS_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/Sensors/*.cpp)
 
 # Get GLAD Source Files
 file(GLOB_RECURSE glad_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/include/*.h)
@@ -35,9 +35,6 @@ source_group("Main File" FILES ${buggie_MAIN_SOURCE})
 source_group("Core Headers" FILES ${buggie_CORE_HEADER})
 source_group("Core Sources" FILES ${buggie_CORE_SOURCE})
 
-source_group("Pin Headers" FILES ${buggie_PIN_SOURCE})
-source_group("Pin Sources" FILES ${buggie_PIN_SOURCE})
-
 source_group("Module Headers" FILES ${buggie_MOD_HEADER})
 source_group("Module Sources" FILES ${buggie_MOD_SOURCE})
 
@@ -46,6 +43,9 @@ source_group("GUI Sources" FILES ${buggie_MOD_GUI_SOURCE})
 
 source_group("GUI Renderer Headers" FILES ${buggie_MOD_GUI_REN_HEADER})
 source_group("GUI Renderer Sources" FILES ${buggie_MOD_GUI_REN_SOURCE})
+
+source_group("Sensor Headers" FILES ${buggie_MOD_SENS_HEADER})
+source_group("Sensor Sources" FILES ${buggie_MOD_SENS_SOURCE})
 
 # Library Source Groups
 source_group("glad Headers" FILES ${glad_HEADER})
@@ -69,6 +69,8 @@ add_executable(
 
     ${buggie_MOD_GUI_HEADER}     ${buggie_MOD_GUI_SOURCE}
     ${buggie_MOD_GUI_REN_HEADER} ${buggie_MOD_GUI_REN_SOURCE}
+
+    ${buggie_MOD_SENS_HEADER} ${buggie_MOD_SENS_SOURCE}
     
     ${glad_HEADER} ${glad_SOURCE}
     ${stb_HEADER}

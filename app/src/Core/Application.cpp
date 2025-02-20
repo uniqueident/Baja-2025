@@ -10,6 +10,13 @@
 #include <ctime>
 #include <iostream>
 
+// libs
+#ifdef RPI_PI
+
+    #include <wiringPi.h>
+
+#endif
+
 namespace BB {
 
     Application::Application() :
@@ -32,8 +39,15 @@ namespace BB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
+        this->p_GUI->Init();
+
         // ==================== WiringPi Setup ====================
         //
+    #ifdef RPI_PI
+
+        wiringPiSetupPinType(WPI_PIN_PHYS);    
+
+    #endif
 
         // Assuming the modules do no need to run on the main thread,
         // we can run it on a separate thread using the following member.
@@ -55,6 +69,8 @@ namespace BB {
             this->m_Modules[i]->Shutdown();
             delete this->m_Modules[i];
         }
+
+        this->p_GUI->Shutdown();
     }
 
     // Runs the application.
