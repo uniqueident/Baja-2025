@@ -102,7 +102,7 @@ target_link_libraries(
     PRIVATE ${OPENGL_LIBRARIES}
 )
 
-if (RPI_PLATFORM)
+if (RPI_RASPBERRY)
 
     target_link_libraries(
         ${PROJECT_NAME}
@@ -110,4 +110,4 @@ if (RPI_PLATFORM)
         PRIVATE wiringPi
     )
 
-endif (RPI_PLATFORM)
+endif (RPI_RASPBERRY)

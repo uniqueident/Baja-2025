@@ -29,17 +29,18 @@ elseif(UNIX)
 
     message(STATUS "System: Linux/Unix")
 
-    if(EXISTS "/opt/vc/include/bcm_host.h")
+    if(EXISTS "/proc/device-tree/soc/ranges")
 
-        MESSAGE(STATUS "bcm_host.h found")
-        set(RPI_PLATFORM true CACHE BOOL "Set this if you are buinding for Raspberry PI" )
+        set(RPI_RASPBERRY true)
+        
+        MESSAGE(STATUS "Device: Raspberry Pi")
 
     endif()
     
 else()
 
     message(WARNING "OS Assessment: Unknown platform. Status: Disastrous.")
-    
+
 endif()
 
 # List out found info.
