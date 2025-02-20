@@ -20,10 +20,24 @@ To install the [FreeType](https://freetype.org/) library on Linux and WSL2, use 
 sudo apt install libfreetype-dev
 ```
 
+**Windows:**  
+On Windows, use the following command in a Msys2-UCRT terminal.
+
+```bash
+pacman -S mingw-w64-ucrt-x86_64-freetype
+```
+
 ### OpenCV
 
 To install [OpenCV](https://opencv.org/) for Ubuntu, use the following command and it should be ready to go. This is something that will make working on Windows more difficult as enabling camera access for WSL is difficult.
 
 ```bash
 sudo apt install libopencv-dev
+```
+
+**Windows:**  
+On Windows, use the following command in a Msys2-UCRT terminal.
+
+```bash
+pacman -S mingw-w64-ucrt-x86_64-opencv
 ```
