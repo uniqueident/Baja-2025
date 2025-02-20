@@ -84,7 +84,6 @@ namespace BB {
     enum ShaderType {
         VERTEX   = 0,
         FRAGMENT = 1,
-        GEOMETRY = 2,
     };
 
     GL::Shader ResourceManager::LoadShaderFile(const char* source) {
@@ -96,7 +95,6 @@ namespace BB {
 
         std::string vertexCode;
         std::string fragmentCode;
-        std::string geometryCode;
         char buffer[MAX_LINE_LENGTH];
         ShaderType type;
 
@@ -110,9 +108,6 @@ namespace BB {
                     case 'f':
                         type = FRAGMENT;
                         break;
-                    case 'g':
-                        type = GEOMETRY;
-                        break;
                 }
 
                 continue;
@@ -125,18 +120,12 @@ namespace BB {
                 case FRAGMENT:
                     fragmentCode.append(buffer);
                     break;
-                case GEOMETRY:
-                    geometryCode.append(buffer);
-                    break;
             }
         }
 
         fclose(fp);
 
-        if (geometryCode.empty())
-            return GL::Shader(vertexCode.c_str(), fragmentCode.c_str(), nullptr);
-
-        return GL::Shader(vertexCode.c_str(), fragmentCode.c_str(), geometryCode.c_str());
+        return GL::Shader(vertexCode.c_str(), fragmentCode.c_str());
     }
 
     GL::Texture2D ResourceManager::LoadTextureFile(const char* source, bool alpha) {

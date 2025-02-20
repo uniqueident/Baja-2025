@@ -10,7 +10,7 @@ namespace BB {
 
     class ThreadRunner {
     public:
-        ThreadRunner() = default;
+        inline ThreadRunner() : m_Running(false), m_Methods(0) { }
         ~ThreadRunner() = default;
 
         /**

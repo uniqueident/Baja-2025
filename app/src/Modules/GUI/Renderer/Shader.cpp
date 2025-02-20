@@ -15,13 +15,12 @@ namespace BB {
 
     namespace GL {
     
-        Shader::Shader(const char* vertexSource, const char* fragmentSource, const char* geometrySource) : m_Program(0) {
+        Shader::Shader(const char* vertexSource, const char* fragmentSource) : m_Program(0) {
 
             // std::cout << vertexSource   << std::endl;
             // std::cout << fragmentSource << std::endl;
-            // std::cout << geometrySource << std::endl;
 
-            Shader_ID vertex, fragment, geometry;
+            Shader_ID vertex, fragment;
 
             // Vertex Shader
             vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -39,23 +38,11 @@ namespace BB {
 
             CheckCompileErrors(fragment, SHADER);
 
-            // Geometry Shader If Given
-            // if (geometrySource != nullptr) {
-            //     geometry = glCreateShader(GL_GEOMETRY_SHADER);
-
-            //     glShaderSource(geometry, 1, &geometrySource, NULL);
-            //     glCompileShader(geometry);
-
-            //     CheckCompileErrors(geometry, SHADER);
-            // }
-
             // Create The Shader Program
             m_Program = glCreateProgram();
 
             glAttachShader(m_Program, vertex);
             glAttachShader(m_Program, fragment);
-            // if (geometrySource != nullptr)
-            //     glAttachShader(m_Program, geometry);
 
             glLinkProgram(m_Program);
 
@@ -64,9 +51,6 @@ namespace BB {
             // Clean Up Unecessary Data
             glDeleteShader(vertex);
             glDeleteShader(fragment);
-
-            // if (geometrySource != nullptr)
-            //     glDeleteShader(geometry);
         }
 
         void Shader::SetBool(const char* name, bool value) const {

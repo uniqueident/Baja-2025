@@ -36,7 +36,7 @@ namespace BB {
              * @param fragmentSource A string of the fragment shader source code. 
              * @param geometrySource A string of the geometry shader source code.
              */
-            Shader(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr);
+            Shader(const char* vertexSource, const char* fragmentSource);
             ~Shader() = default;
 
             /**
