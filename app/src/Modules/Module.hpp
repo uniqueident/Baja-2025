@@ -4,14 +4,16 @@
 
 namespace BB {
 
-    /** @brief The base class for a Module. Pure virtual class. */
+    /**
+     * @brief The base class for a Module. Pure virtual class.
+     */
     class Module {
     public:
-        Module() = default;
+        inline Module(SharedData* data) : p_Data(data) { }
         virtual ~Module() = default;
 
         /** @brief Initializes the Module. */
-        virtual void Init(SharedData* data) = 0;
+        virtual void Init() = 0;
         /** @brief Shut's down the Module. */
         virtual void Shutdown() = 0;
 

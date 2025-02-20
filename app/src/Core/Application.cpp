@@ -1,9 +1,10 @@
 #include "Application.hpp"
 
-#include "Core/Time.hpp"
 #include "Core/SharedData.hpp"
 
 #include "Modules/GUI/GUIModule.hpp"
+
+#include "Modules/Sensors/TempProbe.hpp"
 
 // std
 #include <ctime>
@@ -11,21 +12,38 @@
 
 namespace BB {
 
+    Application::Application() :
+        p_SharedData(nullptr),
+        p_GUI(nullptr),
+        m_Modules(0),
+        m_Thread()
+    {
+        this->p_SharedData = new SharedData;
+
+        this->p_GUI = new GUIModule(this->p_SharedData);
+    }
+
+    Application::~Application() {
+        delete this->p_SharedData;
+
+        delete this->p_GUI;
+    }
+
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
-        this->p_SharedData = new SharedData;
-
         // Assuming the modules do no need to run on the main thread,
         // we can run it on a separate thread using the following member.
-        // this->m_GUIThread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
+        // this->m_Thread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
 
-        // This is how to add a Module to the Application.
-        // The GUI Module Should always be first so that it can be updated separately.
-        this->m_Modules.emplace_back(new GUIModule);
-        this->m_Modules.back()->Init(this->p_SharedData);
+        // This is how to add a Module to the Application:
+        //
+        // this->m_Modules.emplace_back(new ModuleType)->Init(this->p_SharedData);
+        //
 
         // Other Modules to be added and initialized below.
+        this->m_Modules.emplace_back(new TempProbe(this->p_SharedData))->Init();
+
     }
 
     void Application::Shutdown() {
@@ -42,31 +60,36 @@ namespace BB {
     }
 
     // Runs the application.
+    //
     void Application::Run() {
         this->p_SharedData->running = true;
 
-        // this->m_GUIThread.Start();
+        // this->m_Thread.Start();
 
         // This while loop is the runtime. All Module updates will be called from here.
+        //
+        // If the separate thread is being used, remove the correlating function from the
+        // update loop so that it does not get called twice.
+        //
         while (this->p_SharedData->running) {
             UpdateModules();
 
             Render();
         }
 
-        // this->m_GUIThread.Stop();
+        // this->m_Thread.Stop();
     }
 
-    // Forces module_update
+    // Updates all of the Application's modules.
+    //
     void Application::UpdateModules() {
         for (size_t i = 1; i < this->m_Modules.size(); i++)
             this->m_Modules[i]->Update();
     }
 
-    // Pushes update into GUI
+    // Updates the Application's GUI
+    //
     void Application::Render() {
-        // std::cout << timeNow() << " Renderer Thread" << std::endl;
-
         this->m_Modules[0]->Update();
     }
 

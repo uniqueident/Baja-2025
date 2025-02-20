@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Modules/moduletemplate.hpp"
+#include "Core/SharedData.hpp"
+
+#include "Modules/Module.hpp"
 
 // libs
 #include <glm/glm.hpp>
@@ -24,15 +26,11 @@ namespace BB {
 
     class GUIModule : public Module {
     public:
-        GUIModule() : p_Renderer(nullptr), p_Window(nullptr), m_WindowData(), m_WindowScale(), m_Closed(false) { }
+        GUIModule(SharedData* data) : Module(data), p_Renderer(nullptr), p_Window(nullptr), m_WindowData(), m_WindowScale(), m_Closed(false) { }
         virtual ~GUIModule() = default;
 
-        /**
-         * @brief The initializer for the GUI.
-         * 
-         * @param data The shared module data.
-         */
-        virtual void Init(SharedData* data) override;
+        /** @brief The initializer for the GUI. */
+        virtual void Init() override;
         /** @brief Cleans up the GUI module before shutdown. */
         virtual void Shutdown() override;
 

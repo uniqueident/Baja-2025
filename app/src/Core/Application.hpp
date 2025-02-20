@@ -15,8 +15,8 @@ namespace BB {
     /** @brief The core Application class, everything should be controlled or owned by this class. */
     class Application {
     public:
-        Application() = default;
-        ~Application() = default;
+        Application();
+        ~Application();
 
         /** @brief Initializes the Application. */
         void Init();
@@ -40,11 +40,12 @@ namespace BB {
 
         /* --- */
 
-        SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
+        SharedData* p_SharedData; /** @brief The SharedData for the application. */
 
-        std::vector<Module*> m_Modules = { }; /** @brief The Application Modules that complete tasks. */
+        Module* p_GUI; /** @brief The Application GUI module. */
+        std::vector<Module*> m_Modules; /** @brief The Application Modules that complete tasks. */
 
-        // ThreadRunner m_Thread; /** @brief The separate thread to use for update calls. */
+        ThreadRunner m_Thread; /** @brief The separate thread to use for update calls. */
     };
 
 }   // BB

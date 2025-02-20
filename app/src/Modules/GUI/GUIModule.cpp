@@ -1,12 +1,12 @@
 #include "GUIModule.hpp"
 
 #include "Core/SharedData.hpp"
+
 #include "Modules/GUI/Renderer/Camera.hpp"
 #include "Modules/GUI/Renderer/Renderer.hpp"
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
 
 // std
-#include <cstddef>
 #include <iostream>
 #include <sstream>
 
@@ -37,8 +37,7 @@ namespace BB {
 
 
 
-    void GUIModule::Init(SharedData * data) {
-        this->p_Data = data;
+    void GUIModule::Init() {
         this->m_Closed = false;
         this->m_WindowScale = { 1.0f, 1.0f };
 
