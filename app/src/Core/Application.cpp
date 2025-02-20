@@ -32,16 +32,15 @@ namespace BB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
+        // ==================== WiringPi Setup ====================
+        //
+
         // Assuming the modules do no need to run on the main thread,
         // we can run it on a separate thread using the following member.
         // this->m_Thread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
 
-        // This is how to add a Module to the Application:
+        // ==================== Module Setup ====================
         //
-        // this->m_Modules.emplace_back(new ModuleType)->Init(this->p_SharedData);
-        //
-
-        // Other Modules to be added and initialized below.
         this->m_Modules.emplace_back(new TempProbe(this->p_SharedData))->Init();
 
     }
@@ -51,12 +50,11 @@ namespace BB {
 
         // This will shut down and delete all modules.
         // Nothing more should be needed here.
+        //
         for (size_t i = 0; i < this->m_Modules.size(); i++) {
             this->m_Modules[i]->Shutdown();
             delete this->m_Modules[i];
         }
-
-        delete this->p_SharedData;
     }
 
     // Runs the application.
@@ -83,14 +81,14 @@ namespace BB {
     // Updates all of the Application's modules.
     //
     void Application::UpdateModules() {
-        for (size_t i = 1; i < this->m_Modules.size(); i++)
+        for (size_t i = 0; i < this->m_Modules.size(); i++)
             this->m_Modules[i]->Update();
     }
 
     // Updates the Application's GUI
     //
     void Application::Render() {
-        this->m_Modules[0]->Update();
+        this->p_GUI->Update();
     }
 
 } // BB

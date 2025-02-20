@@ -18,15 +18,28 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 string(TIMESTAMP time)
 message(STATUS "TIME OF BUILD: ${time}")
 if(WIN32)
+
     message(STATUS "System: Windows")
+
 elseif(APPLE)
+
     message(STATUS "System: MACOS")
     
 elseif(UNIX)
+
     message(STATUS "System: Linux/Unix")
+
+    if(EXISTS "/opt/vc/include/bcm_host.h")
+
+        MESSAGE(STATUS "bcm_host.h found")
+        set(RPI_PLATFORM true CACHE BOOL "Set this if you are buinding for Raspberry PI" )
+
+    endif()
     
 else()
+
     message(WARNING "OS Assessment: Unknown platform. Status: Disastrous.")
+    
 endif()
 
 # List out found info.

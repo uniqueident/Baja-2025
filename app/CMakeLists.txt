@@ -100,5 +100,14 @@ target_link_libraries(
     PRIVATE ${FREETYPE_LIBRARIES}
     PRIVATE ${OpenCV_LIBS}
     PRIVATE ${OPENGL_LIBRARIES}
-    # PRIVATE gpiod
 )
+
+if (RPI_PLATFORM)
+
+    target_link_libraries(
+        ${PROJECT_NAME}
+
+        PRIVATE wiringPi
+    )
+
+endif (RPI_PLATFORM)
