@@ -110,4 +110,12 @@ if (RPI_RASPBERRY)
         PRIVATE wiringPi
     )
 
+    target_compile_definitions(
+        ${PROJECT_NAME}
+
+        PRIVATE RPI_PI
+    )
+
+    MESSAGE(STATUS "Including WiringPi")
+
 endif (RPI_RASPBERRY)
