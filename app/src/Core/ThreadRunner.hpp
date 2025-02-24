@@ -35,7 +35,7 @@ namespace BB {
                     for (const auto& method : this->m_Methods) {
                         method.first();
 
-                        std::cout << "Running Separate Thread" << std::endl;
+                        // std::cout << "Running Separate Thread" << std::endl;
 
                         std::this_thread::sleep_for(std::chrono::milliseconds(method.second));
                     }

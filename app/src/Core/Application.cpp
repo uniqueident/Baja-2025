@@ -45,13 +45,14 @@ namespace BB {
         //
     #ifdef RPI_PI
 
-        wiringPiSetupPinType(WPI_PIN_PHYS);    
+        wiringPiSetupPinType(WPI_PIN_PHYS);
 
     #endif
 
         // Assuming the modules do no need to run on the main thread,
         // we can run it on a separate thread using the following member.
-        // this->m_Thread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
+        //
+        this->m_Thread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
 
         // ==================== Module Setup ====================
         //
@@ -78,7 +79,7 @@ namespace BB {
     void Application::Run() {
         this->p_SharedData->running = true;
 
-        // this->m_Thread.Start();
+        this->m_Thread.Start();
 
         // This while loop is the runtime. All Module updates will be called from here.
         //
@@ -86,12 +87,12 @@ namespace BB {
         // update loop so that it does not get called twice.
         //
         while (this->p_SharedData->running) {
-            UpdateModules();
+            // UpdateModules();
 
             Render();
         }
 
-        // this->m_Thread.Stop();
+        this->m_Thread.Stop();
     }
 
     // Updates all of the Application's modules.
