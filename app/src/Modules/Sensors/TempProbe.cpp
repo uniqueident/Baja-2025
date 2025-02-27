@@ -4,8 +4,6 @@
 
 #include "Core/SharedData.hpp"
 
-#include "Modules/Sensors/Pins.hpp"
-
 // libs
 #ifdef RPI_PI
 
@@ -16,7 +14,7 @@
 
 namespace BB {
 
-    TempProbe::TempProbe(SharedData* data) : 
+    TempProbe::TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0) : 
         Module(data)
     {
         

@@ -1,4 +1,6 @@
 #pragma once
+#include "Modules/Sensors/Pins.hpp"
+#include <set>
 
 namespace BB {
 
@@ -47,6 +49,12 @@ namespace BB {
          * @brief The data representation of the amount of fuel in the tank 
          */
         float fuel;
+
+        /**
+         * @brief Build the set of used pins.
+         * 
+         */
+        std::set<Physical> usedpins;
 
         SharedData() : running(false), gearPosition(GearPosition::PARK), engineRPM(0), milesPerHour(0), CVT_Heat(0.0), pi_Heat(0.0), fuel(0.0) { }
 
