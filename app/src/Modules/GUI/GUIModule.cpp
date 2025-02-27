@@ -35,7 +35,60 @@ namespace BB {
         data->scale->y = height / static_cast<float>(SCREEN_HEIGHT);
     }
 
+    void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+        WindowData* ref = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+        if (key == GLFW_KEY_E && action == GLFW_PRESS){
+            ref->data->fuel = 1.5f;
+        }
 
+        if (key == GLFW_KEY_W && action == GLFW_REPEAT){
+            ref->data->milesPerHour += 1;
+        }
+
+        if (key == GLFW_KEY_S && action == GLFW_REPEAT){
+            ref->data->milesPerHour -= 1;
+            if(ref->data->milesPerHour < 0){
+                ref->data->gearPosition = REVERSE;
+            }
+        }
+        
+        if (key == GLFW_KEY_P && action == GLFW_PRESS){
+            ref->data->gearPosition = PARK;
+        }
+
+        if (key == GLFW_KEY_D && action == GLFW_PRESS){
+            ref->data->gearPosition = DRIVE;
+        }
+
+        if (key == GLFW_KEY_1 && action == GLFW_PRESS){
+            ref->data->gearPosition = ONE;
+        }
+
+        if (key == GLFW_KEY_2 && action == GLFW_PRESS){
+            ref->data->gearPosition = TWO;
+        }
+
+        if (key == GLFW_KEY_N && action == GLFW_PRESS){
+            ref->data->gearPosition = NEUTRAL;
+        }
+
+        if (key == GLFW_KEY_R && action == GLFW_PRESS){
+            ref->data->gearPosition = REVERSE;
+        }
+
+        if (key == GLFW_KEY_Q && action == GLFW_PRESS){
+            ref->data->fuel = 0.0f;
+            ref->data->CVT_Heat = 0.0f;
+            ref->data->pi_Heat = 0.0f;
+            ref->data->engineRPM = 0;
+            ref->data->milesPerHour = 0;
+            ref->data->gearPosition = PARK;
+        }
+
+        if (key == GLFW_KEY_A && action == GLFW_REPEAT){
+            ref->data->engineRPM += 1;
+        }
+    }
 
     void GUIModule::Init() {
         this->m_Closed = false;
@@ -105,6 +158,9 @@ namespace BB {
 
         glfwSetFramebufferSizeCallback(this->p_Window, glfwFramebufferSizeCallback);
 
+        //demo key input thingy
+        glfwSetKeyCallback(this->p_Window, key_callback);
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -115,6 +171,7 @@ namespace BB {
 
         this->m_WindowData.renderer = this->p_Renderer;
         this->m_WindowData.scale = &this->m_WindowScale;
+        this->m_WindowData.data = this->p_Data;
         glfwSetWindowUserPointer(this->p_Window, &this->m_WindowData);
 
         // Load Textures Here //
@@ -242,7 +299,7 @@ namespace BB {
             {0.82f, 0.106f, 0.106f }
         );
 
-        str_MPH << this->p_Data->milesPerHour;
+        str_MPH << abs(this->p_Data->milesPerHour);
 
         this->p_Renderer->DrawText(
             str_MPH.str(),
@@ -252,7 +309,7 @@ namespace BB {
             {0.82f, 0.106f, 0.106f }
         );
 
-        float mph_bar_size = (static_cast<float>(this->p_Data->milesPerHour)/30) * 300;
+        float mph_bar_size = (static_cast<float>(abs(this->p_Data->milesPerHour) % 30) / 30.0f) * 300.0f;
 
         this->p_Renderer->DrawQuad(
             { 0.0f, 0.0f, 0.0f },
@@ -260,7 +317,7 @@ namespace BB {
             { mph_bar_size, 65.0f}
         );
 
-        str_RPM << this->p_Data->engineRPM;
+        str_RPM << abs(this->p_Data->engineRPM);
 
         this->p_Renderer->DrawText(
             str_RPM.str(),
@@ -270,7 +327,7 @@ namespace BB {
             {0.82f, 0.106f, 0.106f }
         );
 
-        float rpm_bar_size = (static_cast<float>(this->p_Data->engineRPM)/3600) * 230;
+        float rpm_bar_size = (static_cast<float>(abs(this->p_Data->engineRPM) % 3600) / 3600) * 230;
 
         this->p_Renderer->DrawQuad(
             { 0.0f, 0.0f, 0.0f },
@@ -278,7 +335,7 @@ namespace BB {
             { rpm_bar_size, 50.0f}
         );
 
-        float fuel_in_tank_bar = (this->p_Data->fuel/2) * -267;
+        float fuel_in_tank_bar = (abs(this->p_Data->fuel) / 2) * -267;
 
         this->p_Renderer->DrawQuad(
             { 0.0f, 0.0f, 0.0f },

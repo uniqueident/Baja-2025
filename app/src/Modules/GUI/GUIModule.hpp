@@ -22,6 +22,8 @@ namespace BB {
 
         glm::vec2* scale;
 
+        SharedData* data;
+
     };  // WindowData
 
     class GUIModule : public Module {
