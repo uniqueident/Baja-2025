@@ -24,6 +24,8 @@ namespace BB {
             0, 8, 0
         };
 
+        int i =0;
+
     };  // TempProbe
 
 }   // BB

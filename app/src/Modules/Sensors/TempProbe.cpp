@@ -1,5 +1,9 @@
 #include "TempProbe.hpp"
 
+#include <iostream>
+
+#include "Core/SharedData.hpp"
+
 #include "Modules/Sensors/Pins.hpp"
 
 // libs
@@ -40,7 +44,11 @@ namespace BB {
         // MCP3008 DIN to Raspberry Pi MOSI       (Pin 19)
         // MCP3008 CS/SHDN to Raspberry Pi CE0    (Pin 24)
 
+        wiringPiSPISetup(this->k_Channel, this->k_mhz);
+
         wiringPiSPIDataRW(this->k_Channel, this->m_Buffer, 3);
+        //pinMode(Physical::PIN_21, INPUT);
+        //pinMode(Physical::PIN_23,OUTPUT);
 
     #endif
     }
@@ -54,8 +62,14 @@ namespace BB {
         //
     #ifdef RPI_PI
 
-        if (digitalRead(Physical::PIN_21) == HIGH)
+
+
+        if (digitalRead(Physical::PIN_21) == HIGH){
             std::cout << "HIGH Signal" << std::endl;
+
+            this->p_Data->pi_Heat = 5;
+        }
+        ++i;
 
     #endif
     }
