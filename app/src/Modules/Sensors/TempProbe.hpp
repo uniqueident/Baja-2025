@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/SharedData.hpp"
 
 #include "Modules/Module.hpp"
 
@@ -8,7 +7,7 @@ namespace BB {
 
     class TempProbe : public Module {
     public:
-        TempProbe(SharedData* data);
+        TempProbe(SharedData* data,Physical clock, Physical miso, Physical mosi, Physical ce0);
         ~TempProbe();
 
         virtual void Init() override;
@@ -23,6 +22,8 @@ namespace BB {
         unsigned char m_Buffer[3] = {
             0, 8, 0
         };
+
+        int i =0;
 
     };  // TempProbe
 
