@@ -56,7 +56,13 @@ namespace BB {
 
         // ==================== Module Setup ====================
         //TODO: fix for windows pls
-        this->m_Modules.emplace_back(new TempProbe(this->p_SharedData))->Init();
+        this->m_Modules.emplace_back(new TempProbe(
+            this->p_SharedData,
+            Physical::PIN_23,
+            Physical::PIN_21,
+            Physical::PIN_19,
+            Physical::PIN_24
+        ))->Init();
 
     }
 
