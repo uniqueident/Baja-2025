@@ -17,7 +17,11 @@ namespace BB {
     TempProbe::TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0) : 
         Module(data)
     {
-        
+        //add this to the set.
+        data->usedpins.insert(clock);
+        data->usedpins.insert(miso);  
+        data->usedpins.insert(mosi);  
+        data->usedpins.insert(ce0);     
     }
 
     TempProbe::~TempProbe() {
