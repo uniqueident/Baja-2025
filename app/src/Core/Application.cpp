@@ -7,6 +7,7 @@
 #include "Modules/Sensors/TempProbe.hpp"
 
 // std
+#include <cstdlib>
 #include <ctime>
 #include <iostream>
 
@@ -28,6 +29,8 @@ namespace BB {
         this->p_SharedData = new SharedData;
 
         this->p_GUI = new GUIModule(this->p_SharedData);
+
+        srand(time(0));
     }
 
     Application::~Application() {

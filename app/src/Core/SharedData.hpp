@@ -56,7 +56,16 @@ namespace BB {
          */
         std::set<Physical> usedpins;
 
-        SharedData() : running(false), gearPosition(GearPosition::PARK), engineRPM(0), milesPerHour(0), CVT_Heat(0.0), pi_Heat(0.0), fuel(0.0) { }
+        SharedData() :
+            running(false),
+            gearPosition(GearPosition::PARK),
+            engineRPM(0),
+            milesPerHour(0),
+            CVT_Heat(30.0f),
+            pi_Heat(15.0f),
+            fuel(2.0f),
+            usedpins()
+        { }
 
     };  // SharedData
 

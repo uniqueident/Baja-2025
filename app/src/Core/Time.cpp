@@ -1,4 +1,6 @@
 #include "Time.hpp"
+#include <cstdint>
+#include <ctime>
 
 #if defined(_MSC_VER)
 
@@ -12,23 +14,11 @@
 #endif
 
 Time timeNow() {
-#if defined(_MSC_VER)
+	timespec tp;
+	clock_gettime(CLOCK_MONOTONIC, &tp);
 
-	// Get current time
-	LARGE_INTEGER time;
-	QueryPerformanceCounter(&time);
-
-	// Convert to microseconds
-	// const i64 microseconds_per_second = 1000000LL;
-	const i64 microseconds = int64_mul_div(time.QuadPart, 1000000LL, s_frequency.QuadPart);
-
-#else
-
-	clock_t time = clock();
-
-	const unsigned long long microseconds = 1000000ULL * time / CLOCKS_PER_SEC;
-
-#endif
+	const uint64_t now = tp.tv_sec * 1'000'000'000 + tp.tv_nsec;
+	const Time microseconds = now / 1'000;
 
 	return microseconds;
 }
@@ -38,11 +28,11 @@ double timeMicroSec(Time t) {
 }
 
 double timeMilliSec(Time t) {
-	return static_cast<double>(t) / 1000.0;
+	return static_cast<double>(t) / 1'000.0;
 }
 
 double timeRealiSec(Time t) {
-	return static_cast<double>(t) / 1000000.0;
+	return static_cast<double>(t) / 1'000'000.0;
 }
 
 Time timeFrom(Time start) {

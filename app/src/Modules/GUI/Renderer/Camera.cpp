@@ -25,7 +25,12 @@ namespace BB {
 
         Camera::Camera() : m_Camera(), m_Frame(), m_Texture(std::make_shared<DynamicTexture2D>()), m_Started(false) { }
 
-        Camera::Camera(int index) : m_Camera(index, cv::CAP_V4L2), m_Frame(), m_Texture(std::make_shared<DynamicTexture2D>()), m_Started(false) {
+        Camera::Camera(int index) :
+            m_Camera(index, cv::CAP_ANY),
+            m_Frame(),
+            m_Texture(std::make_shared<DynamicTexture2D>()),
+            m_Started(false)
+        {
             if (!this->m_Camera.isOpened())
                 std::cerr << "Failed to access camera!" << std::endl;
 

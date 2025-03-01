@@ -156,7 +156,7 @@ namespace BB {
             std::cerr << "Failed to load font (" << source << ")!" << std::endl;
         }
 
-        GL::Font font(face, 48);
+        GL::Font font(face, 64);
 
         FT_Done_Face(face);
         FT_Done_FreeType(ft);

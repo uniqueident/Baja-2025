@@ -2,13 +2,18 @@
 
 #include "Core/SharedData.hpp"
 
+#include "Core/Time.hpp"
 #include "Modules/GUI/Renderer/Camera.hpp"
 #include "Modules/GUI/Renderer/Renderer.hpp"
 #include "Modules/GUI/Renderer/ResourceManager.hpp"
 
 // std
+#include <algorithm>
+#include <chrono>
 #include <iostream>
+#include <random>
 #include <sstream>
+#include <thread>
 
 // libs
 #define GLFW_INCLUDE_NONE
@@ -86,9 +91,14 @@ namespace BB {
         }
 
         if (key == GLFW_KEY_A && action == GLFW_REPEAT){
-            ref->data->engineRPM += 1;
+            ref->data->engineRPM += 10;
         }
+
+        if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+            ref->animated = !ref->animated;
     }
+
+
 
     void GUIModule::Init() {
         this->m_Closed = false;
@@ -172,6 +182,7 @@ namespace BB {
         this->m_WindowData.renderer = this->p_Renderer;
         this->m_WindowData.scale = &this->m_WindowScale;
         this->m_WindowData.data = this->p_Data;
+        this->m_WindowData.animated = false;
         glfwSetWindowUserPointer(this->p_Window, &this->m_WindowData);
 
         // Load Textures Here //
@@ -179,6 +190,11 @@ namespace BB {
         // ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
         ResourceManager::LoadTexture("../../assets/dashboardUI.png", "Dashboard", true);
         ResourceManager::LoadTexture("../../assets/dashboardGearShift.png", "GearShift", true);
+
+        ResourceManager::LoadTexture("../../assets/Styled_Dashboard.png", "Styled-Dashboard", true);
+        ResourceManager::LoadTexture("../../assets/Styled_Gear-Highlighter.png", "Styled-GearShift", true);
+        ResourceManager::LoadTexture("../../assets/Styled_Fuel-Gauge.png", "Styled-FuelGauge", true);
+        ResourceManager::LoadTexture("../../assets/Styled_Temp-Gauge.png", "Styled-TempGauge");
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
 
@@ -216,16 +232,19 @@ namespace BB {
     }
 
     void GUIModule::Render() {
-        // Render UI Here //
-        glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
+        if (this->m_WindowData.animated)
+            Animate();
 
-        // p_Renderer->DrawSprite(
-        //     ResourceManager::GetTexture("Face"),
-        //     { 200.0f, 100.0f},
-        //     { 200.0f, 300.0f },
-        //     30.0f,
-        //     { 0.0f, 0.0f, 1.0f }
-        // );
+        // Render UI Here //
+        if (false)
+            mvpBoard();
+        else
+            styledBoard();
+
+    }
+
+    void GUIModule::mvpBoard() {
+        glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
 
         this->p_Renderer->DrawQuad(
             { 0.8f, 0.8f, 0.8f },
@@ -342,7 +361,179 @@ namespace BB {
             { 847.0f, 573.0f},
             { 117.0f, fuel_in_tank_bar}
         );
-        
+    }
+
+    void GUIModule::styledBoard() {
+        glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
+        glm::vec3 backgroundColor { 1.0f, 1.0f, 1.0f };
+
+        // Gear Shifter
+        // 
+        // Highlight the active gear, this thankfully is just adjusting the x coordinate
+        // of the highlighter to align with the current gear.
+        //
+        glm::vec2 gearShiftPos = { 863.0f, 479.0f };
+        switch (this->p_Data->gearPosition) {
+            case PARK:       break;
+            case REVERSE:    gearShiftPos.x = 695.0f; break;
+            case NEUTRAL:    gearShiftPos.x = 527.0f; break;
+            case DRIVE:      gearShiftPos.x = 360.0f; break;
+            case ONE:        gearShiftPos.x = 192.0f; break;
+            case TWO:        gearShiftPos.x = 24.0f;  break;
+        }
+
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Styled-GearShift"),
+            gearShiftPos, 
+            { 135.0f, 98.0f },
+            0.0f,
+            { 1.0f, 0.0f, 0.0f }
+        );
+
+        // Fuel Gauge
+        //
+        //
+        float usedFuelDist = 409.0f - (this->p_Data->fuel / 2.0f * 409.0f);
+        float fuelColorStrength = usedFuelDist / 409.0f;
+
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Styled-FuelGauge"),
+            { 856.0f, 24.0f },
+            { 142.5f, 409.0f },
+            0.0f,
+            { fuelColorStrength, 0.9f - fuelColorStrength, 0.0f }
+        );
+
+        this->p_Renderer->DrawQuad(
+            backgroundColor,
+            { 856.0f, 24.0f },
+            { 142.5f, usedFuelDist }
+        );
+
+
+
+        // MPH
+        //
+        std::stringstream ss;
+        ss << this->p_Data->milesPerHour;
+
+        float mphModifier = 0.0f;
+        if (this->p_Data->milesPerHour < 10)
+            mphModifier = 40.0f;
+
+        this->p_Renderer->DrawText(
+            ss.str(),
+            ResourceManager::GetFont("ComicNeue"),
+            { 460.0f + mphModifier, 180.0f },
+            3.5f,
+            { 0.0f, 0.0f, 0.0f }
+        );
+
+
+
+        // Engine RPM
+        //
+        float rpmModifier = 0.0f;
+        int rpm = this->p_Data->engineRPM;
+        if (rpm < 10)
+            rpmModifier = 60.0f;
+        else if (rpm < 100)
+            rpmModifier = 35.0f;
+        else if (rpm < 1'000)
+            rpmModifier = 20.0f;
+
+        ss.str("");
+        ss << this->p_Data->engineRPM;
+
+        this->p_Renderer->DrawText(
+            ss.str(),
+            ResourceManager::GetFont("ComicNeue"),
+            { 130.0f + rpmModifier, 330.0f },
+            1.4f,
+            { 0.0f, 0.0f, 0.0f }
+        );
+
+
+
+        // Pi Temp
+        //
+        // float tempDist = 254.0f - (this->p_Data->pi_Heat / 75.0f * 254.0f);
+        // float tempColorStrength = tempDist / 254.0f;
+
+        // this->p_Renderer->DrawSprite(
+        //     ResourceManager::GetTexture("Styled-TempGauge"),
+        //     { 52.0f, 24.0f },
+        //     { 254.0f, 53.0f },
+        //     0.0f,
+        //     { 0.0f, 0.9f, 0.0f }
+        // );
+
+        // this->p_Renderer->DrawQuad(
+        //     backgroundColor,
+        //     { 856.0f, 24.0f },
+        //     { 142.5f, usedFuelDist }
+        // );
+
+
+
+        // CVT Temp
+        //
+
+
+
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Styled-Dashboard"),
+            { 0.0f, 0.0f },
+            screenSize
+        );
+    }
+
+    #define MAX_RPM 3300
+    #define MAX_MPH 30
+
+    void FluctuateRPM(double dt, int& current, int min = 0, int max = MAX_RPM, int idle = 800) {
+        static std::default_random_engine generator;
+        static std::uniform_int_distribution<int> idle_distribution(idle, max / 3);
+        static std::uniform_int_distribution<int> fluctuation_distribution(-5, 5);
+    
+        int target_rpm;
+    
+        // Determine the target RPM based on current RPM
+        if (current < idle) {
+            target_rpm = idle_distribution(generator);  // If below idle, go to idle or higher
+        }
+        else {
+            target_rpm = std::max(min, std::min(max, current + (fluctuation_distribution(generator) * 10)));
+        }
+    
+        // Simulate smooth transition to target RPM
+        current += (target_rpm - current) * dt * 0.05f;  // Gradual change based on delta time
+        current = std::max(min, current);  // Clamp to min and max RPM
+    }
+
+    void GUIModule::Animate() {
+        static Time start = timeNow();
+        static Time dt;
+        dt = timeFrom(start);
+
+        if (timeRealiSec(dt) > 45.0f) {
+            start = timeNow();
+        }
+
+        // Engine RPM
+        //
+        FluctuateRPM(timeRealiSec(dt), this->p_Data->engineRPM);
+
+        // MPH
+        //
+        this->p_Data->milesPerHour = (this->p_Data->engineRPM / (float)MAX_RPM) * 30.0f;
+
+        // Fuel
+        //
+        this->p_Data->fuel -= this->p_Data->milesPerHour * 0.000001f * timeRealiSec(dt);
+
+        if (this->p_Data->fuel <= 0.01f)
+            this->p_Data->fuel = 2.0f;
     }
 
 }   // BB

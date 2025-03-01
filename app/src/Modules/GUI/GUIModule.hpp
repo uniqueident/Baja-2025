@@ -24,11 +24,20 @@ namespace BB {
 
         SharedData* data;
 
+        bool animated;
+
     };  // WindowData
 
     class GUIModule : public Module {
     public:
-        GUIModule(SharedData* data) : Module(data), p_Renderer(nullptr), p_Window(nullptr), m_WindowData(), m_WindowScale(), m_Closed(false) { }
+        GUIModule(SharedData* data) :
+            Module(data),
+            p_Renderer(nullptr),
+            p_Window(nullptr),
+            m_WindowData(),
+            m_WindowScale(),
+            m_Closed(false)
+        { }
         virtual ~GUIModule() = default;
 
         /** @brief The initializer for the GUI. */
@@ -46,7 +55,13 @@ namespace BB {
         /** @brief Draws the GUI to the screen. */
         void Render();
 
-        /* --- */
+        void mvpBoard();
+        void styledBoard();
+
+        /** @brief Does math to animate for demo mode. */
+        void Animate();
+
+    private:
 
         GL::Renderer* p_Renderer;
 
@@ -57,7 +72,6 @@ namespace BB {
         glm::vec2 m_WindowScale;
 
         bool m_Closed;
-
     };
 
 }   // BB
