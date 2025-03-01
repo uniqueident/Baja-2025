@@ -14,6 +14,9 @@ namespace BB {
         virtual void Shutdown() override;
 
         virtual void Update() override;
+        
+
+        bool PinCheck(Physical pin);
 
     private:
         const int k_Channel = 0;
