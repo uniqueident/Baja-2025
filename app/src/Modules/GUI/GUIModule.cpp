@@ -96,6 +96,10 @@ namespace BB {
 
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
             ref->animated = !ref->animated;
+
+        if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
+            ref->data->running = false;
+        }
     }
 
 
@@ -513,8 +517,11 @@ namespace BB {
 
     void GUIModule::Animate() {
         static Time start = timeNow();
+        static Time acStart = timeNow();
         static Time dt;
+        static Time at;
         dt = timeFrom(start);
+        at = timeFrom(acStart);
 
         if (timeRealiSec(dt) > 45.0f) {
             start = timeNow();
@@ -522,7 +529,10 @@ namespace BB {
 
         // Engine RPM
         //
-        FluctuateRPM(timeRealiSec(dt), this->p_Data->engineRPM);
+        if(timeRealiSec(at) > 0.01f){
+            FluctuateRPM(timeRealiSec(dt), this->p_Data->engineRPM);
+            acStart = timeNow();
+        }
 
         // MPH
         //
@@ -534,6 +544,7 @@ namespace BB {
 
         if (this->p_Data->fuel <= 0.01f)
             this->p_Data->fuel = 2.0f;
+
     }
 
 }   // BB
