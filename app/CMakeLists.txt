@@ -19,8 +19,8 @@ file(GLOB buggie_MOD_GUI_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/*.cp
 file(GLOB buggie_MOD_GUI_REN_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/Renderer/*.hpp)
 file(GLOB buggie_MOD_GUI_REN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GUI/Renderer/*.cpp)
 
-file(GLOB buggie_MOD_GPIO_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GPOI/*.hpp)
-file(GLOB buggie_MOD_GPIO_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GPOI/*.cpp)
+file(GLOB buggie_MOD_GPIO_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GPIO/*.hpp)
+file(GLOB buggie_MOD_GPIO_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/GPIO/*.cpp)
 
 # Get GLAD Source Files
 file(GLOB_RECURSE glad_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/libs/glad/include/*.h)

@@ -4,9 +4,10 @@
 
 #include "Modules/GPIO/FanControl.hpp"
 #include "Modules/GPIO/FuelFlow.hpp"
+#include "Modules/GPIO/TempProbe.hpp"
+
 #include "Modules/GUI/GUIModule.hpp"
 
-#include "Modules/GPIO/TempProbe.hpp"
 
 // std
 #include <cstdlib>
