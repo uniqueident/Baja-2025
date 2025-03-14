@@ -37,7 +37,8 @@ namespace BB {
         // 
     #ifdef RPI_PI
 
-        wiringPiSPISetup(this->k_Channel, this->k_hz);
+        if (wiringPiSPISetup(this->k_Channel, this->k_hz) == -1)
+            throw std::runtime_error("Failed to setup Temp Probe SPI bus!");
 
     #endif
     }
