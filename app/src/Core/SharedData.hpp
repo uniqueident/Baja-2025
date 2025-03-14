@@ -1,5 +1,9 @@
 #pragma once
-#include "Modules/Sensors/Pins.hpp"
+
+#include "Core/SharedData.hpp"
+#include "Modules/GPIO/Pins.hpp"
+
+#include <iostream>
 #include <set>
 
 namespace BB {
@@ -66,6 +70,28 @@ namespace BB {
             fuel(2.0f),
             usedpins()
         { }
+
+        void RegisterPin(Physical pin) {
+            if (this->usedpins.find(pin) != this->usedpins.end()) {
+                std::cerr << "Pin #" << pin << " is already in use!" << std::endl;
+
+                std::exit(3);
+            }
+
+            std::cout << "Pin #" << pin << " is now in use." << std::endl;
+
+            this->usedpins.emplace(pin);
+        }
+
+        void UnregisterPin(Physical pin) {
+            if (this->usedpins.find(pin) != this->usedpins.end()) {
+                std::cerr << "Pin #" << pin << " has not been registered yet!" << std::endl;
+            }
+
+            std::cout << "Pin #" << pin << " is now free." << std::endl;
+
+            this->usedpins.erase(pin);
+        }
 
     };  // SharedData
 

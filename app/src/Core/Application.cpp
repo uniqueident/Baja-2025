@@ -2,9 +2,11 @@
 
 #include "Core/SharedData.hpp"
 
+#include "Modules/GPIO/FanControl.hpp"
+#include "Modules/GPIO/FuelFlow.hpp"
 #include "Modules/GUI/GUIModule.hpp"
 
-#include "Modules/Sensors/TempProbe.hpp"
+#include "Modules/GPIO/TempProbe.hpp"
 
 // std
 #include <cstdlib>
@@ -58,13 +60,24 @@ namespace BB {
         this->m_Thread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
 
         // ==================== Module Setup ====================
-        //TODO: fix for windows pls
+        //
         this->m_Modules.emplace_back(new TempProbe(
             this->p_SharedData,
             Physical::PIN_23,
             Physical::PIN_21,
             Physical::PIN_19,
             Physical::PIN_24
+        ))->Init();
+
+        this->m_Modules.emplace_back(new FuelFlow(
+            this->p_SharedData,
+            Physical::PIN_12
+        ))->Init();
+
+        this->m_Modules.emplace_back(new FanControl(
+            this->p_SharedData,
+            Physical::PIN_32,
+            Physical::PIN_36
         ))->Init();
 
     }

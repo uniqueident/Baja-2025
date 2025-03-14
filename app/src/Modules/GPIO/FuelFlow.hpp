@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/SharedData.hpp"
+
 #include "Modules/Module.hpp"
 
 namespace BB {
@@ -8,14 +10,18 @@ namespace BB {
      * @brief The base class for a Module. Pure virtual class.
      */
     class FuelFlow :public Module {
-        public:
-        FuelFlow(SharedData* data);
+    public:
+        FuelFlow(SharedData* data, Physical gpio);
         ~FuelFlow();
 
         virtual void Init() override;
         virtual void Shutdown() override;
 
         virtual void Update() override;
+
+    private:
+        const Physical m_DataPin;
+
     };
 
 } // BB
