@@ -9,11 +9,9 @@
 
 // std
 #include <algorithm>
-#include <chrono>
 #include <iostream>
 #include <random>
 #include <sstream>
-#include <thread>
 
 // libs
 #define GLFW_INCLUDE_NONE
@@ -40,7 +38,7 @@ namespace BB {
         data->scale->y = height / static_cast<float>(SCREEN_HEIGHT);
     }
 
-    void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    void key_callback(GLFWwindow* window, int key, [[gnu::unused]] int scancode, int action, [[gnu::unused]] int mods) {
         WindowData* ref = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
         if (key == GLFW_KEY_E && action == GLFW_PRESS){
             ref->data->fuel = 1.5f;
@@ -492,7 +490,7 @@ namespace BB {
         );
     }
 
-    #define MAX_RPM 3300
+    #define MAX_RPM 3300.0f
     #define MAX_MPH 30
 
     void FluctuateRPM(double dt, int& current, int min = 0, int max = MAX_RPM, int idle = 800) {
@@ -536,7 +534,7 @@ namespace BB {
 
         // MPH
         //
-        this->p_Data->milesPerHour = (this->p_Data->engineRPM / (float)MAX_RPM) * 30.0f;
+        this->p_Data->milesPerHour = (this->p_Data->engineRPM / MAX_RPM) * 30.0f;
 
         // Fuel
         //

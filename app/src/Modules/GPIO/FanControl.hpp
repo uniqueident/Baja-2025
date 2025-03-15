@@ -20,16 +20,17 @@ namespace BB {
         virtual void Update() override;
 
     private:
-        int GetTemp();
+        // Get's the Raspberry Pi CPU temp.
+        float GetTemp();
 
-        void SetSpeed(int speed);
+        void SetSpeed(float speed);
+        int GetSpeed();
 
     private:
+        // The pin that outputs the PWM signal.
         const Physical m_pwmPin;
+        // The pin that reads the cycles from the fan to determine the RPM.
         const Physical m_rpmPin;
-
-        int m_CurrentSpeed;
-        int m_StartTemp;
 
     };
 

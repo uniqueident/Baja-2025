@@ -75,6 +75,8 @@ namespace BB {
             Physical::PIN_12
         ))->Init();
 
+        // TODO: Check the fan with for sure 12v power supply to confirm that the GPIO can output a strong enough PWM signal.
+        //
         this->m_Modules.emplace_back(new FanControl(
             this->p_SharedData,
             Physical::PIN_32,

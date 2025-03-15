@@ -20,7 +20,12 @@ namespace BB {
         virtual void Update() override;
 
     private:
+        static void FlowPulse();
+
+    private:
         const Physical m_DataPin;
+
+        static inline unsigned int s_Pulse = 0;
 
     };
 

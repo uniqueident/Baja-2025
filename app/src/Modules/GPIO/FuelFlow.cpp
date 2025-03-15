@@ -1,5 +1,11 @@
 #include "FuelFlow.hpp"
 
+#ifdef RPI_PI
+
+    #include <wiringPi.h>
+
+#endif
+
 namespace BB {
 
     FuelFlow::FuelFlow(SharedData* data, Physical gpio) :
@@ -15,15 +21,35 @@ namespace BB {
     }
 
     void FuelFlow::Init() {
-        
+    #ifdef RPI_PI
+
+        pinMode(this->m_DataPin, INPUT);
+
+        wiringPiISR(this->m_DataPin, INT_EDGE_RISING, &FuelFlow::FlowPulse);
+
+    #endif
     }
 
     void FuelFlow::Shutdown() {
-        
+    #ifdef RPI_PI
+
+        wiringPiISRStop(this->m_DataPin);
+
+        pinMode(this->m_DataPin, PM_OFF);
+
+    #endif
     }
 
     void FuelFlow::Update() {
-        
+        if (s_Pulse >= 7) {
+            std::cout << "Reached 7 Flow Signals!" << std::endl;
+
+            s_Pulse = 0;
+        }
+    }
+
+    void FuelFlow::FlowPulse() {
+        s_Pulse++;
     }
 
 }   // BB

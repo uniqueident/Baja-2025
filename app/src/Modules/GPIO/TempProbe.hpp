@@ -41,6 +41,8 @@ namespace BB {
         //
         unsigned char m_Buffer[3];
 
+        int m_fd;
+
     };  // TempProbe
 
 }   // BB

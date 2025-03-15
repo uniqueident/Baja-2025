@@ -73,22 +73,22 @@ namespace BB {
 
         void RegisterPin(Physical pin) {
             if (this->usedpins.find(pin) != this->usedpins.end()) {
-                std::cerr << "Pin #" << pin << " is already in use!" << std::endl;
+                std::cerr << "Pin #" << static_cast<int>(pin) << " is already in use!" << std::endl;
 
                 std::exit(3);
             }
 
-            std::cout << "Pin #" << pin << " is now in use." << std::endl;
+            std::cout << "Pin #" << static_cast<int>(pin) << " is now in use." << std::endl;
 
             this->usedpins.emplace(pin);
         }
 
         void UnregisterPin(Physical pin) {
             if (this->usedpins.find(pin) != this->usedpins.end()) {
-                std::cerr << "Pin #" << pin << " has not been registered yet!" << std::endl;
+                std::cerr << "Pin #" << static_cast<int>(pin) << " has not been registered yet!" << std::endl;
             }
 
-            std::cout << "Pin #" << pin << " is now free." << std::endl;
+            std::cout << "Pin #" << static_cast<int>(pin) << " is now free." << std::endl;
 
             this->usedpins.erase(pin);
         }

@@ -17,7 +17,8 @@ namespace BB {
         m_ClockPin(clock),
         m_MisoPin(miso),
         m_MosiPin(mosi),
-        m_Ce0Pin(ce0)
+        m_Ce0Pin(ce0),
+        m_fd(0)
     {
         this->p_Data->RegisterPin(m_ClockPin);
         this->p_Data->RegisterPin(m_MisoPin);
@@ -37,8 +38,10 @@ namespace BB {
         // 
     #ifdef RPI_PI
 
-        if (wiringPiSPISetup(this->k_Channel, this->k_hz) == -1)
+        if ((this->m_fd = wiringPiSPISetup(this->k_Channel, this->k_hz)) == -1)
             throw std::runtime_error("Failed to setup Temp Probe SPI bus!");
+
+        pinMode(this->m_Ce0Pin, OUTPUT);
 
     #endif
     }
@@ -66,13 +69,20 @@ namespace BB {
         //
     #ifdef RPI_PI
 
-        wiringPiSPIDataRW(1, this->m_Buffer, 3);
+        wiringPiSPIDataRW(this->k_Channel, this->m_Buffer, 3);
+
+        digitalWrite(this->m_Ce0Pin, HIGH);
+
+        delay(10);
 
     #endif
 
-        retVal = (this->m_Buffer[1] << 8) | (this->m_Buffer[2]);
+        retVal = (((this->m_Buffer[1] & 0x03) << 8) | this->m_Buffer[2]) & 0x3FF;
+
+        float voltage = retVal * (5.0 / 1023.0);
 
         std::cout << "Temp Probe returned Data: " << retVal << std::endl;
+        std::cout << "Temp Prove Voltage: " << voltage << std::endl;
     }
 
 }   // BB

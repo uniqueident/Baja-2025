@@ -5,6 +5,9 @@
 
     #include <wiringPi.h>
 
+    #include <fcntl.h>
+    #include <unistd.h>
+
 #endif
 
 namespace BB {
@@ -24,29 +27,29 @@ namespace BB {
         this->p_Data->UnregisterPin(this->m_rpmPin);
     }
 
-    #define MIN_DIVIDER 1U
-    #define MAX_DIVIDER 1456U
+    #define MIN_SPEED 512U
+    #define MAX_SPEED 1023U
 
-    #define MIN_SPEED 10U
-    #define MAX_SPEED 80U
-
-    #define MIN_PI_TEMP 25.0f
-    #define MAX_PI_TEMP 65.0f
+    #define MIN_PI_TEMP 35.0f
+    #define MAX_PI_TEMP 70.0f
+    #define PI_TEMP_RANGE (MAX_PI_TEMP - MIN_PI_TEMP)
 
     void FanControl::Init() {
     #ifdef RPI_PI
 
-        pinMode(this->m_pwmPin, PWM_BAL_OUTPUT);
+        pwmWrite(this->m_pwmPin, 0);
+
+        pinMode(this->m_pwmPin, PWM_OUTPUT);
+
+        pwmSetMode(PWM_MODE_MS);
+
+        // Default divider is 32
+        // 
+        pwmSetClock(35);
 
         // Default range is 1024
         // 
         pwmSetRange(1024);
-
-        // Default divider is 32
-        // 
-        pwmSetClock(MIN_DIVIDER);
-
-        pwmWrite(this->m_pwmPin, 0);
 
     #endif
     }
@@ -61,32 +64,59 @@ namespace BB {
     #endif
     }
 
-    void FanControl::Update() {
-        // Get the current Pi temp.
-        //
-        // TODO: https://forums.raspberrypi.com/viewtopic.php?t=310977#p1859743
+    static unsigned int s_Counter = 0;
 
+    void FanControl::Update() {
+        if (s_Counter++ >= 1'000) {
+            this->p_Data->pi_Heat = GetTemp();
+
+            std::cout << "Current Pi Temp: " << this->p_Data->pi_Heat << std::endl;
+
+            if (this->p_Data->pi_Heat >= MAX_PI_TEMP)
+                SetSpeed(1.0f);
+            else if (this->p_Data->pi_Heat >= MIN_PI_TEMP)
+                SetSpeed((this->p_Data->pi_Heat - MIN_PI_TEMP) / PI_TEMP_RANGE);
+            else
+                SetSpeed(0.0f);
+
+            s_Counter = 0;
+        }
     }
 
-    int FanControl::GetTemp() {
-        int temp = 0;
+    float FanControl::GetTemp() {
+        float temp = 0.0f;
 
     #ifdef RPI_PI
+
         char buf[10];
 
         int fd = open("/sys/class/thermal/thermal_zone0/temp", O_RDONLY);
         read(fd, buf, sizeof(buf));
         close(fd);
 
-        sscanf(buf, "%d", &temp);
+        sscanf(buf, "%f", &temp);
 
     #endif
 
         return temp / 1000;
     }
 
-    void FanControl::SetSpeed(int speed) {
-        
+    void FanControl::SetSpeed(float speed) {
+        std::cout << "Setting Fan to " << speed * 100.0f << std::endl;
+
+        speed = speed * MAX_SPEED;
+        speed = speed <= MIN_SPEED ? MIN_SPEED : speed;
+
+
+    #ifdef RPI_PI
+
+        pwmWrite(this->m_pwmPin, static_cast<int>(speed));
+
+    #endif
+    }
+
+    int FanControl::GetSpeed() {
+        return 0;
     }
 
 } // namespace BB
