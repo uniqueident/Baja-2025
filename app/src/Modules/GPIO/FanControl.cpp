@@ -64,6 +64,8 @@ namespace BB {
     #endif
     }
 
+    // s_Counter is a simple counter to help spread out the updates.
+    //
     static unsigned int s_Counter = 0;
 
     void FanControl::Update() {

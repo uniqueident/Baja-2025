@@ -19,6 +19,17 @@ namespace BB {
         bool PinCheck(Physical pin);
 
     private:
+        struct B10 {
+            union {
+                int val;
+
+                unsigned char buf[4];
+
+            };
+
+        };  // B10
+
+    private:
         const int k_Channel = 0;
         // The clock speed must be within 500,000 and 32,000,000 Hz.
         //

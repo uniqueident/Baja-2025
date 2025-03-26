@@ -63,11 +63,11 @@ namespace BB {
         this->m_Buffer[1] = static_cast<unsigned char>((8 + this->k_Channel) << 4);
         this->m_Buffer[2] = 0;
 
-        unsigned short retVal = 0;
-
         // ==================== WiringPi Actions ====================
         //
     #ifdef RPI_PI
+
+        unsigned short retVal = 0;
 
         wiringPiSPIDataRW(this->k_Channel, this->m_Buffer, 3);
 
@@ -75,14 +75,11 @@ namespace BB {
 
         delay(10);
 
-    #endif
-
         retVal = (((this->m_Buffer[1] & 0x03) << 8) | this->m_Buffer[2]) & 0x3FF;
 
         float voltage = retVal * (5.0 / 1023.0);
 
-        std::cout << "Temp Probe returned Data: " << retVal << std::endl;
-        std::cout << "Temp Prove Voltage: " << voltage << std::endl;
+    #endif
     }
 
 }   // BB
