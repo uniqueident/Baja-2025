@@ -394,7 +394,6 @@ namespace BB {
 
         // Fuel Gauge
         //
-        //
         float usedFuelDist = 409.0f - (this->p_Data->fuel / 2.0f * 409.0f);
         float fuelColorStrength = usedFuelDist / 409.0f;
 
@@ -412,8 +411,6 @@ namespace BB {
             { 142.5f, usedFuelDist }
         );
 
-
-
         // MPH
         //
         std::stringstream ss;
@@ -430,8 +427,6 @@ namespace BB {
             3.5f,
             { 0.0f, 0.0f, 0.0f }
         );
-
-
 
         // Engine RPM
         //
@@ -455,34 +450,31 @@ namespace BB {
             { 0.0f, 0.0f, 0.0f }
         );
 
-
-
         // Pi Temp
-        //
-        // float tempDist = 254.0f - (this->p_Data->pi_Heat / 75.0f * 254.0f);
-        // float tempColorStrength = tempDist / 254.0f;
+        // 
+        float usedPiHeatDist = 254.0f - (this->p_Data->pi_Heat / 75.0f * 254.0f);
+        float piHeatColorStrength = usedPiHeatDist / 254.0f;
 
-        // this->p_Renderer->DrawSprite(
-        //     ResourceManager::GetTexture("Styled-TempGauge"),
-        //     { 52.0f, 24.0f },
-        //     { 254.0f, 53.0f },
-        //     0.0f,
-        //     { 0.0f, 0.9f, 0.0f }
-        // );
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Styled-TempGauge"),
+            { 52.0f, 24.0f },
+            { 254.0f, 53.0f },
+            0.0f,
+            { piHeatColorStrength, 0.9f - piHeatColorStrength, 0.0f }
+        );
 
-        // this->p_Renderer->DrawQuad(
-        //     backgroundColor,
-        //     { 856.0f, 24.0f },
-        //     { 142.5f, usedFuelDist }
-        // );
-
-
+        this->p_Renderer->DrawQuad(
+            backgroundColor,
+            { 856.0f, 24.0f },
+            { 142.5f, usedPiHeatDist }
+        );
 
         // CVT Temp
-        //
+        // 
 
 
-
+        // Dashboard Background
+        // 
         this->p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Styled-Dashboard"),
             { 0.0f, 0.0f },
