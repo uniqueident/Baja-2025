@@ -60,6 +60,11 @@ namespace BB {
          */
         std::set<Physical> usedpins;
 
+        /**
+        * @brief detected voltage of the temp sensor
+        */
+        float voltage;
+
         SharedData() :
             running(false),
             gearPosition(GearPosition::PARK),
@@ -68,7 +73,8 @@ namespace BB {
             CVT_Heat(30.0f),
             pi_Heat(15.0f),
             fuel(2.0f),
-            usedpins()
+            usedpins(),
+            voltage()
         { }
 
         void RegisterPin(Physical pin) {

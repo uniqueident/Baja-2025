@@ -29,6 +29,8 @@ namespace BB {
         const Physical m_MosiPin;
         const Physical m_Ce0Pin;
 
+        float voltage;
+
         // The buffer must have the following format:
         //
         // Byte 1: Always 1 as to set the update signal for the MCP3008.

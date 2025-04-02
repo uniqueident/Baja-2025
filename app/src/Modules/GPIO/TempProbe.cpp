@@ -1,6 +1,7 @@
 #include "TempProbe.hpp"
 
 #include "Core/SharedData.hpp"
+#include <cmath>
 
 // libs
 #ifdef RPI_PI
@@ -18,7 +19,8 @@ namespace BB {
         m_MisoPin(miso),
         m_MosiPin(mosi),
         m_Ce0Pin(ce0),
-        m_fd(0)
+        m_fd(0),
+        voltage()
     {
         this->p_Data->RegisterPin(m_ClockPin);
         this->p_Data->RegisterPin(m_MisoPin);
@@ -56,6 +58,12 @@ namespace BB {
     #endif
     }
 
+    // Constants for PT100
+    const float R0 = 100.0;         // Resistance at 0°C (100 ohms)
+    const float alpha = 0.00385;    // Temperature coefficient of resistance (per °C)
+    const float vIn = 5.0f;         // The input voltage of the PT100
+    const float Rfixed = 23.0f;   // Reference resistor in the circuit
+
     void TempProbe::Update() {
         // Reset the buffer for a new data request.
         //
@@ -79,10 +87,17 @@ namespace BB {
 
         retVal = (((this->m_Buffer[1] & 0x03) << 8) | this->m_Buffer[2]) & 0x3FF;
 
-        float voltage = retVal * (5.0 / 1023.0);
+        // RTD PT100 has 100 ohm resistance at 0 C, so the expected voltage reading will be ~ 4.9V
+        //
+        this->voltage = retVal / 1023.0f * 5.0f;
+        if(fabs(this->p_Data->voltage-this->voltage)>0.0875){
+            this->p_Data->voltage = this->voltage;
+            // std::cout << "Temp Probe Returned Data: " << retVal << std::endl;
+            std::cout << "Temp Probe Voltage: " << this->p_Data->voltage << std::endl;
+            // std::cout << "Temp Probe Temperature: " << this->p_Data->CVT_Heat << std::endl;
+        }
 
-        std::cout << "Temp Probe returned Data: " << retVal << std::endl;
-        std::cout << "Temp Prove Voltage: " << voltage << std::endl;
+
     }
 
 }   // BB
