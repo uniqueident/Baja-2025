@@ -196,7 +196,7 @@ namespace BB {
         ResourceManager::LoadTexture("../../assets/Styled_Dashboard.png", "Styled-Dashboard", true);
         ResourceManager::LoadTexture("../../assets/Styled_Gear-Highlighter.png", "Styled-GearShift", true);
         ResourceManager::LoadTexture("../../assets/Styled_Fuel-Gauge.png", "Styled-FuelGauge", true);
-        ResourceManager::LoadTexture("../../assets/Styled_Temp-Gauge.png", "Styled-TempGauge");
+        ResourceManager::LoadTexture("../../assets/Styled_Temp-Gauge.png", "Styled-TempGauge", true);
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
 
@@ -234,15 +234,11 @@ namespace BB {
     }
 
     void GUIModule::Render() {
-        if (this->m_WindowData.animated)
-            Animate();
+        // if (this->m_WindowData.animated)
+        //     Animate();
 
         // Render UI Here //
-        if (false)
-            mvpBoard();
-        else
-            styledBoard();
-
+        styledBoard();
     }
 
     void GUIModule::mvpBoard() {
@@ -394,7 +390,7 @@ namespace BB {
 
         // Fuel Gauge
         //
-        float usedFuelDist = 409.0f - (this->p_Data->fuel / 2.0f * 409.0f);
+        float usedFuelDist = 409.0f - ((this->p_Data->fuel / 7570.824f) * 409.0f);
         float fuelColorStrength = usedFuelDist / 409.0f;
 
         this->p_Renderer->DrawSprite(
@@ -430,29 +426,26 @@ namespace BB {
 
         // Engine RPM
         //
-        float rpmModifier = 0.0f;
-        int rpm = this->p_Data->engineRPM;
-        if (rpm < 10)
-            rpmModifier = 60.0f;
-        else if (rpm < 100)
-            rpmModifier = 35.0f;
-        else if (rpm < 1'000)
-            rpmModifier = 20.0f;
+        float usedRpmDist = 254.0f - ((this->p_Data->engineRPM / 3000.0f) * 254.0f);
+        float rpmColorStrength = usedRpmDist / 254.0f;
 
-        ss.str("");
-        ss << this->p_Data->engineRPM;
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Styled-TempGauge"),
+            { 52.0f, 352.0f },
+            { 254.0f, 53.0f },
+            0.0f,
+            { 0.9f - rpmColorStrength, rpmColorStrength, 0.0f }
+        );
 
-        this->p_Renderer->DrawText(
-            ss.str(),
-            ResourceManager::GetFont("ComicNeue"),
-            { 130.0f + rpmModifier, 330.0f },
-            1.4f,
-            { 0.0f, 0.0f, 0.0f }
+        this->p_Renderer->DrawQuad(
+            backgroundColor,
+            { 306.0f, 352.0f },
+            { -usedRpmDist, 53.0f }
         );
 
         // Pi Temp
         // 
-        float usedPiHeatDist = 254.0f - (this->p_Data->pi_Heat / 75.0f * 254.0f);
+        float usedPiHeatDist = 254.0f - ((this->p_Data->pi_Heat / 80.0f) * 254.0f);
         float piHeatColorStrength = usedPiHeatDist / 254.0f;
 
         this->p_Renderer->DrawSprite(
@@ -460,18 +453,33 @@ namespace BB {
             { 52.0f, 24.0f },
             { 254.0f, 53.0f },
             0.0f,
-            { piHeatColorStrength, 0.9f - piHeatColorStrength, 0.0f }
+            { 0.9f - piHeatColorStrength, piHeatColorStrength, 0.0f }
         );
 
         this->p_Renderer->DrawQuad(
             backgroundColor,
-            { 856.0f, 24.0f },
-            { 142.5f, usedPiHeatDist }
+            { 306.0f, 24.0f },
+            { -usedPiHeatDist, 53.0f }
         );
 
         // CVT Temp
         // 
+        float usedCvtHeatDist = 254.0f - ((this->p_Data->CVT_Heat / 80.0f) * 254.0f);
+        float cvtHeatColorStrength = usedCvtHeatDist / 254.0f;
 
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Styled-TempGauge"),
+            { 52.0f, 149.0f },
+            { 254.0f, 53.0f },
+            0.0f,
+            { 0.9f - cvtHeatColorStrength, cvtHeatColorStrength, 0.0f }
+        );
+
+        this->p_Renderer->DrawQuad(
+            backgroundColor,
+            { 306.0f, 149.0f },
+            { -usedCvtHeatDist, 53.0f }
+        );
 
         // Dashboard Background
         // 

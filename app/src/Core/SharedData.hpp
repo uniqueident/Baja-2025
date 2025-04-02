@@ -62,11 +62,11 @@ namespace BB {
         SharedData() :
             running(false),
             gearPosition(GearPosition::PARK),
-            engineRPM(0),
-            milesPerHour(0),
+            engineRPM(2000),
+            milesPerHour(12),
             CVT_Heat(30.0f),
             pi_Heat(15.0f),
-            fuel(7570.824),
+            fuel(7570.824f),
             usedpins()
         { }
 
