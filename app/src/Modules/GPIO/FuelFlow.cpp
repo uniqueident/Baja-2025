@@ -41,8 +41,10 @@ namespace BB {
     }
 
     void FuelFlow::Update() {
-        if (s_Pulse >= 7) {
-            std::cout << "Reached 7 Flow Signals!" << std::endl;
+        if (s_Pulse >= 10) {
+            // The fuel flow sensor sends a pulse every 2.5 mL so every 10 pulses is 25 mL.
+            //
+            this->p_Data->fuel -= 25;
 
             s_Pulse = 0;
         }

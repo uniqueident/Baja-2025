@@ -42,21 +42,20 @@ namespace BB {
          */
         int milesPerHour;
         /**
-         * @brief The heat value of the Continuously Variable Transmission.
+         * @brief The heat value of the Continuously Variable Transmission, in Celcius.
          */
         float CVT_Heat;
         /**
-         * @brief The heat value of the pi.
+         * @brief The heat value of the pi, in Celcius.
          */
         float pi_Heat;
         /**
-         * @brief The data representation of the amount of fuel in the tank 
+         * @brief The data representation of the amount of fuel in the tank, this is stored in mL, which for a 2 gallon tank is full with 7570.824 mL.
          */
         float fuel;
 
         /**
          * @brief Build the set of used pins.
-         * 
          */
         std::set<Physical> usedpins;
 
@@ -68,13 +67,18 @@ namespace BB {
         SharedData() :
             running(false),
             gearPosition(GearPosition::PARK),
-            engineRPM(0),
-            milesPerHour(0),
+            engineRPM(2000),
+            milesPerHour(12),
             CVT_Heat(30.0f),
             pi_Heat(15.0f),
+<<<<<<< HEAD
             fuel(2.0f),
             usedpins(),
             voltage()
+=======
+            fuel(7570.824f),
+            usedpins()
+>>>>>>> refs/remotes/origin/dev
         { }
 
         void RegisterPin(Physical pin) {

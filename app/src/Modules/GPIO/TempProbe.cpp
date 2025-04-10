@@ -71,19 +71,17 @@ namespace BB {
         this->m_Buffer[1] = static_cast<unsigned char>((8 + this->k_Channel) << 4);
         this->m_Buffer[2] = 0;
 
-        unsigned short retVal = 0;
-
         // ==================== WiringPi Actions ====================
         //
     #ifdef RPI_PI
+
+        unsigned short retVal = 0;
 
         wiringPiSPIDataRW(this->k_Channel, this->m_Buffer, 3);
 
         digitalWrite(this->m_Ce0Pin, HIGH);
 
         delay(10);
-
-    #endif
 
         retVal = (((this->m_Buffer[1] & 0x03) << 8) | this->m_Buffer[2]) & 0x3FF;
 
@@ -98,6 +96,10 @@ namespace BB {
         }
 
 
+<<<<<<< HEAD
+=======
+    #endif
+>>>>>>> refs/remotes/origin/dev
     }
 
 }   // BB
