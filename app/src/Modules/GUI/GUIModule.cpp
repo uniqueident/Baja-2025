@@ -365,6 +365,14 @@ namespace BB {
         glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
         glm::vec3 backgroundColor { 1.0f, 1.0f, 1.0f };
 
+        if (this->p_Data->gearPosition == GearPosition::REVERSE) {
+            this->p_Renderer->DrawCam(
+                ResourceManager::GetCamera(),
+                { 0.0f, 0.0f },
+                screenSize
+            );
+        }
+
         // Gear Shifter
         // 
         // Highlight the active gear, this thankfully is just adjusting the x coordinate
@@ -388,25 +396,6 @@ namespace BB {
             { 1.0f, 0.0f, 0.0f }
         );
 
-        // Fuel Gauge
-        //
-        float usedFuelDist = 409.0f - ((this->p_Data->fuel / 7570.824f) * 409.0f);
-        float fuelColorStrength = usedFuelDist / 409.0f;
-
-        this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Styled-FuelGauge"),
-            { 856.0f, 24.0f },
-            { 142.5f, 409.0f },
-            0.0f,
-            { fuelColorStrength, 0.9f - fuelColorStrength, 0.0f }
-        );
-
-        this->p_Renderer->DrawQuad(
-            backgroundColor,
-            { 856.0f, 24.0f },
-            { 142.5f, usedFuelDist }
-        );
-
         // MPH
         //
         std::stringstream ss;
@@ -424,62 +413,83 @@ namespace BB {
             { 0.0f, 0.0f, 0.0f }
         );
 
-        // Engine RPM
-        //
-        float usedRpmDist = 254.0f - ((this->p_Data->engineRPM / 3000.0f) * 254.0f);
-        float rpmColorStrength = usedRpmDist / 254.0f;
+        if (this->p_Data->gearPosition != GearPosition::REVERSE) {
+            // Fuel Gauge
+            //
+            float usedFuelDist = 409.0f - ((this->p_Data->fuel / 7570.824f) * 409.0f);
+            float fuelColorStrength = usedFuelDist / 409.0f;
 
-        this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Styled-TempGauge"),
-            { 52.0f, 352.0f },
-            { 254.0f, 53.0f },
-            0.0f,
-            { 0.9f - rpmColorStrength, rpmColorStrength, 0.0f }
-        );
+            this->p_Renderer->DrawSprite(
+                ResourceManager::GetTexture("Styled-FuelGauge"),
+                { 856.0f, 24.0f },
+                { 142.5f, 409.0f },
+                0.0f,
+                { fuelColorStrength, 0.9f - fuelColorStrength, 0.0f }
+            );
 
-        this->p_Renderer->DrawQuad(
-            backgroundColor,
-            { 306.0f, 352.0f },
-            { -usedRpmDist, 53.0f }
-        );
+            this->p_Renderer->DrawQuad(
+                backgroundColor,
+                { 856.0f, 24.0f },
+                { 142.5f, usedFuelDist }
+            );
 
-        // Pi Temp
-        // 
-        float usedPiHeatDist = 254.0f - ((this->p_Data->pi_Heat / 80.0f) * 254.0f);
-        float piHeatColorStrength = usedPiHeatDist / 254.0f;
+            // Engine RPM
+            //
+            float usedRpmDist = 254.0f - ((this->p_Data->engineRPM / 3000.0f) * 254.0f);
+            float rpmColorStrength = usedRpmDist / 254.0f;
 
-        this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Styled-TempGauge"),
-            { 52.0f, 24.0f },
-            { 254.0f, 53.0f },
-            0.0f,
-            { 0.9f - piHeatColorStrength, piHeatColorStrength, 0.0f }
-        );
+            this->p_Renderer->DrawSprite(
+                ResourceManager::GetTexture("Styled-TempGauge"),
+                { 52.0f, 352.0f },
+                { 254.0f, 53.0f },
+                0.0f,
+                { 0.9f - rpmColorStrength, rpmColorStrength, 0.0f }
+            );
 
-        this->p_Renderer->DrawQuad(
-            backgroundColor,
-            { 306.0f, 24.0f },
-            { -usedPiHeatDist, 53.0f }
-        );
+            this->p_Renderer->DrawQuad(
+                backgroundColor,
+                { 306.0f, 352.0f },
+                { -usedRpmDist, 53.0f }
+            );
 
-        // CVT Temp
-        // 
-        float usedCvtHeatDist = 254.0f - ((this->p_Data->CVT_Heat / 80.0f) * 254.0f);
-        float cvtHeatColorStrength = usedCvtHeatDist / 254.0f;
+            // Pi Temp
+            // 
+            float usedPiHeatDist = 254.0f - ((this->p_Data->pi_Heat / 80.0f) * 254.0f);
+            float piHeatColorStrength = usedPiHeatDist / 254.0f;
 
-        this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Styled-TempGauge"),
-            { 52.0f, 149.0f },
-            { 254.0f, 53.0f },
-            0.0f,
-            { 0.9f - cvtHeatColorStrength, cvtHeatColorStrength, 0.0f }
-        );
+            this->p_Renderer->DrawSprite(
+                ResourceManager::GetTexture("Styled-TempGauge"),
+                { 52.0f, 24.0f },
+                { 254.0f, 53.0f },
+                0.0f,
+                { 0.9f - piHeatColorStrength, piHeatColorStrength, 0.0f }
+            );
 
-        this->p_Renderer->DrawQuad(
-            backgroundColor,
-            { 306.0f, 149.0f },
-            { -usedCvtHeatDist, 53.0f }
-        );
+            this->p_Renderer->DrawQuad(
+                backgroundColor,
+                { 306.0f, 24.0f },
+                { -usedPiHeatDist, 53.0f }
+            );
+
+            // CVT Temp
+            // 
+            float usedCvtHeatDist = 254.0f - ((this->p_Data->CVT_Heat / 80.0f) * 254.0f);
+            float cvtHeatColorStrength = usedCvtHeatDist / 254.0f;
+
+            this->p_Renderer->DrawSprite(
+                ResourceManager::GetTexture("Styled-TempGauge"),
+                { 52.0f, 149.0f },
+                { 254.0f, 53.0f },
+                0.0f,
+                { 0.9f - cvtHeatColorStrength, cvtHeatColorStrength, 0.0f }
+            );
+
+            this->p_Renderer->DrawQuad(
+                backgroundColor,
+                { 306.0f, 149.0f },
+                { -usedCvtHeatDist, 53.0f }
+            );
+        }
 
         // Dashboard Background
         // 

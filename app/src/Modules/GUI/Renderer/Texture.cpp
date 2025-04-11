@@ -47,7 +47,7 @@ namespace BB {
         void DynamicTexture2D::UpdateData(unsigned char* data) {
             glBindTexture(GL_TEXTURE_2D, this->m_ID);
 
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, this->m_Width, this->m_Height, GL_RG8, GL_UNSIGNED_BYTE, data);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, this->m_Width, this->m_Height, GL_RGB, GL_UNSIGNED_BYTE, data);
 
             glBindTexture(GL_TEXTURE_2D, 0);
         }

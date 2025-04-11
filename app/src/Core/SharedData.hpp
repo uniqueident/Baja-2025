@@ -83,7 +83,7 @@ namespace BB {
         }
 
         void UnregisterPin(Physical pin) {
-            if (this->usedpins.find(pin) != this->usedpins.end()) {
+            if (this->usedpins.find(pin) == this->usedpins.end()) {
                 std::cerr << "Pin #" << static_cast<int>(pin) << " has not been registered yet!" << std::endl;
             }
 

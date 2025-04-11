@@ -12,6 +12,7 @@
 #include <glad/gl.h>
 
 #include <opencv2/videoio.hpp>
+#include <opencv2/imgproc.hpp>
 
 
 namespace BB {
@@ -26,7 +27,7 @@ namespace BB {
         Camera::Camera() : m_Camera(), m_Frame(), m_Texture(std::make_shared<DynamicTexture2D>()), m_Started(false) { }
 
         Camera::Camera(int index) :
-            m_Camera(index, cv::CAP_ANY),
+            m_Camera(index, cv::CAP_DSHOW),
             m_Frame(),
             m_Texture(std::make_shared<DynamicTexture2D>()),
             m_Started(false)
@@ -42,11 +43,15 @@ namespace BB {
         }
 
         std::shared_ptr<DynamicTexture2D>& Camera::GetFrame() {
-            this->m_Camera.read(this->m_Frame);
+            if (!this->m_Camera.read(this->m_Frame) || this->m_Frame.empty()) {
+                std::cerr << "Failed to read frame from camera!" << std::endl;
 
-            unsigned char* data = this->m_Frame.data;
+                return this->m_Texture;
+            }
 
-            this->m_Texture->UpdateData(data);
+            cv::cvtColor(this->m_Frame, this->m_Frame, cv::COLOR_BGR2RGB);
+
+            this->m_Texture->UpdateData(this->m_Frame.data);
 
             return this->m_Texture;
         }
@@ -54,8 +59,6 @@ namespace BB {
         void Camera::Start() {
             if (this->m_Started == true)
                 std::cerr << "Camera start called after camera is already started!" << std::endl;
-
-            
         }
 
         void Camera::Stop() {
