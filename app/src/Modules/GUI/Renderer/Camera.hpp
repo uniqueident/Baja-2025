@@ -49,6 +49,7 @@ namespace BB {
             std::shared_ptr<DynamicTexture2D> m_Texture; /** @brief The OpenGL frame texture. */
 
             bool m_Started; /** @brief Records if the camera is active or not. */
+            int m_Index;
 
         };  // Camera
 

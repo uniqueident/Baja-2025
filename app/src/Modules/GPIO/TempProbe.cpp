@@ -95,11 +95,7 @@ namespace BB {
             // std::cout << "Temp Probe Temperature: " << this->p_Data->CVT_Heat << std::endl;
         }
 
-
-<<<<<<< HEAD
-=======
     #endif
->>>>>>> refs/remotes/origin/dev
     }
 
 }   // BB

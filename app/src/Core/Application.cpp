@@ -45,7 +45,7 @@ namespace BB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
-        // this->p_GUI->Init();
+        this->p_GUI->Init();
 
         // ==================== WiringPi Setup ====================
         //
@@ -75,8 +75,6 @@ namespace BB {
             Physical::PIN_12
         ))->Init();
 
-        // TODO: Check the fan with for sure 12v power supply to confirm that the GPIO can output a strong enough PWM signal.
-        //
         // this->m_Modules.emplace_back(new FanControl(
         //     this->p_SharedData,
         //     Physical::PIN_32,
@@ -96,7 +94,7 @@ namespace BB {
             delete this->m_Modules[i];
         }
 
-        // this->p_GUI->Shutdown();
+        this->p_GUI->Shutdown();
     }
 
     // Runs the application.
@@ -112,7 +110,7 @@ namespace BB {
         // update loop so that it does not get called twice.
         //
         while (this->p_SharedData->running) {
-            // UpdateModules();
+            UpdateModules();
 
             Render();
         }
@@ -130,7 +128,7 @@ namespace BB {
     // Updates the Application's GUI
     //
     void Application::Render() {
-        // this->p_GUI->Update();
+        this->p_GUI->Update();
     }
 
 } // BB
