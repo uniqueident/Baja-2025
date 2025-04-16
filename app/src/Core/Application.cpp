@@ -45,7 +45,7 @@ namespace BB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
-        this->p_GUI->Init();
+        //this->p_GUI->Init();
 
         // ==================== WiringPi Setup ====================
         //
@@ -67,7 +67,8 @@ namespace BB {
             Physical::PIN_23,
             Physical::PIN_21,
             Physical::PIN_19,
-            Physical::PIN_24
+            Physical::PIN_24,
+            Physical::PIN_29
         ))->Init();
 
         this->m_Modules.emplace_back(new FuelFlow(
@@ -94,7 +95,7 @@ namespace BB {
             delete this->m_Modules[i];
         }
 
-        this->p_GUI->Shutdown();
+        //this->p_GUI->Shutdown();
     }
 
     // Runs the application.
@@ -128,7 +129,7 @@ namespace BB {
     // Updates the Application's GUI
     //
     void Application::Render() {
-        this->p_GUI->Update();
+        // this->p_GUI->Update();
     }
 
 } // BB

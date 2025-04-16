@@ -13,12 +13,13 @@
 
 namespace BB {
 
-    TempProbe::TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0) :
+    TempProbe::TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0, Physical gpio) :
         Module(data),
         m_ClockPin(clock),
         m_MisoPin(miso),
         m_MosiPin(mosi),
         m_Ce0Pin(ce0),
+        m_GpioPin(gpio),
         m_fd(0),
         voltage()
     {
@@ -26,6 +27,7 @@ namespace BB {
         this->p_Data->RegisterPin(m_MisoPin);
         this->p_Data->RegisterPin(m_MosiPin);
         this->p_Data->RegisterPin(m_Ce0Pin);
+        this->p_Data->RegisterPin(m_GpioPin);
     }
 
     TempProbe::~TempProbe() {
@@ -33,6 +35,7 @@ namespace BB {
         this->p_Data->UnregisterPin(m_MisoPin);
         this->p_Data->UnregisterPin(m_MosiPin);
         this->p_Data->UnregisterPin(m_Ce0Pin);
+        this->p_Data->UnregisterPin(m_GpioPin);
     }
 
     void TempProbe::Init() {
@@ -66,34 +69,31 @@ namespace BB {
 
     void TempProbe::Update() {
         // Reset the buffer for a new data request.
-        //
-        this->m_Buffer[0] = 1;
-        this->m_Buffer[1] = static_cast<unsigned char>((8 + this->k_Channel) << 4);
-        this->m_Buffer[2] = 0;
+        
+
+        //config.
+        this->m_Buffer[0] = 0x08;
+        //config for 3 wire
+        this->m_Buffer[1] = 0xD0;//static_cast<unsigned char>((8 + this->k_Channel) << 4);
+        //reuse.
+        this->m_Buffer[2] = 0x00;
 
         // ==================== WiringPi Actions ====================
         //
     #ifdef RPI_PI
 
-        unsigned short retVal = 0;
+        unsigned int retVal = 0;
+        //manually set the value.
 
         wiringPiSPIDataRW(this->k_Channel, this->m_Buffer, 3);
-
         digitalWrite(this->m_Ce0Pin, HIGH);
-
-        delay(10);
-
-        retVal = (((this->m_Buffer[1] & 0x03) << 8) | this->m_Buffer[2]) & 0x3FF;
-
+        delay(100);
+        retVal = (((this->m_Buffer[1]) << 8) | this->m_Buffer[2]) >>1;
+        
         // RTD PT100 has 100 ohm resistance at 0 C, so the expected voltage reading will be ~ 4.9V
         //
-        this->voltage = retVal / 1023.0f * 5.0f;
-        if(fabs(this->p_Data->voltage-this->voltage)>0.0875){
-            this->p_Data->voltage = this->voltage;
-            // std::cout << "Temp Probe Returned Data: " << retVal << std::endl;
-            std::cout << "Temp Probe Voltage: " << this->p_Data->voltage << std::endl;
-            // std::cout << "Temp Probe Temperature: " << this->p_Data->CVT_Heat << std::endl;
-        }
+        //this->voltage = retVal / 1023.0f * 5.0f;
+        std::cout<<"RETURNED VALUE: "<<retVal<<std::endl;
 
     #endif
     }

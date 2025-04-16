@@ -8,7 +8,7 @@ namespace BB {
 
     class TempProbe : public Module {
     public:
-        TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0);
+        TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0, Physical Gpio);
         ~TempProbe();
 
         virtual void Init() override;
@@ -23,7 +23,7 @@ namespace BB {
             union {
                 int val;
 
-                unsigned char buf[4];
+                unsigned char buf[3];
 
             };
 
@@ -39,9 +39,11 @@ namespace BB {
         const Physical m_MisoPin;
         const Physical m_MosiPin;
         const Physical m_Ce0Pin;
+        const Physical m_GpioPin;
 
         float voltage;
 
+        
         // The buffer must have the following format:
         //
         // Byte 1: Always 1 as to set the update signal for the MCP3008.
