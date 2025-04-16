@@ -60,11 +60,6 @@ namespace BB {
          */
         std::set<Physical> usedpins;
 
-        /**
-        * @brief detected voltage of the temp sensor
-        */
-        float voltage;
-
         SharedData() :
             running(false),
             gearPosition(GearPosition::PARK),

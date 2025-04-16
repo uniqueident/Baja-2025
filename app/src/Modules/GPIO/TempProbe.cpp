@@ -1,6 +1,7 @@
 #include "TempProbe.hpp"
 
 #include "Core/SharedData.hpp"
+
 #include <cmath>
 
 // libs
@@ -8,26 +9,26 @@
 
     #include <wiringPi.h>
     #include <wiringPiSPI.h>
+    #include <max31855.h>
+
+    #include <byteswap.h>
 
 #endif
 
 namespace BB {
 
-    TempProbe::TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0, Physical gpio) :
+    TempProbe::TempProbe(SharedData* data, Physical clock, Physical miso, Physical mosi, Physical ce0) :
         Module(data),
         m_ClockPin(clock),
         m_MisoPin(miso),
         m_MosiPin(mosi),
         m_Ce0Pin(ce0),
-        m_GpioPin(gpio),
-        m_fd(0),
-        voltage()
+        m_fd(0)
     {
         this->p_Data->RegisterPin(m_ClockPin);
         this->p_Data->RegisterPin(m_MisoPin);
         this->p_Data->RegisterPin(m_MosiPin);
         this->p_Data->RegisterPin(m_Ce0Pin);
-        this->p_Data->RegisterPin(m_GpioPin);
     }
 
     TempProbe::~TempProbe() {
@@ -35,7 +36,6 @@ namespace BB {
         this->p_Data->UnregisterPin(m_MisoPin);
         this->p_Data->UnregisterPin(m_MosiPin);
         this->p_Data->UnregisterPin(m_Ce0Pin);
-        this->p_Data->UnregisterPin(m_GpioPin);
     }
 
     void TempProbe::Init() {
@@ -46,7 +46,21 @@ namespace BB {
         if ((this->m_fd = wiringPiSPISetup(this->k_Channel, this->k_hz)) == -1)
             throw std::runtime_error("Failed to setup Temp Probe SPI bus!");
 
-        pinMode(this->m_Ce0Pin, OUTPUT);
+        uint8_t data[2];
+        data[0] = 0x08; // Write Signal
+        // Bit | Purpose                  | Value
+        // --------------------------------------
+        // 7   | Vbias                    | 1
+        // 6   | Conversion Mode (Auto)   | 1
+        // 5   | 1-Shot (Ignored in Auto) | 0
+        // 4   | 3-Wire                   | 1
+        // 3   | Fault Detection Cycle    | 0
+        // 2-1 | Fault Detection Bits     | 00
+        // 1   | Fault Status Clear       | 0
+        //
+        data[1] = 0b11010010;
+
+        wiringPiSPIDataRW(this->k_Channel, data, 2);
 
     #endif
     }
@@ -61,39 +75,30 @@ namespace BB {
     #endif
     }
 
-    // Constants for PT100
-    const float R0 = 100.0;         // Resistance at 0°C (100 ohms)
-    const float alpha = 0.00385;    // Temperature coefficient of resistance (per °C)
-    const float vIn = 5.0f;         // The input voltage of the PT100
-    const float Rfixed = 23.0f;   // Reference resistor in the circuit
-
     void TempProbe::Update() {
-        // Reset the buffer for a new data request.
-        
-
-        //config.
-        this->m_Buffer[0] = 0x08;
-        //config for 3 wire
-        this->m_Buffer[1] = 0xD0;//static_cast<unsigned char>((8 + this->k_Channel) << 4);
-        //reuse.
-        this->m_Buffer[2] = 0x00;
+        // ==================== SPI Data Setup ====================
+        //
+        uint8_t tx[3];
+        tx[0] = 0x01 & 0x7F;
+        tx[1] = 0;
+        tx[2] = 0;
 
         // ==================== WiringPi Actions ====================
         //
     #ifdef RPI_PI
 
-        unsigned int retVal = 0;
-        //manually set the value.
+        wiringPiSPIDataRW(this->k_Channel, tx, 3);
+        uint8_t msb = tx[1]; // Most significant bits
+        uint8_t lsb = tx[2]; // Least significant bits
 
-        wiringPiSPIDataRW(this->k_Channel, this->m_Buffer, 3);
-        digitalWrite(this->m_Ce0Pin, HIGH);
-        delay(100);
-        retVal = (((this->m_Buffer[1]) << 8) | this->m_Buffer[2]) >>1;
-        
-        // RTD PT100 has 100 ohm resistance at 0 C, so the expected voltage reading will be ~ 4.9V
-        //
-        //this->voltage = retVal / 1023.0f * 5.0f;
-        std::cout<<"RETURNED VALUE: "<<retVal<<std::endl;
+        uint16_t data = ((msb << 8) | lsb) >> 1; // Remove fault bit
+
+        float resistance = ((float)data * 430.0f) / 32768.0f;
+        float temp = 0.0f;
+
+        printf("RTD: %u | Resistance: %.2f ohm | Temp: %.2f C\n", data, resistance, temp);
+
+        delay(1000);
 
     #endif
     }
