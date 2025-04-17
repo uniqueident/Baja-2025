@@ -67,8 +67,7 @@ namespace BB {
             Physical::PIN_23,
             Physical::PIN_21,
             Physical::PIN_19,
-            Physical::PIN_24,
-            Physical::PIN_29
+            Physical::PIN_24
         ))->Init();
 
         this->m_Modules.emplace_back(new FuelFlow(

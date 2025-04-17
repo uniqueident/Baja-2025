@@ -20,7 +20,7 @@ namespace BB {
         const int k_Channel = 0;
         // The clock speed must be within 500,000 and 32,000,000 Hz.
         //
-        const int k_hz =500'000;
+        const int k_hz = 500'000;
 
         const Physical m_ClockPin;
         const Physical m_MisoPin;

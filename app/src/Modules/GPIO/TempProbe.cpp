@@ -43,11 +43,14 @@ namespace BB {
         // 
     #ifdef RPI_PI
 
+        pinMode(this->m_Ce0Pin, OUTPUT);
+        digitalWrite(this->m_Ce0Pin, HIGH);
+
         if ((this->m_fd = wiringPiSPISetup(this->k_Channel, this->k_hz)) == -1)
             throw std::runtime_error("Failed to setup Temp Probe SPI bus!");
 
         uint8_t data[2];
-        data[0] = 0x08; // Write Signal
+        data[0] = 0x80; // Write Signal
         // Bit | Purpose                  | Value
         // --------------------------------------
         // 7   | Vbias                    | 1
@@ -56,11 +59,16 @@ namespace BB {
         // 4   | 3-Wire                   | 1
         // 3   | Fault Detection Cycle    | 0
         // 2-1 | Fault Detection Bits     | 00
-        // 1   | Fault Status Clear       | 0
+        // 0   | Fault Status Clear       | 0
         //
         data[1] = 0b11010010;
 
         wiringPiSPIDataRW(this->k_Channel, data, 2);
+
+        // Now read it back
+        uint8_t readBuf[2] = { 0x00 & 0x7F, 0x00 };
+        wiringPiSPIDataRW(this->k_Channel, readBuf, 2);
+        printf("Config Register Readback: 0x%02X\n", readBuf[1]);
 
     #endif
     }
@@ -91,14 +99,31 @@ namespace BB {
         uint8_t msb = tx[1]; // Most significant bits
         uint8_t lsb = tx[2]; // Least significant bits
 
+        printf("Raw Data: { %i, %i, %i }\n", tx[0], tx[1], tx[2]);
+
         uint16_t data = ((msb << 8) | lsb) >> 1; // Remove fault bit
 
-        float resistance = ((float)data * 430.0f) / 32768.0f;
-        float temp = 0.0f;
+        float resistance = (static_cast<float>(data) * 430.0f) / 32768.0f;
+        float temp = (resistance - 100.0f) / 0.385f;
 
         printf("RTD: %u | Resistance: %.2f ohm | Temp: %.2f C\n", data, resistance, temp);
 
         delay(1000);
+
+        // Read fault register
+        uint8_t fault[2] = { 0x07 & 0x7F, 0 };
+        wiringPiSPIDataRW(this->k_Channel, fault, 2);
+        uint8_t status = fault[1];
+
+        if (status) {
+            printf("Fault Detected! Status Register: 0x%02X\n", status);
+            if (status & (1 << 7)) printf(" → RTD High Threshold Exceeded\n");
+            if (status & (1 << 6)) printf(" → RTD Low Threshold Triggered\n");
+            if (status & (1 << 5)) printf(" → REFIN- > 0.85 × Vbias\n");
+            if (status & (1 << 4)) printf(" → REFIN- < 0.85 × Vbias\n");
+            if (status & (1 << 3)) printf(" → RTDIN- < 0.85 × Vbias\n");
+            if (status & (1 << 2)) printf(" → Overvoltage/Undervoltage Fault\n");
+        }
 
     #endif
     }
