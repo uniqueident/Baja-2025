@@ -2,14 +2,17 @@
 
 #include "Core/SharedData.hpp"
 
+#include <chrono>
 #include <cmath>
+#include <cstdint>
+#include <iostream>
+#include <thread>
 
 // libs
 #ifdef RPI_PI
 
     #include <wiringPi.h>
     #include <wiringPiSPI.h>
-    #include <max31855.h>
 
     #include <byteswap.h>
 
@@ -38,39 +41,210 @@ namespace BB {
         this->p_Data->UnregisterPin(m_Ce0Pin);
     }
 
+    #define CONFIG_REG            0x00
+    #define CONFIG_BIAS           0x80
+    #define CONFIG_MODE_AUTO      0x40
+    #define CONFIG_MODEOFF        0x00
+    #define CONFIG_1_SHOT         0x20
+    #define CONFIG_3_WIRE         0x10
+    #define CONFIG_2_4_WIRE       0x00
+    #define CONFIG_FAULT_STATUS   0x02
+    #define CONFIG_FILTER_50HZ    0x01
+    #define CONFIG_FILTER_60HZ    0x00
+
+    #define RTD_MSB_REG           0x01
+    #define RTD_LSB_REG           0x02
+    #define HFAULT_MSB_REG        0x03
+    #define HFAULT_LSB_REG        0x04
+    #define LFAULT_MSB_REG        0x05
+    #define LFAULT_LSB_REG        0x06
+    #define FAULT_STATUS_REG      0x07
+
+    #define FAULT_HIGH_THRESHOLD   0x80
+    #define FAULT_LOW_THRESHOLD    0x40
+    #define FAULT_REF_IN_LOW       0x20
+    #define FAULT_REF_IN_HIGH      0x10
+    #define FAULT_RTD_IN_LOW       0x08
+    #define FAULT_OV_UV            0x04
+    #define FAULT_NONE             0x00
+
+    #define WIRE_COUNT             3
+    #define FILTER_HZ              50
+
+    void TempProbe::ReadRegisterN(uint8_t address, uint8_t* buffer, uint8_t n) {
+        address &= 0x7F;
+
+    #ifdef RPI_PI
+
+        digitalWrite(this->m_Ce0Pin, LOW);
+
+        wiringPiSPIDataRW(this->k_Channel, static_cast<char*>(&address), n);
+
+        digitalWrite(this->m_Ce0Pin, HIGH);
+
+    #endif
+    }
+
+    uint8_t TempProbe::ReadRegister8(uint8_t address) {
+        uint8_t ret = 0;
+
+        ReadRegisterN(address, &ret, 1);
+
+        return ret;
+    }
+
+    uint16_t TempProbe::ReadRegister16(uint8_t address) {
+        uint8_t buf[2] = { 0, 0 };
+
+        ReadRegisterN(address, buf, 2);
+
+        uint16_t ret = buf[0];
+        ret <<= 8;
+        ret |= buf[1];
+
+        return ret;
+    }
+
+    void TempProbe::WriteRegister8(uint8_t address, uint8_t data) {
+        address |= 0x80;
+
+    #ifdef RPI_PI
+
+        digitalWrite(this->m_Ce0Pin, LOW);
+
+        wiringPiSPIDataRW(this->k_Channel, static_cast<char*>(&address), 1);
+        wiringPiSPIDataRW(this->k_Channel, static_cast<char*>(&data), 1);
+
+        digitalWrite(this->m_Ce0Pin, HIGH);
+
+    #endif
+    }
+
+    uint8_t TempProbe::ReadFault() {
+        return ReadRegister8(FAULT_STATUS_REG);
+    }
+
+    void TempProbe::ClearFault() {
+        uint8_t t = ReadRegister8(CONFIG_REG);
+
+        t &= ~0x2C;
+        t |= CONFIG_FAULT_STATUS;
+
+        WriteRegister8(CONFIG_REG, t);
+    }
+
+    void TempProbe::CompareFault() {
+        switch (ReadFault()) {
+            case FAULT_NONE:
+                std::cerr << "No errors detected." << std::endl; break;
+
+            case FAULT_HIGH_THRESHOLD:
+                std::cerr << "Measured resistance greater than High Fault Threshold value." << std::endl; break;
+
+            case FAULT_LOW_THRESHOLD:
+                std::cerr << "Measured resistance less than Low Fault Threshold value." << std::endl; break;
+
+            case FAULT_REF_IN_LOW:
+                std::cerr << "vREFIN > 0.85 x vBIAS." << std::endl; break;
+
+            case FAULT_REF_IN_HIGH:
+                std::cerr << "vRERFIN < 0.85 X vBIAS (FORCE - open)." << std::endl; break;
+
+            case FAULT_RTD_IN_LOW:
+                std::cerr << "vRTRIN- < 0.85 X vBIAS (FORCE - open)." << std::endl; break;
+
+            case FAULT_OV_UV:
+                std::cerr << "Any protected input voltage > vDD or < GND1." << std::endl; break;
+        }
+    }
+
+    void TempProbe::EnableBias(bool enable) {
+        uint8_t t = ReadRegister8(CONFIG_REG);
+
+        if (enable)
+            t |= CONFIG_BIAS;
+        else
+            t &= ~CONFIG_BIAS;
+
+        WriteRegister8(CONFIG_REG, t);
+    }
+
+    void TempProbe::AutoConvert(bool enable) {
+        uint8_t t = ReadRegister8(CONFIG_REG);
+
+        if (enable)
+            t |= CONFIG_MODE_AUTO;
+        else
+            t &= ~CONFIG_MODE_AUTO;
+
+        WriteRegister8(CONFIG_REG, t);
+    }
+
+    void TempProbe::SetWires(uint8_t numWires) {
+        uint8_t t = ReadRegister8(CONFIG_REG);
+
+        if (numWires == 3)
+            t |= CONFIG_3_WIRE;
+        else
+            t &= ~CONFIG_3_WIRE;
+
+        WriteRegister8(CONFIG_REG, t);
+    }
+
+    void TempProbe::SetFilter(uint8_t filterHz) {
+        uint8_t t = ReadRegister8(CONFIG_REG);
+
+        if (filterHz == 50)
+            t |= CONFIG_FILTER_50HZ;
+        else
+            t &= ~CONFIG_FILTER_50HZ;
+
+        WriteRegister8(CONFIG_REG, t);
+    }
+
+    uint16_t TempProbe::ReadRTD() {
+        ClearFault();
+        EnableBias(true);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        uint8_t t = ReadRegister8(CONFIG_REG);
+
+        t |= CONFIG_1_SHOT;
+
+        WriteRegister8(CONFIG_REG, t);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        uint16_t rtd = ReadRegister16(RTD_MSB_REG);
+
+        rtd >>= 1;
+
+        EnableBias(false);
+
+        return rtd;
+    }
+
     void TempProbe::Init() {
         // ==================== WiringPi Pin Setup ====================
         // 
     #ifdef RPI_PI
 
-        pinMode(this->m_Ce0Pin, OUTPUT);
-        digitalWrite(this->m_Ce0Pin, HIGH);
-
         if ((this->m_fd = wiringPiSPISetup(this->k_Channel, this->k_hz)) == -1)
             throw std::runtime_error("Failed to setup Temp Probe SPI bus!");
 
-        uint8_t data[2];
-        data[0] = 0x80; // Write Signal
-        // Bit | Purpose                  | Value
-        // --------------------------------------
-        // 7   | Vbias                    | 1
-        // 6   | Conversion Mode (Auto)   | 1
-        // 5   | 1-Shot (Ignored in Auto) | 0
-        // 4   | 3-Wire                   | 1
-        // 3   | Fault Detection Cycle    | 0
-        // 2-1 | Fault Detection Bits     | 00
-        // 0   | Fault Status Clear       | 0
-        //
-        data[1] = 0b11010010;
-
-        wiringPiSPIDataRW(this->k_Channel, data, 2);
-
-        // Now read it back
-        uint8_t readBuf[2] = { 0x00 & 0x7F, 0x00 };
-        wiringPiSPIDataRW(this->k_Channel, readBuf, 2);
-        printf("Config Register Readback: 0x%02X\n", readBuf[1]);
+        pinMode(this->m_Ce0Pin, OUTPUT);
+        digitalWrite(this->m_Ce0Pin, HIGH);
 
     #endif
+
+        SetWires(WIRE_COUNT);
+        EnableBias(false);
+        AutoConvert(false);
+
+        ClearFault();
+
+        SetFilter(FILTER_HZ);
     }
 
     void TempProbe::Shutdown() {
@@ -83,49 +257,26 @@ namespace BB {
     #endif
     }
 
+    #define RTD_A     3.9083e-3f;
+    #define RTD_B     -5.775e-7f;
+
     void TempProbe::Update() {
-        // ==================== SPI Data Setup ====================
-        //
-        uint8_t tx[3];
-        tx[0] = 0x01 & 0x7F;
-        tx[1] = 0;
-        tx[2] = 0;
+        // Calculate the temperature, 430 is the resistor.
+        float rt = (ReadRTD() / 32768.0f) * 430.0f;
+        constexpr float z1 = -RTD_A;
+        constexpr float z2 = RTD_A * RTD_A - (4.0f * RTD_B);
+        // 100 is the reference resistance.
+        constexpr float z3 = (4.0f * RTD_B) / 100.0f;
+        constexpr float z4 = 2.0f * RTD_B;
 
-        // ==================== WiringPi Actions ====================
-        //
-    #ifdef RPI_PI
+        float temp = z2 + (z3 * rt);
+        temp = (sqrt(temp) + z1) / z4;
+ 
+        if (temp >= 0) { // Save temp if it above 0 *C
+            CompareFault();
 
-        wiringPiSPIDataRW(this->k_Channel, tx, 3);
-        uint8_t msb = tx[1]; // Most significant bits
-        uint8_t lsb = tx[2]; // Least significant bits
-
-        printf("Raw Data: { %i, %i, %i }\n", tx[0], tx[1], tx[2]);
-
-        uint16_t data = ((msb << 8) | lsb) >> 1; // Remove fault bit
-
-        float resistance = (static_cast<float>(data) * 430.0f) / 32768.0f;
-        float temp = (resistance - 100.0f) / 0.385f;
-
-        printf("RTD: %u | Resistance: %.2f ohm | Temp: %.2f C\n", data, resistance, temp);
-
-        delay(1000);
-
-        // Read fault register
-        uint8_t fault[2] = { 0x07 & 0x7F, 0 };
-        wiringPiSPIDataRW(this->k_Channel, fault, 2);
-        uint8_t status = fault[1];
-
-        if (status) {
-            printf("Fault Detected! Status Register: 0x%02X\n", status);
-            if (status & (1 << 7)) printf(" → RTD High Threshold Exceeded\n");
-            if (status & (1 << 6)) printf(" → RTD Low Threshold Triggered\n");
-            if (status & (1 << 5)) printf(" → REFIN- > 0.85 × Vbias\n");
-            if (status & (1 << 4)) printf(" → REFIN- < 0.85 × Vbias\n");
-            if (status & (1 << 3)) printf(" → RTDIN- < 0.85 × Vbias\n");
-            if (status & (1 << 2)) printf(" → Overvoltage/Undervoltage Fault\n");
+            printf("Temperature C*: %.2f\n", temp);
         }
-
-    #endif
     }
 
 }   // BB

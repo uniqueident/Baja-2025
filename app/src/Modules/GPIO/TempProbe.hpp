@@ -4,6 +4,8 @@
 
 #include "Modules/Module.hpp"
 
+#include <stdint.h>
+
 namespace BB {
 
     class TempProbe : public Module {
@@ -15,6 +17,25 @@ namespace BB {
         virtual void Shutdown() override;
 
         virtual void Update() override;
+
+    private:
+        void ReadRegisterN(uint8_t address, uint8_t* buffer, uint8_t n);
+        uint8_t ReadRegister8(uint8_t address);
+        uint16_t ReadRegister16(uint8_t address);
+
+        void WriteRegister8(uint8_t address, uint8_t data);
+
+        uint8_t ReadFault();
+        void ClearFault();
+
+        void CompareFault();
+
+        void EnableBias(bool enable);
+        void AutoConvert(bool enable);
+        void SetWires(uint8_t numWires);
+        void SetFilter(uint8_t filterHz);
+
+        uint16_t ReadRTD();
 
     private:
         const int k_Channel = 0;
