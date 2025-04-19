@@ -6,10 +6,7 @@
 
 namespace BB {
 
-    /**
-     * @brief The base class for a Module. Pure virtual class.
-     */
-    class FanControl :public Module {
+    class FanControl : public Module {
     public:
         FanControl(SharedData* data, Physical pwm, Physical rpm);
         ~FanControl();

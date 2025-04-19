@@ -6,13 +6,10 @@
 
 namespace BB {
 
-    /**
-     * @brief The base class for a Module. Pure virtual class.
-     */
-    class FuelFlow : public Module {
+    class EngineRPM : public Module {
     public:
-        FuelFlow(SharedData* data, Physical flow, Physical reset);
-        ~FuelFlow();
+        EngineRPM(SharedData* data, Physical signal);
+        ~EngineRPM();
 
         virtual void Init() override;
         virtual void Shutdown() override;
@@ -20,15 +17,12 @@ namespace BB {
         virtual void Update() override;
 
     private:
-        static void FlowPulse();
-        static void ResetSignal();
+        static void EnginePulse();
 
     private:
         const Physical m_DataPin;
-        const Physical m_ResetPin;
 
         static inline unsigned int s_Pulse = 0;
-        static inline bool s_Reset = false;
 
     };
 

@@ -51,9 +51,18 @@ namespace BB {
          */
         float pi_Heat;
         /**
-         * @brief The data representation of the amount of fuel in the tank, this is stored in mL, which for a 2 gallon tank is full with 7570.824 mL.
+         * @brief The data representation of the amount of fuel in the tank in mL.
          */
         float fuel;
+
+        /**
+         * @brief The full tank amount in milliliters. A 2 gallon tank is full with 7570.824 mL.
+         */
+        #define FUEL_FULL_ML 7570.824f
+        /**
+         * @brief Resets the fuel level to full.
+         */
+        void ResetFuel() { this->fuel = FUEL_FULL_ML; }
 
         /**
          * @brief Build the set of used pins.
@@ -63,11 +72,11 @@ namespace BB {
         SharedData() :
             running(false),
             gearPosition(GearPosition::PARK),
-            engineRPM(2000),
-            milesPerHour(12),
-            CVT_Heat(30.0f),
-            pi_Heat(15.0f),
-            fuel(7570.824f),
+            engineRPM(0),
+            milesPerHour(0),
+            CVT_Heat(0.0f),
+            pi_Heat(0.0f),
+            fuel(FUEL_FULL_ML),
             usedpins()
         { }
 
