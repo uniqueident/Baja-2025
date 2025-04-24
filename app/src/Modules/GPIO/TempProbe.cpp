@@ -41,35 +41,119 @@ namespace BB {
         this->p_Data->UnregisterPin(m_Ce0Pin);
     }
 
-    #define CONFIG_REG            0x00
-    #define CONFIG_BIAS           0x80
-    #define CONFIG_MODE_AUTO      0x40
-    #define CONFIG_MODEOFF        0x00
-    #define CONFIG_1_SHOT         0x20
-    #define CONFIG_3_WIRE         0x10
-    #define CONFIG_2_4_WIRE       0x00
-    #define CONFIG_FAULT_STATUS   0x02
-    #define CONFIG_FILTER_50HZ    0x01
-    #define CONFIG_FILTER_60HZ    0x00
+    /**
+     * - Register Addresses and POR State
+     * -------------------------------------------------------------------
+     * | Register Name  | Read Address | Write Address | POR State | R/W |
+     * -------------------------------------------------------------------
+     * | Configuration  | 0x00         | 0x80          | 0x00      | R/W |
+     * | RTD MSBs       | 0x01         |               | 0x00      | R   |
+     * | RTD LSBs       | 0x02         |               | 0x00      | R   |
+     * | High Fault MSB | 0x03         | 0x83          | 0xFF      | R/W |
+     * | High Fault LSB | 0x04         | 0x84          | 0xFF      | R/W |
+     * | Low Fault MSB  | 0x05         | 0x85          | 0x00      | R/W |
+     * | Low Fault LSB  | 0x06         | 0x86          | 0x00      | R/W |
+     * | Fault Status   | 0x07         |               | 0x00      | R   |
+     * -------------------------------------------------------------------
+     */
 
-    #define RTD_MSB_REG           0x01
-    #define RTD_LSB_REG           0x02
-    #define HFAULT_MSB_REG        0x03
-    #define HFAULT_LSB_REG        0x04
-    #define LFAULT_MSB_REG        0x05
-    #define LFAULT_LSB_REG        0x06
-    #define FAULT_STATUS_REG      0x07
+    #define CONFIG_REG_READ      0x00
+    #define CONFIG_REG_WRITE     0x80
+    #define CONFIG_REG_PW        0x00
 
-    #define FAULT_HIGH_THRESHOLD   0x80
-    #define FAULT_LOW_THRESHOLD    0x40
-    #define FAULT_REF_IN_LOW       0x20
-    #define FAULT_REF_IN_HIGH      0x10
-    #define FAULT_RTD_IN_LOW       0x08
-    #define FAULT_OV_UV            0x04
-    #define FAULT_NONE             0x00
+    #define RTD_MSB_READ         0x01
+    #define RTD_MSB_PW           0x00
+    #define RTD_LSB_READ         0x02
+    #define RTD_LSB_PW           0x00
 
-    #define WIRE_COUNT             3
-    #define FILTER_HZ              50
+    #define HIGH_FAULT_MSB_READ  0x03
+    #define HIGH_FAULT_MSB_WRITE 0x83
+    #define HIGH_FAULT_MSB_PW    0xFF
+
+    #define HIGH_FAULT_LSB_READ  0x04
+    #define HIGH_FAULT_LSB_WRITE 0x84
+    #define HIGH_FAULT_LSB_PW    0xFF
+
+    #define LOW_FAULT_MSB_READ   0x05
+    #define LOW_FAULT_MSB_WRITE  0x85
+    #define LOW_FAULT_MSB_PW     0x00
+
+    #define LOW_FAULT_LSB_READ   0x06
+    #define LOW_FAULT_LSB_WRITE  0x86
+    #define LOW_FAULT_LSB_PW     0x00
+
+    #define FAULT_STATUS         0x07
+    #define FAULT_STATUS_PW      0x00
+
+    /**
+     * - Configuration Register Definition
+     * ------------------------------------------------------------------
+     * | D0 | 50 / 60 Hz Filter Select      | 1 = 50 Hz  | 0 = 60 Hz    |
+     * | D1 | Fault Status Clear            | 1 = Clear  |              |
+     * | D2 | Fault Detection Cycle Control |            |              |
+     * | D3 | Fault Detection Cycle Control |            |              |
+     * | D4 | 3-Wire vs 2/4-Wire            | 1 = 3-Wire | 0 = 2/4-Wire |
+     * | D5 | 1-Shot Auto Clear             | 1 = 1-Shot |              |
+     * | D6 | Conversion Mode               | 1 = Auto   |              |
+     * | D7 | V-Bias                        | 1 = On     | 0 = Off      |
+     * ------------------------------------------------------------------
+     */
+
+    #define FILTER_SELECT_50HZ   0b00000001
+    #define FILTER_SELECT_60HZ   0b00000000
+
+    #define FAULT_STATUS_CLEAR   0b00000010
+
+    #define WIRE_SELECT_3        0b00010000
+    #define WIRE_SELECT_2_4      0b00000000
+
+    #define ONE_SHOT_CLEAR       0b00100000
+
+    #define CONVERSION_MODE_AUTO 0b01000000
+
+    #define V_BIAS_ENABLE        0b10000000
+    #define V_BIAS_DISABLE       0b00000000
+
+    /**
+     * - Fault-Detection Cycle Control Bits
+     * --------------------------------------------------------------------------------------------------------------------------------------------------
+     * | D3 | D2 | Configuration Register Write | Write Action                             | Read Meaning                                               |
+     * --------------------------------------------------------------------------------------------------------------------------------------------------
+     * | 0  | 0  | 0bXXXX00XX                   | No action                                | Fault detection finished                                   |
+     * | 0  | 1  | 0b100X010X                   | Fault detection with automatic delay     | Automatic fault detection still running                    |
+     * | 1  | 0  | 0b100X100X                   | Run fault detection with manual delay    | Manual cycle 1 still running; waiting for user to write 11 |
+     * | 1  | 1  | 0b100X110X                   | Finish fault detection with manual delay | Manual cycle 2 still running                               |
+     * --------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    #define NO_FAULT_ACTION        0b00000000
+
+    #define AUTO_FAULT_DETECTION   0b10000100
+
+    #define MANUAL_FAULT_DETECTION 0b10001000
+
+    #define FINISH_FAULT_DETECTION 0b10001100
+
+    /**
+     * - Fault Status Register Definition
+     * ----------------------------------------------
+     * | D2 | Overvoltage / undervoltage fault      |
+     * | D3 | RTD-In < 0.85 x V-Bias (Force - Open) |
+     * | D4 | REF-In < 0.85 x V-Bias (Force - Open) |
+     * | D5 | REF-In > 0.85 x V-Bias                |
+     * | D6 | RTD Low Threshold                     |
+     * | D7 | RTD High Threshold                    |
+     * ----------------------------------------------
+     */
+
+    #define FAULT_NONE           0b00000011
+    #define FAULT_OV_UV          0b00000100
+    #define FAULT_RTD_IN_LOW     0b00001000
+    #define FAULT_REF_IN_LOW     0b00010000
+    #define FAULT_REF_IN_HIGH    0b00100000
+    #define FAULT_HIGH_THRESHOLD 0b01000000
+    #define FAULT_LOW_THRESHOLD  0b10000000
+
 
     void TempProbe::ReadRegisterN(uint8_t address, uint8_t* buffer, uint8_t n) {
         address &= 0x7F;
@@ -78,7 +162,7 @@ namespace BB {
 
         digitalWrite(this->m_Ce0Pin, LOW);
 
-        wiringPiSPIDataRW(this->k_Channel, static_cast<char*>(&address), n);
+        wiringPiSPIDataRW(this->k_Channel, &address, n);
 
         digitalWrite(this->m_Ce0Pin, HIGH);
 
@@ -112,8 +196,8 @@ namespace BB {
 
         digitalWrite(this->m_Ce0Pin, LOW);
 
-        wiringPiSPIDataRW(this->k_Channel, static_cast<char*>(&address), 1);
-        wiringPiSPIDataRW(this->k_Channel, static_cast<char*>(&data), 1);
+        wiringPiSPIDataRW(this->k_Channel, &address, 1);
+        wiringPiSPIDataRW(this->k_Channel, &data, 1);
 
         digitalWrite(this->m_Ce0Pin, HIGH);
 
@@ -121,23 +205,20 @@ namespace BB {
     }
 
     uint8_t TempProbe::ReadFault() {
-        return ReadRegister8(FAULT_STATUS_REG);
+        return ReadRegister8(FAULT_STATUS);
     }
 
     void TempProbe::ClearFault() {
-        uint8_t t = ReadRegister8(CONFIG_REG);
+        uint8_t t = ReadRegister8(CONFIG_REG_READ);
 
         t &= ~0x2C;
-        t |= CONFIG_FAULT_STATUS;
+        t |= FAULT_STATUS_CLEAR;
 
-        WriteRegister8(CONFIG_REG, t);
+        WriteRegister8(CONFIG_REG_WRITE, t);
     }
 
     void TempProbe::CompareFault() {
-        switch (ReadFault()) {
-            case FAULT_NONE:
-                std::cerr << "No errors detected." << std::endl; break;
-
+        switch (ReadFault() & (~FAULT_NONE)) {
             case FAULT_HIGH_THRESHOLD:
                 std::cerr << "Measured resistance greater than High Fault Threshold value." << std::endl; break;
 
@@ -159,47 +240,47 @@ namespace BB {
     }
 
     void TempProbe::EnableBias(bool enable) {
-        uint8_t t = ReadRegister8(CONFIG_REG);
+        uint8_t t = ReadRegister8(CONFIG_REG_READ);
 
         if (enable)
-            t |= CONFIG_BIAS;
+            t |= V_BIAS_ENABLE;
         else
-            t &= ~CONFIG_BIAS;
+            t &= ~V_BIAS_ENABLE;
 
-        WriteRegister8(CONFIG_REG, t);
+        WriteRegister8(CONFIG_REG_WRITE, t);
     }
 
     void TempProbe::AutoConvert(bool enable) {
-        uint8_t t = ReadRegister8(CONFIG_REG);
+        uint8_t t = ReadRegister8(CONFIG_REG_READ);
 
         if (enable)
-            t |= CONFIG_MODE_AUTO;
+            t |= CONVERSION_MODE_AUTO;
         else
-            t &= ~CONFIG_MODE_AUTO;
+            t &= ~CONVERSION_MODE_AUTO;
 
-        WriteRegister8(CONFIG_REG, t);
+        WriteRegister8(CONFIG_REG_WRITE, t);
     }
 
     void TempProbe::SetWires(uint8_t numWires) {
-        uint8_t t = ReadRegister8(CONFIG_REG);
+        uint8_t t = ReadRegister8(CONFIG_REG_READ);
 
         if (numWires == 3)
-            t |= CONFIG_3_WIRE;
+            t |= WIRE_SELECT_3;
         else
-            t &= ~CONFIG_3_WIRE;
+            t &= ~WIRE_SELECT_3;
 
-        WriteRegister8(CONFIG_REG, t);
+        WriteRegister8(CONFIG_REG_WRITE, t);
     }
 
     void TempProbe::SetFilter(uint8_t filterHz) {
-        uint8_t t = ReadRegister8(CONFIG_REG);
+        uint8_t t = ReadRegister8(CONFIG_REG_READ);
 
         if (filterHz == 50)
-            t |= CONFIG_FILTER_50HZ;
+            t |= FILTER_SELECT_50HZ;
         else
-            t &= ~CONFIG_FILTER_50HZ;
+            t &= ~FILTER_SELECT_50HZ;
 
-        WriteRegister8(CONFIG_REG, t);
+        WriteRegister8(CONFIG_REG_WRITE, t);
     }
 
     uint16_t TempProbe::ReadRTD() {
@@ -208,15 +289,15 @@ namespace BB {
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        uint8_t t = ReadRegister8(CONFIG_REG);
+        uint8_t t = ReadRegister8(CONFIG_REG_READ);
 
-        t |= CONFIG_1_SHOT;
+        t |= ONE_SHOT_CLEAR;
 
-        WriteRegister8(CONFIG_REG, t);
+        WriteRegister8(CONFIG_REG_WRITE, t);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        uint16_t rtd = ReadRegister16(RTD_MSB_REG);
+        uint16_t rtd = ReadRegister16(RTD_MSB_READ);
 
         rtd >>= 1;
 
@@ -238,13 +319,13 @@ namespace BB {
 
     #endif
 
-        SetWires(WIRE_COUNT);
+        SetWires(3);
         EnableBias(false);
         AutoConvert(false);
 
         ClearFault();
 
-        SetFilter(FILTER_HZ);
+        SetFilter(50);
     }
 
     void TempProbe::Shutdown() {
@@ -257,8 +338,8 @@ namespace BB {
     #endif
     }
 
-    #define RTD_A     3.9083e-3f;
-    #define RTD_B     -5.775e-7f;
+    #define RTD_A     3.9083e-3f
+    #define RTD_B     -5.775e-7f
 
     void TempProbe::Update() {
         // Calculate the temperature, 430 is the resistor.
