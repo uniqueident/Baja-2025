@@ -342,6 +342,7 @@ namespace BB {
     #define RTD_B     -5.775e-7f
 
     void TempProbe::Update() {
+        CompareFault();
         // Calculate the temperature, 430 is the resistor.
         float rt = (ReadRTD() / 32768.0f) * 430.0f;
         constexpr float z1 = -RTD_A;
