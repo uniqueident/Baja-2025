@@ -2,8 +2,10 @@
 
 #include "Core/SharedData.hpp"
 
+#include "Modules/GPIO/EngineRPM.hpp"
 #include "Modules/GPIO/FanControl.hpp"
 #include "Modules/GPIO/FuelFlow.hpp"
+#include "Modules/GPIO/GearShifter.hpp"
 #include "Modules/GPIO/TempProbe.hpp"
 
 #include "Modules/GUI/GUIModule.hpp"
@@ -72,7 +74,17 @@ namespace BB {
 
         this->m_Modules.emplace_back(new FuelFlow(
             this->p_SharedData,
-            Physical::PIN_12
+            Physical::PIN_12,
+            Physical::PIN_16
+        ))->Init();
+
+        this->m_Modules.emplace_back(new EngineRPM(
+            this->p_SharedData,
+            Physical::PIN_18
+        ))->Init();
+
+        this->m_Modules.emplace_back(new GearShifter(
+            this->p_SharedData
         ))->Init();
 
         // this->m_Modules.emplace_back(new FanControl(
@@ -91,6 +103,7 @@ namespace BB {
         //
         for (size_t i = 0; i < this->m_Modules.size(); i++) {
             this->m_Modules[i]->Shutdown();
+
             delete this->m_Modules[i];
         }
 
