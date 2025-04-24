@@ -14,11 +14,13 @@ namespace BB {
         m_ResetPin(reset)
     {
         this->p_Data->RegisterPin(this->m_DataPin);
+        this->p_Data->RegisterPin(this->m_ResetPin);
     }
 
     FuelFlow::~FuelFlow()
     {
         this->p_Data->UnregisterPin(this->m_DataPin);
+        this->p_Data->UnregisterPin(this->m_ResetPin);
     }
 
     void FuelFlow::Init() {
@@ -30,7 +32,7 @@ namespace BB {
 
         pinMode(this->m_ResetPin, INPUT);
 
-        wiringPiISR(this->m_ResetPin, INT_EDGE_RISING, &FuelFlow::ResetSignal);
+        wiringPiISR(this->m_ResetPin, INT_EDGE_BOTH, &FuelFlow::ResetSignal);
 
     #endif
     }
@@ -50,8 +52,10 @@ namespace BB {
     }
 
     void FuelFlow::Update() {
-        if (s_Reset)
+        if (s_Reset){
             this->p_Data->ResetFuel();
+        }
+
 
         if (s_Pulse) {
             // The fuel flow sensor sends a pulse every 2.5 mL.

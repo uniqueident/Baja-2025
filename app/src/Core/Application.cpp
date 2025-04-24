@@ -84,7 +84,10 @@ namespace BB {
         ))->Init();
 
         this->m_Modules.emplace_back(new GearShifter(
-            this->p_SharedData
+            this->p_SharedData,
+            Physical::PIN_29,
+            Physical::PIN_31,
+            Physical::PIN_33
         ))->Init();
 
         // this->m_Modules.emplace_back(new FanControl(
@@ -93,6 +96,8 @@ namespace BB {
         //     Physical::PIN_36
         // ))->Init();
 
+        //++++Used pins diagram++++//
+        
     }
 
     void Application::Shutdown() {

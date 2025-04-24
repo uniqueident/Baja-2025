@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <set>
+#include <vector>
 
 namespace BB {
 
@@ -102,6 +103,10 @@ namespace BB {
             this->usedpins.erase(pin);
         }
 
+        //visualizes 
+        void visualize(){
+
+        }
     };  // SharedData
 
 }   // BB

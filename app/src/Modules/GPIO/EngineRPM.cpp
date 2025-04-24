@@ -1,4 +1,5 @@
 #include "EngineRPM.hpp"
+#include <wiringPi.h>
 
 namespace BB {
 

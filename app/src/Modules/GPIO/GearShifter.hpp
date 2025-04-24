@@ -8,7 +8,7 @@ namespace BB {
 
     class GearShifter : public Module {
     public:
-        GearShifter(SharedData* data);
+        GearShifter(SharedData* data, Physical reverse, Physical drive, Physical neutral);
         ~GearShifter();
 
         virtual void Init() override;
@@ -17,6 +17,10 @@ namespace BB {
         virtual void Update() override;
 
     private:
+
+        const Physical m_reverse;
+        const Physical m_drive;
+        const Physical m_neutral;
 
     };
 
