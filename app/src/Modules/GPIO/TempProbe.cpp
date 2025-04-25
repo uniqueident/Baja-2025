@@ -13,8 +13,8 @@
 
     #include <wiringPi.h>
     #include <wiringPiSPI.h>
-
     #include <byteswap.h>
+    #include <linux/spi/spidev.h>
 
 #endif
 
@@ -160,8 +160,8 @@ namespace BB {
     #ifdef RPI_PI
 
         digitalWrite(this->m_Ce0Pin, LOW);
-
-        wiringPiSPIDataRW(this->k_Channel, &address, n);
+        
+        
 
         digitalWrite(this->m_Ce0Pin, HIGH);
 
@@ -314,14 +314,22 @@ namespace BB {
             throw std::runtime_error("Failed to setup Temp Probe SPI bus!");
 
         pinMode(this->m_Ce0Pin, OUTPUT);
+        pinMode(this->m_MosiPin, OUTPUT);
+        pinMode(this->m_MisoPin, INPUT);
+        pinMode(this->m_ClockPin,OUTPUT);
+
+
         digitalWrite(this->m_Ce0Pin, HIGH);
+        digitalWrite(this->m_ClockPin, LOW);
+        digitalWrite(this->m_MosiPin, LOW);
+
 
     #endif
 
         SetWires(3);
         EnableBias(false);
         AutoConvert(false);
-
+        
         ClearFault();
 
         SetFilter(50);
@@ -341,22 +349,25 @@ namespace BB {
     #define RTD_B     -5.775e-7f
 
     void TempProbe::Update() {
+        //CompareFault();
+        int test = ReadRTD();
+        std::cout<<test<<std::endl;
         // Calculate the temperature, 430 is the resistor.
-        float rt = (ReadRTD() / 32768.0f) * 430.0f;
-        constexpr float z1 = -RTD_A;
-        constexpr float z2 = RTD_A * RTD_A - (4.0f * RTD_B);
-        // 100 is the reference resistance.
-        constexpr float z3 = (4.0f * RTD_B) / 100.0f;
-        constexpr float z4 = 2.0f * RTD_B;
+        // float rt = (ReadRTD() / 32768.0f) * 430.0f;
+        // constexpr float z1 = -RTD_A;
+        // constexpr float z2 = RTD_A * RTD_A - (4.0f * RTD_B);
+        // // 100 is the reference resistance.
+        // constexpr float z3 = (4.0f * RTD_B) / 100.0f;
+        // constexpr float z4 = 2.0f * RTD_B;
 
-        float temp = z2 + (z3 * rt);
-        temp = (sqrt(temp) + z1) / z4;
+        // float temp = z2 + (z3 * rt);
+        // temp = (sqrt(temp) + z1) / z4;
  
-        if (temp >= 0) { // Save temp if it above 0 *C
-            CompareFault();
+        // if (temp >= 0) { // Save temp if it above 0 *C
+        //     CompareFault();
 
-            printf("Temperature C*: %.2f\n", temp);
-        }
+        //     printf("Temperature C*: %.2f\n", temp);
+        // }
     }
 
 }   // BB
