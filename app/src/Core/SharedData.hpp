@@ -104,12 +104,12 @@ namespace BB {
         }
 
         //visualizes 
-        void visualize(){
-            std::vector<Physical> k(usedpins.begin(),usedpins.end());
-            for(int i=0; i<k.size(); i++){
+        // void visualize(){
+        //     std::vector<Physical> k(usedpins.begin(),usedpins.end());
+        //     for(int i=0; i<k.size(); i++){
                 
-            }
-        }
+        //     }
+        // }
     };  // SharedData
 
 }   // BB
