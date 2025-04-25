@@ -154,9 +154,8 @@ namespace BB {
     #define FAULT_HIGH_THRESHOLD 0b01000000
     #define FAULT_LOW_THRESHOLD  0b10000000
 
-
     void TempProbe::ReadRegisterN(uint8_t address, uint8_t* buffer, uint8_t n) {
-        address &= 0x7F;
+        address &= 0x7F; // Make sure top bit is not set
 
     #ifdef RPI_PI
 
@@ -287,7 +286,7 @@ namespace BB {
         ClearFault();
         EnableBias(true);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         uint8_t t = ReadRegister8(CONFIG_REG_READ);
 
@@ -295,7 +294,7 @@ namespace BB {
 
         WriteRegister8(CONFIG_REG_WRITE, t);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         uint16_t rtd = ReadRegister16(RTD_MSB_READ);
 
