@@ -1,5 +1,13 @@
 #include "EngineRPM.hpp"
-#include <wiringPi.h>
+
+// std
+#include <chrono>
+
+#ifdef RPI_PI
+
+    #include <wiringPi.h>
+
+#endif
 
 namespace BB {
 
@@ -23,6 +31,8 @@ namespace BB {
         wiringPiISR(this->m_DataPin, INT_EDGE_RISING, &EngineRPM::EnginePulse);
 
     #endif
+
+        this->m_PrevTime = std::chrono::steady_clock::now();
     }
 
     void EngineRPM::Shutdown() {
@@ -35,8 +45,24 @@ namespace BB {
     #endif
     }
 
+    #define TIRE_DIAMETER 20.0f // In inches
+    #define GEAR_RATIO    31.0f
+
     void EngineRPM::Update() {
-        // TODO
+        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed = now - this->m_PrevTime;
+
+        if (elapsed.count() >= 1.0f) {
+            this->m_PrevTime = now;
+
+            this->p_Data->engineRPM = static_cast<float>(s_Pulse) * 60.0f;
+
+            s_Pulse = 0;
+
+            // This supposedly is a correct conversion.
+            // 
+            this->p_Data->milesPerHour = (this->p_Data->engineRPM * TIRE_DIAMETER) / (GEAR_RATIO * 336);
+        }
     }
 
     void EngineRPM::EnginePulse() {

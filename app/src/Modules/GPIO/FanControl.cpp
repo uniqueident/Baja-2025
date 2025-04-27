@@ -74,8 +74,6 @@ namespace BB {
         if (s_Counter++ >= 1'000) {
             this->p_Data->pi_Heat = GetTemp();
 
-            std::cout << "Current Pi Temp: " << this->p_Data->pi_Heat << std::endl;
-
             if (this->p_Data->pi_Heat >= MAX_PI_TEMP)
                 SetSpeed(1.0f);
             else if (this->p_Data->pi_Heat >= MIN_PI_TEMP)
@@ -106,8 +104,6 @@ namespace BB {
     }
 
     void FanControl::SetSpeed(float speed) {
-        std::cout << "Setting Fan to " << speed * 100.0f << std::endl;
-
         speed = speed * PWM_RANGE;
 
     #ifdef RPI_PI

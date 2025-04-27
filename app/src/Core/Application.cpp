@@ -6,7 +6,6 @@
 #include "Modules/GPIO/FanControl.hpp"
 #include "Modules/GPIO/FuelFlow.hpp"
 #include "Modules/GPIO/GearShifter.hpp"
-#include "Modules/GPIO/TempProbe.hpp"
 
 #include "Modules/GUI/GUIModule.hpp"
 
@@ -87,7 +86,8 @@ namespace BB {
             this->p_SharedData,
             Physical::PIN_29,
             Physical::PIN_31,
-            Physical::PIN_33
+            Physical::PIN_33,
+            Physical::PIN_35
         ))->Init();
 
         this->m_Modules.emplace_back(new FanControl(

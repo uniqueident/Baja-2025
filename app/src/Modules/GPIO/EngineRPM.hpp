@@ -4,6 +4,9 @@
 
 #include "Modules/Module.hpp"
 
+// std
+#include <chrono>
+
 namespace BB {
 
     class EngineRPM : public Module {
@@ -21,6 +24,8 @@ namespace BB {
 
     private:
         const Physical m_DataPin;
+
+        std::chrono::steady_clock::time_point m_PrevTime;
 
         static inline unsigned int s_Pulse = 0;
 

@@ -1,50 +1,73 @@
 #include "GearShifter.hpp"
+
 #include "Core/SharedData.hpp"
-#include <wiringPi.h>
+
+#ifdef RPI_PI
+
+    #include <wiringPi.h>
+
+#endif
 
 namespace BB {
 
-    GearShifter::GearShifter(SharedData* data, Physical reverse, Physical drive, Physical neutral) :
+    GearShifter::GearShifter(SharedData* data, Physical park, Physical neutral, Physical gear1, Physical gear2) :
         Module(data),
-        m_reverse(reverse),
-        m_drive(drive),
-        m_neutral(neutral)
+        m_Park(park),
+        m_Neutral(neutral),
+        m_1(gear1),
+        m_2(gear2)
     {
-        this->p_Data->RegisterPin(m_reverse);
-        this->p_Data->RegisterPin(m_drive);
-        this->p_Data->RegisterPin(m_neutral);
+        this->p_Data->RegisterPin(this->m_Park);
+        this->p_Data->RegisterPin(this->m_Neutral);
+        this->p_Data->RegisterPin(this->m_1);
+        this->p_Data->RegisterPin(this->m_2);
     }
 
     GearShifter::~GearShifter()
     {
-        this->p_Data->UnregisterPin(m_reverse);
-        this->p_Data->UnregisterPin(m_drive);
-        this->p_Data->UnregisterPin(m_neutral);
+        this->p_Data->UnregisterPin(this->m_Park);
+        this->p_Data->UnregisterPin(this->m_Neutral);
+        this->p_Data->UnregisterPin(this->m_1);
+        this->p_Data->UnregisterPin(this->m_2);
     }
 
     void GearShifter::Init() {
-        pinMode(m_reverse, INPUT);
-        pinMode(m_drive,INPUT);
-        pinMode(m_neutral, INPUT);
+    #ifdef RPI_PI
+
+        pinMode(this->m_Park, INPUT);
+        pinMode(this->m_Neutral, INPUT);
+        pinMode(this->m_1,INPUT);
+        pinMode(this->m_2,INPUT);
+
+    #endif
     }
 
     void GearShifter::Shutdown() {
-        pinMode(m_reverse, PM_OFF);
-        pinMode(m_drive, PM_OFF);
-        pinMode(m_neutral, PM_OFF);
+    #ifdef RPI_PI
+
+        pinMode(this->m_Park, PM_OFF);
+        pinMode(this->m_Neutral, PM_OFF);
+        pinMode(this->m_1, PM_OFF);
+        pinMode(this->m_2, PM_OFF);
+
+    #endif
     }
 
     void GearShifter::Update() {
+    #ifdef RPI_PI
 
-        if(digitalRead(m_reverse)){
-            this->p_Data->gearPosition = REVERSE;
-        }else if(digitalRead(m_drive)){
-            this->p_Data->gearPosition = DRIVE;
-        }else if(digitalRead(m_neutral)){
-            this->p_Data->gearPosition = NEUTRAL;
-        }else{
-            this->p_Data->gearPosition = PARK;
-        } 
+        if(digitalRead(this->m_Park))
+            this->p_Data->gearPosition = GearPosition::PARK;
+        else if(digitalRead(this->m_Neutral))
+            this->p_Data->gearPosition = GearPosition::NEUTRAL;
+        else if(digitalRead(this->m_1))
+            this->p_Data->gearPosition = GearPosition::ONE;
+        else if(digitalRead(this->m_2))
+            this->p_Data->gearPosition = GearPosition::TWO;
+        else
+            this->p_Data->gearPosition = GearPosition::REVERSE;
+
+    #endif
     }
 
 } // namespace BB

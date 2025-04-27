@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include <set>
-#include <vector>
 
 namespace BB {
 
@@ -15,7 +14,6 @@ namespace BB {
 
         REVERSE = 1,
         NEUTRAL = 2,
-        DRIVE = 3,
 
         ONE = 4,
         TWO = 5,

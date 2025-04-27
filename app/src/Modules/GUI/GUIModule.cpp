@@ -54,13 +54,9 @@ namespace BB {
                 ref->data->gearPosition = REVERSE;
             }
         }
-        
+
         if (key == GLFW_KEY_P && action == GLFW_PRESS){
             ref->data->gearPosition = PARK;
-        }
-
-        if (key == GLFW_KEY_D && action == GLFW_PRESS){
-            ref->data->gearPosition = DRIVE;
         }
 
         if (key == GLFW_KEY_1 && action == GLFW_PRESS){
@@ -275,10 +271,6 @@ namespace BB {
                 gearShiftPos.x -= 37.0f * 2.0f;
                 break;
 
-            case DRIVE:
-                gearShiftPos.x -= 38.0f * 3.0f;
-                break;
-
             case ONE:
                 gearShiftPos.x -= 36.0f * 4.0f;
                 break;
@@ -378,14 +370,13 @@ namespace BB {
         // Highlight the active gear, this thankfully is just adjusting the x coordinate
         // of the highlighter to align with the current gear.
         //
-        glm::vec2 gearShiftPos = { 863.0f, 479.0f };
+        glm::vec2 gearShiftPos = { 780.5f, 479.0f };
         switch (this->p_Data->gearPosition) {
             case PARK:       break;
-            case REVERSE:    gearShiftPos.x = 695.0f; break;
-            case NEUTRAL:    gearShiftPos.x = 527.0f; break;
-            case DRIVE:      gearShiftPos.x = 360.0f; break;
-            case ONE:        gearShiftPos.x = 192.0f; break;
-            case TWO:        gearShiftPos.x = 24.0f;  break;
+            case REVERSE:    gearShiftPos.x = 612.5f; break;
+            case NEUTRAL:    gearShiftPos.x = 444.5f; break;
+            case ONE:        gearShiftPos.x = 276.5f; break;
+            case TWO:        gearShiftPos.x = 108.5f;  break;
         }
 
         this->p_Renderer->DrawSprite(
@@ -405,12 +396,16 @@ namespace BB {
         if (this->p_Data->milesPerHour < 10)
             mphModifier = 40.0f;
 
+        glm::vec3 mphColor = { 0.0f, 0.0f, 0.0f };
+        if (this->p_Data->gearPosition == GearPosition::REVERSE)
+            mphColor.r = mphColor.b = 1.0f;
+
         this->p_Renderer->DrawText(
             ss.str(),
             ResourceManager::GetFont("ComicNeue"),
             { 460.0f + mphModifier, 180.0f },
             3.5f,
-            { 0.0f, 0.0f, 0.0f }
+            mphColor
         );
 
         if (this->p_Data->gearPosition != GearPosition::REVERSE) {
