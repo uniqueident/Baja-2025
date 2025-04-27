@@ -10,6 +10,11 @@ file(GLOB buggie_MAIN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 file(GLOB buggie_CORE_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/*.hpp)
 file(GLOB buggie_CORE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/*.cpp)
 
+
+#file(GLOB buggie_PIN_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Pins/*.hpp)
+#file(GLOB buggie_PIN_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Core/Pins/*.cpp)
+
+
 file(GLOB buggie_MOD_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/*.hpp)
 file(GLOB buggie_MOD_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/Modules/*.cpp)
 
@@ -34,6 +39,11 @@ source_group("Main File" FILES ${buggie_MAIN_SOURCE})
 
 source_group("Core Headers" FILES ${buggie_CORE_HEADER})
 source_group("Core Sources" FILES ${buggie_CORE_SOURCE})
+
+
+#source_group("Pin Headers" FILES ${buggie_PIN_SOURCE})
+#source_group("Pin Sources" FILES ${buggie_PIN_SOURCE})
+
 
 source_group("Module Headers" FILES ${buggie_MOD_HEADER})
 source_group("Module Sources" FILES ${buggie_MOD_SOURCE})
@@ -63,7 +73,7 @@ add_executable(
 
     ${buggie_CORE_HEADER} ${buggie_CORE_SOURCE}
 
-    ${buggie_PIN_HEADER} ${buggie_PIN_SOURCE}
+ #   ${buggie_PIN_HEADER} ${buggie_PIN_SOURCE}
 
     ${buggie_MOD_HEADER} ${buggie_MOD_SOURCE}
 
@@ -102,6 +112,9 @@ target_link_libraries(
     PRIVATE ${FREETYPE_LIBRARIES}
     PRIVATE ${OpenCV_LIBS}
     PRIVATE ${OPENGL_LIBRARIES}
+
+ #   PRIVATE gpiod
+
 )
 
 if (RPI_RASPBERRY)

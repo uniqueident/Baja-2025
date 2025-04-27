@@ -302,6 +302,7 @@ namespace BB {
             str_PI.str(),
             ResourceManager::GetFont("ComicNeue"),
             this->m_WindowScale * glm::vec2(140.0f, 50.0f),
+
             this->m_WindowScale.y * 0.8f,
             {0.82f, 0.106f, 0.106f }
         );
@@ -552,6 +553,17 @@ namespace BB {
 
         if (this->p_Data->fuel <= 0.01f)
             this->p_Data->fuel = 2.0f;
+
+
+            1.2f,
+            {0.82f, 0.106f, 0.106f }
+        );
+
+        this->p_Renderer->DrawCam(
+            ResourceManager::GetCamera(0), 
+            { 50.0f, 50.0f },
+            { 640.0f, 480.0f }
+        );
 
     }
 

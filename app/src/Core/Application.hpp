@@ -38,9 +38,9 @@ namespace BB {
         /** @brief Updates the GUI Module to render. */
         void Render();
 
-        /* --- */
 
-        SharedData* p_SharedData; /** @brief The SharedData for the application. */
+        SharedData* p_SharedData = nullptr; /** @brief The SharedData for the application. */
+
 
         Module* p_GUI; /** @brief The Application GUI module. */
         std::vector<Module*> m_Modules; /** @brief The Application Modules that complete tasks. */

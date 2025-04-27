@@ -47,6 +47,7 @@ namespace BB {
     void Application::Init() {
         std::cout << "Initializing Application!" << std::endl;
 
+
         this->p_GUI->Init();
 
         // ==================== WiringPi Setup ====================
@@ -55,7 +56,15 @@ namespace BB {
 
         wiringPiSetupPinType(WPI_PIN_PHYS);
 
+        this->p_SharedData = new SharedData;
+        
+        // Assuming the modules do no need to run on the main thread,
+        // we can run it on a separate thread using the following member.
+        // this->m_GUIThread.AddMethod(std::bind(&Application::UpdateModules, this), 1);
+
+
     #endif
+
 
         // Assuming the modules do no need to run on the main thread,
         // we can run it on a separate thread using the following member.
@@ -98,6 +107,12 @@ namespace BB {
 
         //++++Used pins diagram++++//
         
+
+
+
+        // Other Modules to be added and initialized below.
+        //Sensor modules below.
+
     }
 
     void Application::Shutdown() {
