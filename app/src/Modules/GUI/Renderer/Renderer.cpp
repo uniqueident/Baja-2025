@@ -7,6 +7,8 @@
 #include "Modules/GUI/Renderer/Camera.hpp"
 
 // std
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/trigonometric.hpp>
 #include <memory>
 
 // libs
@@ -130,16 +132,40 @@ namespace BB {
         void Renderer::DrawText(
             const std::string& text, Font& font,
             glm::vec2 position, float size,
-            const glm::vec3& color
+            const glm::vec3& color,
+            float rotation
         ) {
             p_TextShader->Use();
             p_TextShader->SetVec3f("textColor", color);
 
             glActiveTexture(GL_TEXTURE0);
-            glBindVertexArray(m_TextVAO);
+            glBindVertexArray(this->m_TextVAO);
 
-            for (unsigned int i = 0; i < text.length(); i++) {
-                font.DrawChar(text[i], position.x, position.y, size, this->m_TextVBO);
+            glm::vec2 pen = position;
+
+            for (char c : text) {
+                const Character& ch = font.GetCharacter(c);
+
+                glm::vec2 offset(
+                    ch.bearing.x,
+                    font.GetCharacter('H').bearing.y - ch.bearing.y
+                );
+
+                offset *= size;
+
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(pen + offset, 0.0f));
+
+                model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+                model = glm::translate(model, glm::vec3(pen - position, 0.0f));
+
+                model = glm::scale(model, glm::vec3(size, size, 1.0f));
+
+                this->p_TextShader->SetMat4f("model", model);
+
+                font.DrawChar(c, size, this->m_TextVBO);
+
+                pen.x += (ch.advance >> 6) * size;
             }
 
             glBindVertexArray(0);

@@ -60,23 +60,20 @@ namespace BB {
                 glDeleteTextures(1, &item.second.id);
         }
 
-        void Font::DrawChar(char c, float& x, float& y, float scale, VertexBuffer_ID buffer) {
+        void Font::DrawChar(char c, float scale, VertexBuffer_ID buffer) {
             Character ch = m_Characters[c];
-
-            float xpos = x + ch.bearing.x * scale;
-            float ypos = y + (this->m_Characters['H'].bearing.y - ch.bearing.y) * scale;
 
             float w = ch.size.x * scale;
             float h = ch.size.y * scale;
 
             float vertices[6][4] = {
-                { xpos,     ypos + h,   0.0f, 1.0f },            
-                { xpos + w, ypos,       1.0f, 0.0f },
-                { xpos,     ypos,       0.0f, 0.0f },
+                { 0.0f, h,    0.0f, 1.0f },
+                { w,    0.0f, 1.0f, 0.0f },
+                { 0.0f, 0.0f, 0.0f, 0.0f },
 
-                { xpos,     ypos + h,   0.0f, 1.0f },
-                { xpos + w, ypos + h,   1.0f, 1.0f },
-                { xpos + w, ypos,       1.0f, 0.0f },
+                { 0.0f, h,    0.0f, 1.0f },
+                { w,    h,    1.0f, 1.0f },
+                { w,    0.0f, 1.0f, 0.0f },
             };
 
             glBindTexture(GL_TEXTURE_2D, ch.id);
@@ -86,8 +83,6 @@ namespace BB {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
-
-            x += (ch.advance >> 6) * scale;
         }
 
     }   // GL
