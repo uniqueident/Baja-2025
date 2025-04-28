@@ -55,10 +55,6 @@ namespace BB {
             }
         }
 
-        if (key == GLFW_KEY_P && action == GLFW_PRESS){
-            ref->data->gearPosition = PARK;
-        }
-
         if (key == GLFW_KEY_1 && action == GLFW_PRESS){
             ref->data->gearPosition = ONE;
         }
@@ -81,7 +77,6 @@ namespace BB {
             ref->data->pi_Heat = 0.0f;
             ref->data->engineRPM = 0;
             ref->data->milesPerHour = 0;
-            ref->data->gearPosition = PARK;
         }
 
         if (key == GLFW_KEY_A && action == GLFW_REPEAT){
@@ -255,9 +250,6 @@ namespace BB {
         // The gearShiftPos will need to be adjusted if the image is changed but it works :)
         glm::vec2 gearShiftPos(85.0f, 275.0f);
         switch (this->p_Data->gearPosition) {
-            case PARK:
-                break;
-
             case REVERSE:
                 gearShiftPos.x -= 37.0f;
                 this->p_Renderer->DrawCam(
@@ -372,7 +364,6 @@ namespace BB {
         //
         glm::vec2 gearShiftPos = { 780.5f, 479.0f };
         switch (this->p_Data->gearPosition) {
-            case PARK:       break;
             case REVERSE:    gearShiftPos.x = 612.5f; break;
             case NEUTRAL:    gearShiftPos.x = 444.5f; break;
             case ONE:        gearShiftPos.x = 276.5f; break;
