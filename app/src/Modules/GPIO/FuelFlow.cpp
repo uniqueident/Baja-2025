@@ -62,7 +62,7 @@ namespace BB {
         if (elapsed.count() >= 1.0f) {
             this->m_PrevTime = now;
 
-            this->p_Data->fuel -= 20.0f / 60.0f * 1000;
+            this->p_Data->fuel -= 20.0f / 60.0f;
         }
 
         // if (s_Reset){
