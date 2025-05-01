@@ -72,8 +72,7 @@ namespace BB {
             void DrawText(
                 const std::string& text, Font& font,
                 glm::vec2 position, float size,
-                const glm::vec3& color,
-                float rotation = 0.0f
+                const glm::vec3& color
             );
 
             /**

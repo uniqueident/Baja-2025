@@ -49,14 +49,12 @@ namespace BB {
              * @brief Draw a single character on screen.
              * 
              * @param c The character to draw.
+             * @param x The x position.
+             * @param y The y position.
              * @param scale The text scale.
              * @param buffer The OpenGL VBO to send data to.
              */
-            void DrawChar(char c, float scale, VertexBuffer_ID buffer);
-
-            const Character& GetCharacter(char c) const {
-                return this->m_Characters.at(c);
-            }
+            void DrawChar(char c, float& x, float& y, float scale, VertexBuffer_ID buffer);
 
             /* --- */
 

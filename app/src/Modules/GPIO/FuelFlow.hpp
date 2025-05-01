@@ -4,6 +4,8 @@
 
 #include "Modules/Module.hpp"
 
+#include <chrono>
+
 namespace BB {
 
     /**
@@ -26,6 +28,8 @@ namespace BB {
     private:
         const Physical m_DataPin;
         const Physical m_ResetPin;
+
+        std::chrono::steady_clock::time_point m_PrevTime;
 
         static inline unsigned int s_Pulse = 0;
         static inline bool s_Reset = false;

@@ -71,7 +71,7 @@ namespace BB {
             gearPosition(GearPosition::NEUTRAL),
             engineRPM(300),
             milesPerHour(20),
-            CVT_Heat(20.0f),
+            CVT_Heat(0.0f),
             pi_Heat(20.0f),
             fuel(FUEL_FULL_ML),
             usedpins()

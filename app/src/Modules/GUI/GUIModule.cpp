@@ -23,8 +23,8 @@
 
 namespace BB {
 
-    #define SCREEN_WIDTH 1024
-    #define SCREEN_HEIGHT 600
+    #define SCREEN_WIDTH 600
+    #define SCREEN_HEIGHT 1024
 
     void glfwErrorCallback(int error, const char* description) {
         std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
@@ -219,11 +219,9 @@ namespace BB {
         glfwSwapBuffers(this->p_Window);
     }
 
-    #define SCREEN_ROTATION 90.0f
-
     void GUIModule::Render() {
-        // if (this->m_WindowData.animated)
-        //     Animate();
+        if (this->m_WindowData.animated)
+            Animate();
 
         // Render UI Here //
         glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
@@ -232,9 +230,8 @@ namespace BB {
         if (this->p_Data->gearPosition == GearPosition::REVERSE) {
             this->p_Renderer->DrawCam(
                 ResourceManager::GetCamera(),
-                { -125.0f, 124.0f },
-                { 600.0f, 352.0f },
-                SCREEN_ROTATION
+                { 0.0f, 672.0f },
+                { 600.0f, 352.0f }
             );
         }
 
@@ -252,10 +249,9 @@ namespace BB {
         this->p_Renderer->DrawText(
             ss.str(),
             ResourceManager::GetFont("ComicNeue"),
-            { 530.0f, 470.0f },
+            { 470.0f, 470.0f },
             1.0f,
-            { 0.0f, 0.0f, 0.0f },
-            SCREEN_ROTATION
+            { 0.0f, 0.0f, 0.0f }
         );
         ss.str("");
 
@@ -263,17 +259,12 @@ namespace BB {
         //
         ss << this->p_Data->milesPerHour;
 
-        float mphModifier = 0.0f;
-        if (this->p_Data->milesPerHour < 10)
-            mphModifier = 40.0f;
-
         this->p_Renderer->DrawText(
             ss.str(),
             ResourceManager::GetFont("ComicNeue"),
-            { 620.0f, 260.0f },
+            { (this->p_Data->milesPerHour > 9) ? 230.0f : 260.0f, 390.0f },
             1.2f,
-            { 0.0f, 0.0f, 0.0f },
-            SCREEN_ROTATION
+            { 0.0f, 0.0f, 0.0f }
         );
         ss.str("");
 
@@ -284,29 +275,28 @@ namespace BB {
         this->p_Renderer->DrawText(
             ss.str(),
             ResourceManager::GetFont("ComicNeue"),
-            { 530.0f, 30.0f },
-            0.8f,
-            { 0.0f, 0.0f, 0.0f },
-            SCREEN_ROTATION
+            { 15.0f, 490.0f },
+            0.7f,
+            { 0.0f, 0.0f, 0.0f }
         );
         ss.str("");
 
         // Fuel Gauge
         //
-        float usedFuelDist = 241.0f - ((this->p_Data->fuel / FUEL_FULL_ML) * 241.0f);
+        float usedFuelDist = 240.0f - ((this->p_Data->fuel / FUEL_FULL_ML) * 240.0f);
 
         this->p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Fuel-Fill"),
-            { 770.0f, -39.0f },
-            { 160.0f, 241.0f },
-            SCREEN_ROTATION,
+            { 0.0f, 52.0f },
+            { 161.0f, 241.0f },
+            0.0f,
             { 0.0f, 1.0f, 0.0f }
         );
 
         this->p_Renderer->DrawQuad(
-            backgroundColor, 
-            { screenSize.x - 52.0f, 0.0f },
-            { -usedFuelDist, 160.0f }
+            backgroundColor,
+            { 0.0f, 52.0f },
+            { 161.0f, usedFuelDist }
         );
 
         // Pi Temp
@@ -315,16 +305,16 @@ namespace BB {
 
         this->p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Bar-Fill"),
-            { 883.0f, 500.0f },
+            { 440.0f, 41.0f },
             { 160.0f, 38.0f },
-            SCREEN_ROTATION,
+            0.0f,
             { 0.0f, 1.0f, 0.0f }
         );
 
         this->p_Renderer->DrawQuad(
             backgroundColor,
-            { screenSize.x - 80.0f, screenSize.y - 160.0f },
-            { 38.0f, piDist }
+            { 440.0f, 41.0f },
+            { piDist, 38.0f }
         );
 
         // CVT Temp
@@ -333,17 +323,17 @@ namespace BB {
 
         this->p_Renderer->DrawSprite(
             ResourceManager::GetTexture("Bar-Fill"),
-            { 798.0f, 500.0f },
+            { 440.0f, 126.0f },
             { 160.0f, 38.0f },
-            SCREEN_ROTATION,
+            0.0f,
             { 0.0f, 1.0f, 0.0f }
             
         );
 
         this->p_Renderer->DrawQuad(
             backgroundColor,
-            { screenSize.x - 165.0f, screenSize.y - 160.0f },
-            { 38.0f, cvtDist }
+            { 440.0f, 126.0f },
+            { cvtDist, 38.0f }
         );
 
         // Dashboard Background

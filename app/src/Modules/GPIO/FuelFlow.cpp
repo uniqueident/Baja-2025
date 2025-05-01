@@ -1,5 +1,7 @@
 #include "FuelFlow.hpp"
 
+#include <chrono>
+
 #ifdef RPI_PI
 
     #include <wiringPi.h>
@@ -24,54 +26,65 @@ namespace BB {
     }
 
     void FuelFlow::Init() {
-    #ifdef RPI_PI
+        this->m_PrevTime = std::chrono::steady_clock::now();
 
-        pinMode(this->m_DataPin, INPUT);
+    // #ifdef RPI_PI
 
-        wiringPiISR(this->m_DataPin, INT_EDGE_RISING, &FuelFlow::FlowPulse);
+    //     pinMode(this->m_DataPin, INPUT);
 
-        pinMode(this->m_ResetPin, INPUT);
+    //     wiringPiISR(this->m_DataPin, INT_EDGE_RISING, &FuelFlow::FlowPulse);
 
-        wiringPiISR(this->m_ResetPin, INT_EDGE_BOTH, &FuelFlow::ResetSignal);
+    //     pinMode(this->m_ResetPin, INPUT);
 
-    #endif
+    //     wiringPiISR(this->m_ResetPin, INT_EDGE_BOTH, &FuelFlow::ResetSignal);
+
+    // #endif
     }
 
     void FuelFlow::Shutdown() {
-    #ifdef RPI_PI
+    // #ifdef RPI_PI
 
-        wiringPiISRStop(this->m_DataPin);
+    //     wiringPiISRStop(this->m_DataPin);
 
-        pinMode(this->m_DataPin, PM_OFF);
+    //     pinMode(this->m_DataPin, PM_OFF);
 
-        wiringPiISRStop(this->m_ResetPin);
+    //     wiringPiISRStop(this->m_ResetPin);
 
-        pinMode(this->m_ResetPin, PM_OFF);
+    //     pinMode(this->m_ResetPin, PM_OFF);
 
-    #endif
+    // #endif
     }
 
     void FuelFlow::Update() {
-        if (s_Reset){
-            this->p_Data->ResetFuel();
+        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed = now - this->m_PrevTime;
+
+        if (elapsed.count() >= 1.0f) {
+            this->m_PrevTime = now;
+
+            this->p_Data->fuel -= 20.0f / 60.0f * 1000;
         }
 
+        // if (s_Reset){
+        //     this->p_Data->ResetFuel();
+        // }
 
-        if (s_Pulse) {
-            // The fuel flow sensor sends a pulse every 2.5 mL.
-            //
-            this->p_Data->fuel -= 2.5f * this->s_Pulse;
 
-            s_Pulse = 0;
-        }
+        // if (s_Pulse) {
+        //     // The fuel flow sensor sends a pulse every 2.5 mL.
+        //     //
+        //     this->p_Data->fuel -= 2.5f * this->s_Pulse;
+
+        //     s_Pulse = 0;
+        // }
     }
 
     void FuelFlow::FlowPulse() {
-        s_Pulse++;
+        // s_Pulse++;
     }
 
     void FuelFlow::ResetSignal() {
-        s_Reset = true;
+        // s_Reset = true;
     }
 
 }   // BB
