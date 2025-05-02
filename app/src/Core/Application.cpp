@@ -127,8 +127,6 @@ namespace BB {
         // update loop so that it does not get called twice.
         //
         while (this->p_SharedData->running) {
-            UpdateModules();
-
             Render();
         }
 
