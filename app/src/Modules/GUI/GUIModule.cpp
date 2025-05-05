@@ -23,8 +23,8 @@
 
 namespace BB {
 
-    #define SCREEN_WIDTH 1024
-    #define SCREEN_HEIGHT 600
+    #define SCREEN_WIDTH 600
+    #define SCREEN_HEIGHT 1024
 
     void glfwErrorCallback(int error, const char* description) {
         std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
@@ -55,10 +55,6 @@ namespace BB {
             }
         }
 
-        if (key == GLFW_KEY_P && action == GLFW_PRESS){
-            ref->data->gearPosition = PARK;
-        }
-
         if (key == GLFW_KEY_1 && action == GLFW_PRESS){
             ref->data->gearPosition = ONE;
         }
@@ -81,7 +77,6 @@ namespace BB {
             ref->data->pi_Heat = 0.0f;
             ref->data->engineRPM = 0;
             ref->data->milesPerHour = 0;
-            ref->data->gearPosition = PARK;
         }
 
         if (key == GLFW_KEY_A && action == GLFW_REPEAT){
@@ -184,15 +179,10 @@ namespace BB {
         glfwSetWindowUserPointer(this->p_Window, &this->m_WindowData);
 
         // Load Textures Here //
-        
-        // ResourceManager::LoadTexture("../../assets/awesomeface.png", "Face", true);
-        ResourceManager::LoadTexture("../../assets/dashboardUI.png", "Dashboard", true);
-        ResourceManager::LoadTexture("../../assets/dashboardGearShift.png", "GearShift", true);
 
-        ResourceManager::LoadTexture("../../assets/Styled_Dashboard.png", "Styled-Dashboard", true);
-        ResourceManager::LoadTexture("../../assets/Styled_Gear-Highlighter.png", "Styled-GearShift", true);
-        ResourceManager::LoadTexture("../../assets/Styled_Fuel-Gauge.png", "Styled-FuelGauge", true);
-        ResourceManager::LoadTexture("../../assets/Styled_Temp-Gauge.png", "Styled-TempGauge", true);
+        ResourceManager::LoadTexture("../../assets/Vertical_Dashboard.png", "Dashboard", true);
+        ResourceManager::LoadTexture("../../assets/Fuel_Fill.png", "Fuel-Fill", true);
+        ResourceManager::LoadTexture("../../assets/Bar_Fill.png", "Bar-Fill", true);
 
         ResourceManager::LoadFont("../../assets/Fonts/ComicNeue-Bold.ttf", "ComicNeue");
 
@@ -230,266 +220,126 @@ namespace BB {
     }
 
     void GUIModule::Render() {
-        // if (this->m_WindowData.animated)
-        //     Animate();
+        if (this->m_WindowData.animated)
+            Animate();
 
         // Render UI Here //
-        styledBoard();
-    }
-
-    void GUIModule::mvpBoard() {
-        glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
-
-        this->p_Renderer->DrawQuad(
-            { 0.8f, 0.8f, 0.8f },
-            { 0.0f, 0.0f},
-            screenSize
-        );
-        //dont touch this it is perfect how it is :3
-        this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Dashboard"),
-            { 0.0f, 0.0f},
-            screenSize // I touched it :^)
-        );
-
-        // The gearShiftPos will need to be adjusted if the image is changed but it works :)
-        glm::vec2 gearShiftPos(85.0f, 275.0f);
-        switch (this->p_Data->gearPosition) {
-            case PARK:
-                break;
-
-            case REVERSE:
-                gearShiftPos.x -= 37.0f;
-                this->p_Renderer->DrawCam(
-                    ResourceManager::GetCamera(0), 
-                    { 50.0f, 50.0f },
-                    { 640.0f, 480.0f }
-                );
-                break;
-
-            case NEUTRAL:
-                gearShiftPos.x -= 37.0f * 2.0f;
-                break;
-
-            case ONE:
-                gearShiftPos.x -= 36.0f * 4.0f;
-                break;
-
-            case TWO:
-                gearShiftPos.x -= 35.0f * 5.0f;
-                break;
-        }
-
-        this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("GearShift"),
-            gearShiftPos * this->m_WindowScale,
-            screenSize
-        );
-        
-        //string version of the shared data values
-        std::stringstream str_PI, str_CVT, str_RPM, str_MPH;
-        str_PI << this->p_Data->pi_Heat << "%";
-
-        this->p_Renderer->DrawText(
-            str_PI.str(),
-            ResourceManager::GetFont("ComicNeue"),
-            this->m_WindowScale * glm::vec2(140.0f, 50.0f),
-            this->m_WindowScale.y * 0.8f,
-            {0.82f, 0.106f, 0.106f }
-        );
-        
-        str_CVT << this->p_Data->CVT_Heat << "%";
-        
-        this->p_Renderer->DrawText(
-            str_CVT.str(),
-            ResourceManager::GetFont("ComicNeue"),
-            this->m_WindowScale * glm::vec2(170.0f, 120.0f),
-            this->m_WindowScale.y * 0.8f,
-            {0.82f, 0.106f, 0.106f }
-        );
-
-        str_MPH << abs(this->p_Data->milesPerHour);
-
-        this->p_Renderer->DrawText(
-            str_MPH.str(),
-            ResourceManager::GetFont("ComicNeue"),
-            this->m_WindowScale * glm::vec2(440.0f, 170.0f),
-            this->m_WindowScale.y * 1.5f,
-            {0.82f, 0.106f, 0.106f }
-        );
-
-        float mph_bar_size = (static_cast<float>(abs(this->p_Data->milesPerHour) % 30) / 30.0f) * 300.0f;
-
-        this->p_Renderer->DrawQuad(
-            { 0.0f, 0.0f, 0.0f },
-            { 360.0f, 235.0f},
-            { mph_bar_size, 65.0f}
-        );
-
-        str_RPM << abs(this->p_Data->engineRPM);
-
-        this->p_Renderer->DrawText(
-            str_RPM.str(),
-            ResourceManager::GetFont("ComicNeue"),
-            this->m_WindowScale * glm::vec2(90.0f, 460.0f),
-            this->m_WindowScale.y * 0.8f,
-            {0.82f, 0.106f, 0.106f }
-        );
-
-        float rpm_bar_size = (static_cast<float>(abs(this->p_Data->engineRPM) % 3600) / 3600) * 230;
-
-        this->p_Renderer->DrawQuad(
-            { 0.0f, 0.0f, 0.0f },
-            { 35.0f, 490.0f},
-            { rpm_bar_size, 50.0f}
-        );
-
-        float fuel_in_tank_bar = (abs(this->p_Data->fuel) / 2) * -267;
-
-        this->p_Renderer->DrawQuad(
-            { 0.0f, 0.0f, 0.0f },
-            { 847.0f, 573.0f},
-            { 117.0f, fuel_in_tank_bar}
-        );
-    }
-
-    void GUIModule::styledBoard() {
         glm::vec2 screenSize = glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT) * this->m_WindowScale;
         glm::vec3 backgroundColor { 1.0f, 1.0f, 1.0f };
 
         if (this->p_Data->gearPosition == GearPosition::REVERSE) {
             this->p_Renderer->DrawCam(
                 ResourceManager::GetCamera(),
-                { 0.0f, 0.0f },
-                screenSize
+                { 0.0f, 672.0f },
+                { 600.0f, 352.0f }
             );
         }
 
-        // Gear Shifter
-        // 
-        // Highlight the active gear, this thankfully is just adjusting the x coordinate
-        // of the highlighter to align with the current gear.
-        //
-        glm::vec2 gearShiftPos = { 780.5f, 479.0f };
-        switch (this->p_Data->gearPosition) {
-            case PARK:       break;
-            case REVERSE:    gearShiftPos.x = 612.5f; break;
-            case NEUTRAL:    gearShiftPos.x = 444.5f; break;
-            case ONE:        gearShiftPos.x = 276.5f; break;
-            case TWO:        gearShiftPos.x = 108.5f;  break;
-        }
-
-        this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Styled-GearShift"),
-            gearShiftPos, 
-            { 135.0f, 98.0f },
-            0.0f,
-            { 1.0f, 0.0f, 0.0f }
-        );
-
-        // MPH
-        //
         std::stringstream ss;
-        ss << this->p_Data->milesPerHour;
 
-        float mphModifier = 0.0f;
-        if (this->p_Data->milesPerHour < 10)
-            mphModifier = 40.0f;
-
-        glm::vec3 mphColor = { 0.0f, 0.0f, 0.0f };
-        if (this->p_Data->gearPosition == GearPosition::REVERSE)
-            mphColor.r = mphColor.b = 1.0f;
+        // Gear Shifter
+        //
+        switch (this->p_Data->gearPosition) {
+            case REVERSE:   ss << "R"; break;
+            case NEUTRAL:   ss << "N"; break;
+            case ONE:       ss << "1"; break;
+            case TWO:       ss << "2"; break;
+        }
 
         this->p_Renderer->DrawText(
             ss.str(),
             ResourceManager::GetFont("ComicNeue"),
-            { 460.0f + mphModifier, 180.0f },
-            3.5f,
-            mphColor
+            { 470.0f, 470.0f },
+            1.0f,
+            { 0.0f, 0.0f, 0.0f }
+        );
+        ss.str("");
+
+        // MPH
+        //
+        ss << this->p_Data->milesPerHour;
+
+        this->p_Renderer->DrawText(
+            ss.str(),
+            ResourceManager::GetFont("ComicNeue"),
+            { (this->p_Data->milesPerHour > 9) ? 230.0f : 260.0f, 390.0f },
+            1.2f,
+            { 0.0f, 0.0f, 0.0f }
+        );
+        ss.str("");
+
+        // Engine RPM
+        //
+        ss << this->p_Data->engineRPM;
+
+        this->p_Renderer->DrawText(
+            ss.str(),
+            ResourceManager::GetFont("ComicNeue"),
+            { 15.0f, 490.0f },
+            0.7f,
+            { 0.0f, 0.0f, 0.0f }
+        );
+        ss.str("");
+
+        // Fuel Gauge
+        //
+        float usedFuelDist = 240.0f - ((this->p_Data->fuel / FUEL_FULL_ML) * 240.0f);
+
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Fuel-Fill"),
+            { 0.0f, 52.0f },
+            { 161.0f, 241.0f },
+            0.0f,
+            { 0.0f, 1.0f, 0.0f }
         );
 
-        if (this->p_Data->gearPosition != GearPosition::REVERSE) {
-            // Fuel Gauge
-            //
-            float usedFuelDist = 409.0f - ((this->p_Data->fuel / 7570.824f) * 409.0f);
-            float fuelColorStrength = usedFuelDist / 409.0f;
+        this->p_Renderer->DrawQuad(
+            backgroundColor,
+            { 0.0f, 52.0f },
+            { 161.0f, usedFuelDist }
+        );
 
-            this->p_Renderer->DrawSprite(
-                ResourceManager::GetTexture("Styled-FuelGauge"),
-                { 856.0f, 24.0f },
-                { 142.5f, 409.0f },
-                0.0f,
-                { fuelColorStrength, 0.9f - fuelColorStrength, 0.0f }
-            );
+        // Pi Temp
+        //
+        float piDist = 160.0f - ((this->p_Data->pi_Heat / 80.0f) * 160.0f);
 
-            this->p_Renderer->DrawQuad(
-                backgroundColor,
-                { 856.0f, 24.0f },
-                { 142.5f, usedFuelDist }
-            );
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Bar-Fill"),
+            { 440.0f, 41.0f },
+            { 160.0f, 38.0f },
+            0.0f,
+            { 0.0f, 1.0f, 0.0f }
+        );
 
-            // Engine RPM
-            //
-            float usedRpmDist = 254.0f - ((this->p_Data->engineRPM / 3000.0f) * 254.0f);
-            float rpmColorStrength = usedRpmDist / 254.0f;
+        this->p_Renderer->DrawQuad(
+            backgroundColor,
+            { 440.0f, 41.0f },
+            { piDist, 38.0f }
+        );
 
-            this->p_Renderer->DrawSprite(
-                ResourceManager::GetTexture("Styled-TempGauge"),
-                { 52.0f, 352.0f },
-                { 254.0f, 53.0f },
-                0.0f,
-                { 0.9f - rpmColorStrength, rpmColorStrength, 0.0f }
-            );
+        // CVT Temp
+        //
+        float cvtDist = 160.0f - ((this->p_Data->CVT_Heat / 80.0f) * 160.0f);
 
-            this->p_Renderer->DrawQuad(
-                backgroundColor,
-                { 306.0f, 352.0f },
-                { -usedRpmDist, 53.0f }
-            );
+        this->p_Renderer->DrawSprite(
+            ResourceManager::GetTexture("Bar-Fill"),
+            { 440.0f, 126.0f },
+            { 160.0f, 38.0f },
+            0.0f,
+            { 0.0f, 1.0f, 0.0f }
+            
+        );
 
-            // Pi Temp
-            // 
-            float usedPiHeatDist = 254.0f - ((this->p_Data->pi_Heat / 80.0f) * 254.0f);
-            float piHeatColorStrength = usedPiHeatDist / 254.0f;
-
-            this->p_Renderer->DrawSprite(
-                ResourceManager::GetTexture("Styled-TempGauge"),
-                { 52.0f, 24.0f },
-                { 254.0f, 53.0f },
-                0.0f,
-                { 0.9f - piHeatColorStrength, piHeatColorStrength, 0.0f }
-            );
-
-            this->p_Renderer->DrawQuad(
-                backgroundColor,
-                { 306.0f, 24.0f },
-                { -usedPiHeatDist, 53.0f }
-            );
-
-            // CVT Temp
-            // 
-            float usedCvtHeatDist = 254.0f - ((this->p_Data->CVT_Heat / 80.0f) * 254.0f);
-            float cvtHeatColorStrength = usedCvtHeatDist / 254.0f;
-
-            this->p_Renderer->DrawSprite(
-                ResourceManager::GetTexture("Styled-TempGauge"),
-                { 52.0f, 149.0f },
-                { 254.0f, 53.0f },
-                0.0f,
-                { 0.9f - cvtHeatColorStrength, cvtHeatColorStrength, 0.0f }
-            );
-
-            this->p_Renderer->DrawQuad(
-                backgroundColor,
-                { 306.0f, 149.0f },
-                { -usedCvtHeatDist, 53.0f }
-            );
-        }
+        this->p_Renderer->DrawQuad(
+            backgroundColor,
+            { 440.0f, 126.0f },
+            { cvtDist, 38.0f }
+        );
 
         // Dashboard Background
-        // 
+        //
         this->p_Renderer->DrawSprite(
-            ResourceManager::GetTexture("Styled-Dashboard"),
+            ResourceManager::GetTexture("Dashboard"),
             { 0.0f, 0.0f },
             screenSize
         );

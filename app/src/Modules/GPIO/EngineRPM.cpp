@@ -1,4 +1,5 @@
 #include "EngineRPM.hpp"
+#include "Core/SharedData.hpp"
 
 // std
 #include <chrono>
@@ -45,8 +46,9 @@ namespace BB {
     #endif
     }
 
-    #define TIRE_DIAMETER 20.0f // In inches
-    #define GEAR_RATIO    31.0f
+    #define TIRE_DIAMETER 24.0f // In inches
+    #define GEAR_1        12.0f
+    #define GEAR_2        21.0f
 
     void EngineRPM::Update() {
         std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
@@ -61,7 +63,10 @@ namespace BB {
 
             // This supposedly is a correct conversion.
             // 
-            this->p_Data->milesPerHour = (this->p_Data->engineRPM * TIRE_DIAMETER) / (GEAR_RATIO * 336);
+            if (this->p_Data->gearPosition == GearPosition::ONE || this->p_Data->gearPosition == GearPosition::REVERSE)
+                this->p_Data->milesPerHour = (this->p_Data->engineRPM * TIRE_DIAMETER) / (GEAR_1 * 336);
+            else
+                this->p_Data->milesPerHour = (this->p_Data->engineRPM * TIRE_DIAMETER) / (GEAR_2 * 336);
         }
     }
 

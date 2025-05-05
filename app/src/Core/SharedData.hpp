@@ -10,8 +10,6 @@
 namespace BB {
 
     enum GearPosition {
-        PARK = 0,
-
         REVERSE = 1,
         NEUTRAL = 2,
 
@@ -70,11 +68,11 @@ namespace BB {
 
         SharedData() :
             running(false),
-            gearPosition(GearPosition::PARK),
-            engineRPM(0),
-            milesPerHour(0),
+            gearPosition(GearPosition::NEUTRAL),
+            engineRPM(300),
+            milesPerHour(20),
             CVT_Heat(0.0f),
-            pi_Heat(0.0f),
+            pi_Heat(20.0f),
             fuel(FUEL_FULL_ML),
             usedpins()
         { }

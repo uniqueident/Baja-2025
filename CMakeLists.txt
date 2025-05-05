@@ -9,6 +9,8 @@ endif()
 # Overhead Project Name
 project(RPI_PROJECT)
 
+set(BUILD_SHARED_LIBS OFF)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -63,7 +65,9 @@ set(CMAKE_CXX_FLAGS "${GCC_FLAGS}")
 
 find_package(OpenGL REQUIRED)
 
+set(GLFW_BUILD_DOCS OFF)
 set(GLFW_BUILD_WAYLAND OFF)
+set(GLFW_LIBRARY_TYPE "STATIC")
 add_subdirectory(app/libs/glfw EXCLUDE_FROM_ALL)
 message(STATUS "")
 

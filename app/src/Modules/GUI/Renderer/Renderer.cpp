@@ -7,6 +7,8 @@
 #include "Modules/GUI/Renderer/Camera.hpp"
 
 // std
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/trigonometric.hpp>
 #include <memory>
 
 // libs

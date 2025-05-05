@@ -55,9 +55,6 @@ namespace BB {
         /** @brief Draws the GUI to the screen. */
         void Render();
 
-        void mvpBoard();
-        void styledBoard();
-
         /** @brief Does math to animate for demo mode. */
         void Animate();
 

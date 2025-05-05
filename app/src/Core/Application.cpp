@@ -84,10 +84,9 @@ namespace BB {
 
         this->m_Modules.emplace_back(new GearShifter(
             this->p_SharedData,
-            Physical::PIN_29,
-            Physical::PIN_31,
             Physical::PIN_33,
-            Physical::PIN_35
+            Physical::PIN_29,
+            Physical::PIN_31
         ))->Init();
 
         this->m_Modules.emplace_back(new FanControl(
@@ -128,8 +127,6 @@ namespace BB {
         // update loop so that it does not get called twice.
         //
         while (this->p_SharedData->running) {
-            UpdateModules();
-
             Render();
         }
 
